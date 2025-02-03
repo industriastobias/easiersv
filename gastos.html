@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gastos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0cbf8;
+            color: white;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        #totalCost {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        .add-button {
+            padding: 10px 20px;
+            background-color: #947de6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-button:hover {
+            background-color: #6b6ff0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Análisis de Costos</h2>
+
+<table id="gastosTable">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Costo de Adquisición</th>
+            <th>Gastos Operativos</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div>
+    <input type="text" id="producto" placeholder="Nombre del Producto" required>
+    <input type="number" id="costoAdquisicion" placeholder="Costo de Adquisición" required>
+    <input type="number" id="gastosOperativos" placeholder="Gastos Operativos" required>
+    <button class="add-button" onclick="agregarGasto()">Agregar Gasto</button>
+</div>
+
+<p id="totalCost"></p>
+
+<script>
+    const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
+
+    function actualizarTabla() {
+        const tableBody = document.querySelector('#gastosTable tbody');
+        tableBody.innerHTML = '';
+
+        gastos.forEach((gasto, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${gasto.producto}</td>
+                <td>$${gasto.costoAdquisicion}</td>
+                <td>$${gasto.gastosOperativos}</td>
+                <td><button onclick="eliminarGasto(${index})">Eliminar</button></td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        calcularTotal();
+    }
+
+    function agregarGasto() {
+        const producto = document.getElementById('producto').value;
+        const costoAdquisicion = parseFloat(document.getElementById('costoAdquisicion').value);
+        const gastosOperativos = parseFloat(document.getElementById('gastosOperativos').value);
+
+        if (producto && !isNaN(costoAdquisicion) && !isNaN(gastosOperativos)) {
+            gastos.push({ producto, costoAdquisicion, gastosOperativos });
+            localStorage.setItem('gastos', JSON.stringify(gastos));
+            document.getElementById('producto').value = '';
+            document.getElementById('costoAdquisicion').value = '';
+            document.getElementById('gastosOperativos').value = '';
+            actualizarTabla();
+        } else {
+            alert('Por favor, completa todos los campos.');
+        }
+    }
+
+    function eliminarGasto(index) {
+        gastos.splice(index, 1);
+        localStorage.setItem('gastos', JSON.stringify(gastos));
+        actualizarTabla();
+    }
+
+    function calcularTotal() {
+        const total = gastos.reduce((acc, gasto) => acc + gasto.costoAdquisicion + gasto.gastosOperativos, 0);
+        document.getElementById('totalCost').innerText = `Total de Gastos: $${total}`;
+    }
+
+    // Manejo de desplazamiento con Enter
+    document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+        input.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Evita el comportamiento predeterminado
+                const nextInput = this.nextElementSibling;
+                if (nextInput) {
+                    nextInput.focus(); // Mueve el foco al siguiente input
+                } else {
+                    agregarGasto(); // Agrega gasto si no hay siguiente
+                }
+            }
+        });
+    });
+
+    // Inicializar la tabla al cargar la página
+    window.onload = actualizarTabla;
+</script>
+
+</body>
+</html>

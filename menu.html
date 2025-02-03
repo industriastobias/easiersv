@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            background-color: #f7f7f7; /* Fondo neutro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 2em;
+            color: #444;
+        }
+        .container {
+            background-color: #fff; /* Fondo blanco para el contenedor */
+            border-radius: 16px; /* Bordes redondeados */
+            padding: 3em;
+            width: 100%;
+            max-width: 1100px; /* Máximo tamaño del contenedor */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 3em;
+        }
+        .header {
+            font-size: 3em;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2em;
+            justify-content: center;
+            width: 100%;
+        }
+        .menu a {
+            background-color: #e3e8ed; /* Color suave */
+            color: #333;
+            padding: 1.5em 2em;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1.2em;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+        }
+        .menu a:hover {
+            background-color: #d2dae5; /* Color más suave al pasar el mouse */
+            transform: scale(1.05); /* Efecto de agrandado */
+        }
+        .menu a.active {
+            background-color: #a2b3cc; /* Color resaltado para el enlace activo */
+            color: #fff;
+        }
+        .logout {
+            position: absolute;
+            top: 1.5em;
+            right: 1.5em;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #a3b0c3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .logout img {
+            width: 20px;
+            height: 20px;
+        }
+        .logout:hover {
+            background-color: #8c9ab1; /* Color más oscuro al pasar el mouse */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">Industrias Tobias</div>
+    <div class="menu">
+        <a href="compra.html" id="compra-link">Compra</a>
+        <a href="venta.html" id="venta-link">Venta</a>
+        <a href="inventario.html">Inventario</a>
+        <a href="clientes.html">Clientes</a>
+        <a href="traslados.html">Traslados</a>
+        <a href="facturas.html">Facturas</a>
+        <a href="gastos.html">Gastos</a>
+        <a href="lista_usuarios.html" id="usuarios-link">Usuarios</a>
+        <a href="lista.html" id="lista">Lista</a>
+        <a href="descuentos.html" id="descuentos">Descuentos</a>
+    </div>
+    <div class="logout" onclick="sessionStorage.removeItem('loggedIn'); window.location.href='index.html';">
+        <img src="cerrar.png" alt="Cerrar Sesión">
+    </div>
+</div>
+
+<script>
+    // Previene el retroceso en el navegador
+    (function() {
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.history.go(1);
+        };
+    })();
+    
+    // Verifica si el usuario está autenticado
+    function checkAuthentication() {
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'index.html';
+        }
+    }
+
+    window.onload = function() {
+        checkAuthentication();
+
+        const userID = sessionStorage.getItem('userID');
+        const userLink = document.getElementById('usuarios-link');
+        const compraLink = document.getElementById('compra-link');
+        const ventaLink = document.getElementById('venta-link');
+
+        // Oculta la opción "Usuarios" si el ID no es 2005
+        if (userID !== '2005') {
+            userLink.style.display = 'none';
+        }
+
+        // Oculta "Compra" y "Venta" para usuarios con ID que comienzan con "100"
+        if (userID.startsWith('100')) {
+            compraLink.style.display = 'none';
+            ventaLink.style.display = 'none';
+        }
+
+        // Resalta el enlace activo
+        const currentPage = window.location.pathname.split('/').pop();
+        document.querySelectorAll('.menu a').forEach(link => {
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            }
+        });
+    };
+</script>
+
+</body>
+</html>

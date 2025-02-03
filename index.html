@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0; /* Fondo neutro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9); /* Fondo blanco con transparencia */
+            padding: 2em 1em; /* Reducir el padding */
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 300px; /* Contenedor más estrecho */
+            text-align: center;
+            position: relative;
+            z-index: 10; /* Asegura que el contenedor esté por encima del fondo */
+            animation: fadeIn 0.5s ease-in-out; /* Animación de aparición */
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 1em; /* Reducir el margen inferior */
+        }
+        h1 {
+            color: #4a6a41;
+            font-size: 2.5em; /* Título grande */
+            margin: 0;
+        }
+        h3 {
+            color: #2c3e50;
+            font-size: 1.5em; /* Subtítulo más pequeño */
+            margin: 0;
+            margin-bottom: 1em;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 1em;
+            border: 2px solid #4a6a41;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #00796b; /* Cambio de color al enfocar */
+            outline: none;
+        }
+        .button {
+            background-color: #4a6a41;
+            color: white;
+            border: none;
+            padding: 10px; /* Reducir padding */
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .button:hover {
+            background-color: #3b5e38; /* Color al pasar el mouse */
+            transform: scale(1.05); /* Efecto de aumento */
+        }
+        .logo {
+            max-width: 80px; /* Tamaño del logo ajustado a 80px */
+            margin-bottom: 0.5em; /* Menos margen inferior para que esté más cerca del título */
+            margin-top: -30px; /* Ajustar posición del logo hacia arriba */
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>INDUSTRIAS TOBIAS</h1> <!-- Título -->
+    <h3>A FAMILY COMPANY</h3> <!-- Subtítulo -->
+</div>
+
+<img src="logo.jpg" alt="Logo de Industrias Tobias" class="logo"> <!-- Logo fuera del contenedor -->
+
+<div class="container">
+    <h2>Welcome</h2> <!-- Mensaje de bienvenida -->
+    <input type="text" id="userID" placeholder="ID de Usuario" required autofocus>
+    <input type="password" id="userClave" placeholder="Contraseña" required>
+    <button class="button" onclick="login()">Iniciar Sesión</button>
+</div>
+
+<script>
+    const users = [
+        { id: '2005', clave: 'admin2024' },
+        { id: '1001', clave: 'viewer2024' },
+        { id: '1002', clave: 'claveViewer2' },
+        { id: '1003', clave: 'claveViewer3' },
+        { id: '1004', clave: 'claveViewer4' },
+        { id: '1005', clave: 'claveViewer5' }
+    ];
+
+    function login() {
+        const userID = document.getElementById('userID').value;
+        const userClave = document.getElementById('userClave').value;
+
+        const user = users.find(u => u.id === userID && u.clave === userClave);
+
+        if (user) {
+            const timestamp = new Date().toLocaleString();
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            sessions.push({ id: user.id, time: timestamp });
+            localStorage.setItem('sessions', JSON.stringify(sessions));
+
+            sessionStorage.setItem('loggedIn', 'true');
+            sessionStorage.setItem('userID', user.id);
+            sessionStorage.setItem('userClave', userClave); // Guardar la clave del usuario
+            window.location.href = 'menu.html'; // Redirigir al menú principal
+        } else {
+            alert('ID o contraseña incorrectos.');
+        }
+    }
+
+    // Permitir iniciar sesión al presionar "Enter"
+    document.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            const activeElement = document.activeElement;
+            if (activeElement.id === 'userID') {
+                document.getElementById('userClave').focus(); // Cambia al campo de clave
+            } else if (activeElement.id === 'userClave') {
+                login(); // Intenta iniciar sesión
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

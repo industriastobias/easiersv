@@ -1,0 +1,173 @@
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura - TOBIAS JEWELRY</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 100px;
+        }
+        .info {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="invoice">
+        <div class="header">
+            <div>
+                <h2>TOBIAS JEWELRY</h2>
+                <p>Dirección: El Salvador, San Salvador</p>
+                <p>Correo: Industriastobias@gmail.com</p>
+            </div>
+            <img src="factura.jpg" alt="Logo TOBIAS JEWELRY" class="logo">
+        </div>
+
+        <div class="info">
+            <p><strong>Factura N°:</strong> <span contenteditable="true" id="facturaNum">0001</span></p>
+            <p><strong>Fecha:</strong> <span contenteditable="true" id="fecha">03/02/2025</span></p>
+            <p><strong>Cliente:</strong> <span contenteditable="true" id="cliente">Juan Pérez</span></p>
+            <p><strong>Dirección:</strong> <span contenteditable="true" id="direccion">Colonia Centro, Ciudad</span></p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario ($)</th>
+                    <th>Total ($)</th>
+                </tr>
+            </thead>
+            <tbody id="productos">
+                <tr>
+                    <td contenteditable="true">Anillo de Oro 18K</td>
+                    <td contenteditable="true" class="cantidad">1</td>
+                    <td contenteditable="true" class="precio">500.00</td>
+                    <td class="total">500.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button onclick="agregarFila()">Agregar Producto</button>
+
+        <div class="footer">
+            <p><strong>Total a Pagar:</strong> $<span id="total">500.00</span></p>
+        </div>
+
+        <div class="footer">
+            <button onclick="calcularTotal()">Actualizar Total</button>
+            <button onclick="descargarPDF()">Descargar PDF</button>
+        </div>
+    </div>
+
+    <script>
+        function calcularTotal() {
+            let filas = document.querySelectorAll("#productos tr");
+            let total = 0;
+
+            filas.forEach(fila => {
+                let cantidad = parseFloat(fila.querySelector(".cantidad").innerText) || 0;
+                let precio = parseFloat(fila.querySelector(".precio").innerText) || 0;
+                let totalFila = cantidad * precio;
+                fila.querySelector(".total").innerText = totalFila.toFixed(2);
+                total += totalFila;
+            });
+
+            document.getElementById("total").innerText = total.toFixed(2);
+        }
+
+        function agregarFila() {
+            let tabla = document.getElementById("productos");
+            let nuevaFila = document.createElement("tr");
+
+            nuevaFila.innerHTML = `
+                <td contenteditable="true">Nuevo Producto</td>
+                <td contenteditable="true" class="cantidad">1</td>
+                <td contenteditable="true" class="precio">0.00</td>
+                <td class="total">0.00</td>
+            `;
+
+            tabla.appendChild(nuevaFila);
+        }
+
+        function descargarPDF() {
+            const invoice = document.getElementById("invoice");
+            const buttons = invoice.querySelectorAll("button");
+
+            // Ocultar los botones antes de capturar la imagen
+            buttons.forEach(button => button.style.display = "none");
+
+            html2canvas(invoice).then((canvas) => {
+                const imgData = canvas.toDataURL("image/png");
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF("p", "mm", "a4");
+
+                const imgWidth = 190;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+                
+                doc.save("factura_tobias_jewelry.pdf");
+
+                // Mostrar los botones nuevamente después de la descarga
+                buttons.forEach(button => button.style.display = "inline-block");
+            });
+        }
+    </script>
+
+</body>
+</html>

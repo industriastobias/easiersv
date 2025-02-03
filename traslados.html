@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Traslados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #fff;
+            color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #ddd;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .table-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th, .table-container td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .table-container th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .table-container button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .table-container button:hover {
+            background-color: #e53935;
+        }
+        .transfer-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .transfer-container input, .transfer-container select, .transfer-container button {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+    Gestión de Traslados
+</div>
+
+<div class="container">
+    <div class="table-container">
+        <button onclick="exportToExcel()">Exportar a Excel</button>
+        <table id="transferTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Código</th>
+                    <th>Lugar</th>
+                    <th>Precio Vendido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="transferList">
+                <!-- Las filas de traslados se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="transfer-container">
+        <h2>Registrar Nuevo Traslado</h2>
+        <form id="transferForm">
+            <input type="text" id="itemName" placeholder="Nombre" required>
+            <input type="number" id="itemQuantity" placeholder="Cantidad" required>
+            <input type="text" id="itemCode" placeholder="Código" required>
+            <input type="text" id="itemLocation" placeholder="Lugar" required>
+            <input type="number" id="itemPrice" placeholder="Precio Vendido" required>
+            <button type="button" onclick="addTransfer()">Agregar Traslado</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const transferList = document.getElementById('transferList');
+
+        function loadTransfers() {
+            const transfers = JSON.parse(localStorage.getItem('transfers')) || [];
+
+            transferList.innerHTML = transfers.map((transfer, index) => `
+                <tr>
+                    <td>${transfer.name}</td>
+                    <td>${transfer.quantity}</td>
+                    <td>${transfer.code}</td>
+                    <td>${transfer.location}</td>
+                    <td>${transfer.price}</td>
+                    <td>
+                        <button onclick="removeTransfer(${index})">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.removeTransfer = function(index) {
+            let transfers = JSON.parse(localStorage.getItem('transfers')) || [];
+
+            // Remove the item from transfers
+            transfers.splice(index, 1);
+
+            // Save updated transfers to localStorage
+            localStorage.setItem('transfers', JSON.stringify(transfers));
+            loadTransfers();
+        };
+
+        window.addTransfer = function() {
+            const name = document.getElementById('itemName').value;
+            const quantity = document.getElementById('itemQuantity').value;
+            const code = document.getElementById('itemCode').value;
+            const location = document.getElementById('itemLocation').value;
+            const price = document.getElementById('itemPrice').value;
+
+            if (name && quantity && code && location && price) {
+                let transfers = JSON.parse(localStorage.getItem('transfers')) || [];
+                
+                transfers.push({ name, quantity, code, location, price });
+                
+                localStorage.setItem('transfers', JSON.stringify(transfers));
+                loadTransfers();
+
+                // Clear form
+                document.getElementById('transferForm').reset();
+            } else {
+                alert('Por favor, complete todos los campos.');
+            }
+        };
+
+        loadTransfers();
+    });
+
+    function exportToExcel() {
+        const ws = XLSX.utils.table_to_sheet(document.getElementById('transferTable'));
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Traslados");
+        XLSX.writeFile(wb, "INDUSTRIAS_TOBIAS.xlsx");
+    }
+</script>
+
+</body>
+</html>

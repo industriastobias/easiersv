@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos Vendidos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #fff;
+            color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #ddd;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .inventory-table {
+            background-color: #fff;
+            padding: 20px;
+        }
+        .inventory-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table th, .inventory-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .ok-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: block;
+            width: 100px;
+            margin: 20px auto;
+        }
+        /* Estilos para el menú plegable */
+        #menu-toggle {
+            display: none;
+        }
+        #menu-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            width: 35px;  /* Menú más pequeño */
+            height: 35px; /* Menú más pequeño */
+        }
+        #menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #333;
+            color: white;
+            width: 150px; /* Menú más estrecho */
+            height: 100%;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            padding-top: 60px;
+        }
+        #menu a {
+            display: block;
+            color: white;
+            padding: 8px 16px; /* Menú más pequeño */
+            text-decoration: none;
+            font-size: 14px; /* Fuente más pequeña */
+        }
+        #menu a:hover {
+            background-color: #575757;
+        }
+        #menu.open {
+            transform: translateX(0);
+        }
+    </style>
+    <!-- Agregar la librería XLSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="header">
+    Productos Vendidos
+</div>
+
+<div class="container">
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad Vendida</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="soldList">
+                <!-- Las filas de productos vendidos se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+    <!-- Botón para descargar en Excel -->
+    <button class="ok-btn" onclick="generateExcel()">Descargar en Excel</button>
+</div>
+
+<!-- Menú plegable -->
+<button id="menu-btn" onclick="toggleMenu(event)">=</button>
+
+<div id="menu">
+    <a href="menu.html">Menú Principal</a>
+    <a href="compra.html">Compra</a>
+    <a href="inventario.html">Inventario</a>
+    <a href="clientes.html">Clientes</a>
+    <a href="traslados.html">Traslados</a>
+    <a href="facturas.html">Facturas</a>
+    <a href="gastos.html">Gastos</a>
+    <a href="usuarios.html">Usuarios</a>
+    <a href="lista.html">Lista</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const soldList = document.getElementById('soldList');
+
+        // Cargar productos vendidos desde localStorage
+        function loadSoldItems() {
+            const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+
+            // Renderizar la tabla de productos vendidos
+            soldList.innerHTML = soldItems.map((item, index) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount ? item.discount : 0}%</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantitySold}</td>
+                        <td><span class="delete-btn" onclick="deleteItem(${index})">Eliminar</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Eliminar un producto
+        window.deleteItem = function(index) {
+            const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            soldItems.splice(index, 1); // Eliminar el producto seleccionado
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+            loadSoldItems(); // Recargar la tabla
+        }
+
+        // Cargar los productos vendidos al iniciar
+        loadSoldItems();
+    });
+
+    // Función para generar el archivo Excel
+    function generateExcel() {
+        const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+
+        // Verificar si hay productos en localStorage
+        if (soldItems.length === 0) {
+            alert("No hay productos vendidos para generar el Excel.");
+            return;
+        }
+
+        // Crear la hoja de trabajo
+        const ws = XLSX.utils.aoa_to_sheet([ 
+            ['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad Vendida'],
+            ...soldItems.map(item => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return [
+                    item.name,
+                    item.code,
+                    item.barcode,
+                    item.price.toFixed(2),
+                    item.discount ? item.discount : 0,
+                    priceWithDiscount.toFixed(2),
+                    item.description,
+                    item.category,
+                    item.quantitySold
+                ];
+            })
+        ]);
+
+        // Crear un libro de trabajo
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Productos Vendidos");
+
+        // Generar y guardar el archivo Excel
+        XLSX.writeFile(wb, "productos_vendidos.xlsx");
+    }
+
+    // Función para mostrar/ocultar el menú
+    function toggleMenu(event) {
+        const menu = document.getElementById('menu');
+        menu.classList.toggle('open');
+        event.stopPropagation(); // Evita que el clic en el botón cierre el menú
+
+        // Cerrar el menú si se hace clic en cualquier parte fuera del menú
+        document.addEventListener('click', function closeMenu(e) {
+            if (!menu.contains(e.target) && e.target !== document.getElementById('menu-btn')) {
+                menu.classList.remove('open');
+                document.removeEventListener('click', closeMenu); // Eliminar el evento de cierre
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #fff;
+            color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #ddd;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .info-container {
+            margin-bottom: 20px;
+        }
+        .inventory-table {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .inventory-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table th, .inventory-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .inventory-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .total-container p {
+            font-size: 18px;
+        }
+        .inventory-table button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .inventory-table button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    Inventario
+</div>
+
+<div class="container">
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+    </div>
+    
+    <div class="info-container">
+        <p id="totalCount">Número de productos disponibles: 0</p>
+    </div>
+    
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+                <!-- Las filas de inventario se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-container">
+        <h2>Total en Dólares Americanos:</h2>
+        <p id="totalAmount">$0.00</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inventoryList = document.getElementById('inventoryList');
+        const totalAmount = document.getElementById('totalAmount');
+        const searchInput = document.getElementById('searchInput');
+        const totalCount = document.getElementById('totalCount');
+
+        // Cargar inventario desde localStorage
+        function loadInventory() {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            const filteredInventory = filterInventory(inventory);
+
+            // Renderizar la tabla
+            inventoryList.innerHTML = filteredInventory.map((item, index) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount ? item.discount : 0}%</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                        <td>
+                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                        </td>
+                    </tr>
+                `;
+            }).join(''); 
+
+            // Calcular el total en dólares considerando el precio con descuento
+            const total = filteredInventory.reduce((sum, item) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return sum + (priceWithDiscount * parseInt(item.quantity)); // Usar priceWithDiscount aquí
+            }, 0);
+            totalAmount.textContent = `$${total.toFixed(2)}`;
+            totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
+        }
+
+        // Filtrar inventario según la búsqueda
+        function filterInventory(inventory) {
+            const query = searchInput.value.toLowerCase();
+            return inventory.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.code.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query)
+            );
+        }
+
+        // Función para marcar un producto como vendido
+        window.markAsSold = function(index) {
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+
+            const item = inventory[index];
+
+            // Preguntar cuántas unidades se van a vender
+            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
+
+            // Validar la entrada del usuario
+            if (quantityToSell === null || quantityToSell.trim() === "") {
+                alert("Operación cancelada o cantidad no válida.");
+                return;
+            }
+
+            const quantity = parseInt(quantityToSell);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Por favor, ingresa un número válido mayor que 0.");
+                return;
+            }
+
+            if (quantity > item.quantity) {
+                alert("No hay suficiente stock para realizar la venta.");
+                return;
+            }
+
+            // Actualizar la cantidad en stock
+            item.quantity -= quantity;
+            if (item.quantity <= 0) {
+                inventory.splice(index, 1); // Eliminar si no hay stock
+            }
+
+            // Registrar la venta
+            const soldItem = { ...item, quantitySold: quantity };
+            soldItems.push(soldItem);
+
+            // Guardar en localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+
+            // Recargar la tabla
+            loadInventory();
+        };
+
+        // Escuchar cambios en la búsqueda
+        searchInput.addEventListener('input', function() {
+            loadInventory();
+        });
+
+        // Cargar el inventario al iniciar
+        loadInventory();
+    });
+</script>
+
+</body>
+</html>

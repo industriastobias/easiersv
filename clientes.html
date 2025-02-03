@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        header {
+            background-color: #dcdcdc;
+            color: #333;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 22px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            min-height: 90vh;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #555;
+        }
+
+        .editable {
+            cursor: pointer;
+        }
+
+        .editable:hover {
+            background-color: #f9f9f9;
+        }
+
+        .conversion {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .conversion input {
+            padding: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        .conversion p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .sumar-puntos {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .sumar-puntos input {
+            width: 100px;
+        }
+
+        .filtro-avanzado {
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .filtro-avanzado input {
+            padding: 8px;
+            font-size: 14px;
+            width: 20%;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>Gestión de Clientes</header>
+
+<div class="container">
+    <button onclick="location.href='menu.html'">Menú</button>
+    <div>
+        <input type="text" id="cliente-id" placeholder="ID del Cliente" onkeydown="navegarCampos(event)">
+        <input type="text" id="cliente-nombre" placeholder="Nombre del Cliente" onkeydown="navegarCampos(event)">
+        <input type="email" id="cliente-correo" placeholder="Correo del Cliente" onkeydown="navegarCampos(event)">
+        <input type="tel" id="cliente-telefono" placeholder="Teléfono del Cliente" onkeydown="navegarCampos(event)">
+        <input type="text" id="cliente-producto" placeholder="Producto Comprado" onkeydown="navegarCampos(event)">
+        <input type="number" id="cliente-puntos" placeholder="Puntos" onkeydown="navegarCampos(event)">
+        <button onclick="agregarCliente()">Agregar Cliente</button>
+    </div>
+
+    <!-- Filtro avanzado -->
+    <div class="filtro-avanzado">
+        <input type="text" id="filtro-id" placeholder="Filtrar por ID" oninput="filtrarClientes()">
+        <input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" oninput="filtrarClientes()">
+        <input type="email" id="filtro-correo" placeholder="Filtrar por correo" oninput="filtrarClientes()">
+        <input type="tel" id="filtro-telefono" placeholder="Filtrar por teléfono" oninput="filtrarClientes()">
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Producto</th>
+                <th>Puntos</th>
+                <th>Fecha de Registro</th>
+                <th>Historial de Compras</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="clientes-table"></tbody>
+    </table>
+
+    <div class="sumar-puntos">
+        <label for="puntos-sumar">Puntos a sumar:</label>
+        <input type="number" id="puntos-sumar" placeholder="Ingrese puntos">
+        <button onclick="sumarPuntos()">Sumar Puntos</button>
+    </div>
+
+</div>
+
+<!-- Casilla de conversión de dólares a puntos -->
+<div class="conversion">
+    <label for="dolares">Dólares:</label>
+    <input type="number" id="dolares" placeholder="Ingrese dólares" oninput="calcularConversion()">
+    <p id="puntos-equivalentes">Puntos equivalentes: 0</p>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        cargarClientes();
+    });
+
+    function agregarCliente() {
+        let id = document.getElementById("cliente-id").value.trim();
+        let nombre = document.getElementById("cliente-nombre").value.trim();
+        let correo = document.getElementById("cliente-correo").value.trim();
+        let telefono = document.getElementById("cliente-telefono").value.trim();
+        let producto = document.getElementById("cliente-producto").value.trim();
+        let puntos = document.getElementById("cliente-puntos").value.trim();
+        let fecha = new Date().toLocaleDateString();
+
+        if (!id || !nombre || !correo || !telefono || !producto || !puntos) {
+            alert("Todos los campos son obligatorios.");
+            return;
+        }
+
+        // Verificar si el cliente ya está registrado
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let clienteExistente = clientes.find(cliente => cliente.id === id);
+
+        if (clienteExistente) {
+            // Si ya está registrado, preguntar si quiere actualizarlo o sumar puntos
+            let sumarPuntos = confirm(`El cliente con ID ${id} ya está registrado. ¿Deseas sumar puntos adicionales?`);
+            if (sumarPuntos) {
+                // Mostrar la casilla de sumar puntos
+                document.querySelector(".sumar-puntos").style.display = "block";
+                document.getElementById("cliente-id").disabled = true;
+                return; // Detener el proceso de agregar para sumar puntos
+            } else {
+                let actualizar = confirm(`El cliente con ID ${id} ya está registrado. ¿Deseas actualizar su información?`);
+                if (actualizar) {
+                    // Actualizar la información del cliente
+                    clienteExistente.nombre = nombre;
+                    clienteExistente.correo = correo;
+                    clienteExistente.telefono = telefono;
+                    clienteExistente.producto = producto;
+                    clienteExistente.puntos = puntos;
+                    clienteExistente.fecha = fecha;
+
+                    // Guardar los cambios
+                    localStorage.setItem("clientes", JSON.stringify(clientes));
+                    cargarClientes();
+                    limpiarFormulario();
+                    alert("Cliente actualizado correctamente.");
+                }
+            }
+        } else {
+            // Si no está registrado, agregar un nuevo cliente
+            let cliente = { id, nombre, correo, telefono, producto, puntos, fecha, historial: [] };
+            clientes.push(cliente);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+
+            limpiarFormulario();
+            cargarClientes();
+        }
+    }
+
+    function cargarClientes() {
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let tbody = document.getElementById("clientes-table");
+        tbody.innerHTML = "";
+
+        clientes.forEach(cliente => {
+            let fila = `<tr>
+                <td>${cliente.id}</td>
+                <td>${cliente.nombre}</td>
+                <td>${cliente.correo}</td>
+                <td>${cliente.telefono}</td>
+                <td>${cliente.producto}</td>
+                <td>${cliente.puntos}</td>
+                <td>${cliente.fecha}</td>
+                <td><button onclick="verHistorial('${cliente.id}')">Ver Historial</button></td>
+                <td>
+                    <button onclick="editarCliente('${cliente.id}')">Editar</button>
+                    <button onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += fila;
+        });
+    }
+
+    function editarCliente(id) {
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let cliente = clientes.find(cliente => cliente.id === id);
+        document.getElementById("cliente-id").value = cliente.id;
+        document.getElementById("cliente-nombre").value = cliente.nombre;
+        document.getElementById("cliente-correo").value = cliente.correo;
+        document.getElementById("cliente-telefono").value = cliente.telefono;
+        document.getElementById("cliente-producto").value = cliente.producto;
+        document.getElementById("cliente-puntos").value = cliente.puntos;
+    }
+
+    function eliminarCliente(id) {
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        clientes = clientes.filter(cliente => cliente.id !== id);
+        localStorage.setItem("clientes", JSON.stringify(clientes));
+        cargarClientes();
+    }
+
+    function verHistorial(id) {
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let cliente = clientes.find(cliente => cliente.id === id);
+        alert(`Historial de compras de ${cliente.nombre}: \n${cliente.historial.join("\n")}`);
+    }
+
+    function sumarPuntos() {
+        let id = document.getElementById("cliente-id").value.trim();
+        let puntosSumar = document.getElementById("puntos-sumar").value.trim();
+        if (!puntosSumar || isNaN(puntosSumar) || puntosSumar <= 0) {
+            alert("Por favor ingresa un valor válido para los puntos.");
+            return;
+        }
+
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let cliente = clientes.find(cliente => cliente.id === id);
+        if (cliente) {
+            cliente.puntos = parseInt(cliente.puntos) + parseInt(puntosSumar);
+            cliente.historial.push(`+${puntosSumar} puntos`);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+            cargarClientes();
+            document.querySelector(".sumar-puntos").style.display = "none"; 
+            limpiarFormulario();
+        } else {
+            alert("El cliente no existe.");
+        }
+    }
+
+    function navegarCampos(event) {
+        if (event.key === "Enter") {
+            const nextInput = document.querySelector("input:focus + input");
+            if (nextInput) nextInput.focus();
+        }
+    }
+
+    function filtrarClientes() {
+        let filtroId = document.getElementById("filtro-id").value.toLowerCase();
+        let filtroNombre = document.getElementById("filtro-nombre").value.toLowerCase();
+        let filtroCorreo = document.getElementById("filtro-correo").value.toLowerCase();
+        let filtroTelefono = document.getElementById("filtro-telefono").value.toLowerCase();
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let tbody = document.getElementById("clientes-table");
+        tbody.innerHTML = "";
+
+        clientes.forEach(cliente => {
+            if (cliente.id.toLowerCase().includes(filtroId) &&
+                cliente.nombre.toLowerCase().includes(filtroNombre) &&
+                cliente.correo.toLowerCase().includes(filtroCorreo) &&
+                cliente.telefono.toLowerCase().includes(filtroTelefono)) {
+                
+                let fila = `<tr>
+                    <td>${cliente.id}</td>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.correo}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.producto}</td>
+                    <td>${cliente.puntos}</td>
+                    <td>${cliente.fecha}</td>
+                    <td><button onclick="verHistorial('${cliente.id}')">Ver Historial</button></td>
+                    <td>
+                        <button onclick="editarCliente('${cliente.id}')">Editar</button>
+                        <button onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += fila;
+            }
+        });
+    }
+
+    function calcularConversion() {
+        let dolares = document.getElementById("dolares").value;
+        let puntosEquivalentes = dolares * 10; // Ejemplo: 1 dólar = 10 puntos
+        document.getElementById("puntos-equivalentes").textContent = `Puntos equivalentes: ${puntosEquivalentes}`;
+    }
+
+    function limpiarFormulario() {
+        document.getElementById("cliente-id").value = "";
+        document.getElementById("cliente-nombre").value = "";
+        document.getElementById("cliente-correo").value = "";
+        document.getElementById("cliente-telefono").value = "";
+        document.getElementById("cliente-producto").value = "";
+        document.getElementById("cliente-puntos").value = "";
+    }
+</script>
+
+</body>
+
+</html>

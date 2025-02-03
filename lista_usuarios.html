@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 2em;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100vw;  /* Ancho completo */
+            height: 100vh; /* Altura completa */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        h2 {
+            color: #4a6a41;
+            text-align: center;
+            margin-bottom: 1em;
+        }
+        .table-container {
+            flex-grow: 1; /* Permite que el contenedor de la tabla se expanda */
+            max-height: 400px; /* Altura fija para permitir el desplazamiento */
+            overflow-y: auto;  /* Habilita el desplazamiento vertical */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1em;
+            table-layout: fixed; /* Establece el ancho de las columnas */
+        }
+        th, td {
+            padding: 0.8em;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 14px; /* Tamaño de fuente más pequeño */
+        }
+        th {
+            background-color: #4a6a41;
+            color: white;
+        }
+        .button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 0.2em; /* Espaciado entre botones */
+        }
+        .button:hover {
+            background-color: #c0392b;
+        }
+        .logout {
+            position: absolute;
+            top: 1em;
+            right: 1em;
+            cursor: pointer;
+        }
+        .save-button, .back-button {
+            align-self: flex-end; /* Alinea los botones a la derecha */
+            margin-top: 1em;
+            margin-left: 0.5em; /* Espaciado entre botones */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Lista de Usuarios</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Clave</th>
+                    <th>Fecha y Hora</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- Los usuarios se llenarán aquí -->
+            </tbody>
+        </table>
+    </div>
+    <button class="button save-button" onclick="saveChanges()">Guardar Cambios</button>
+    <button class="button back-button" onclick="goBack()">Regresar al Menú</button>
+    <div class="logout" onclick="sessionStorage.removeItem('loggedIn'); window.location.href='inicio.html';">
+        <img src="cerrar.png" alt="Cerrar Sesión" width="30">
+    </div>
+</div>
+
+<script>
+    const users = [
+        { id: '2005', clave: 'admin2024' },
+        { id: '1001', clave: 'viewer2024' },
+        { id: '1002', clave: 'claveViewer2' },
+        { id: '1003', clave: 'claveViewer3' },
+        { id: '1004', clave: 'claveViewer4' },
+        { id: '1005', clave: 'claveViewer5' }
+    ];
+
+    const userTableBody = document.getElementById('userTableBody');
+    let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+
+    // Cargar sesiones al inicio
+    sessions.forEach(session => {
+        const user = users.find(u => u.id === session.id);
+        if (user) {
+            const row = document.createElement('tr');
+            row.setAttribute('data-user-id', user.id);
+            row.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.clave}</td>
+                <td>${session.time}</td>
+                <td><button class="button" onclick="removeUser('${user.id}')">Eliminar</button></td>
+            `;
+            userTableBody.appendChild(row);
+        }
+    });
+
+    function removeUser(userID) {
+        const row = Array.from(userTableBody.rows).find(row => row.dataset.userId === userID);
+        if (row) {
+            userTableBody.removeChild(row);
+            // Eliminar la sesión del array
+            sessions = sessions.filter(session => session.id !== userID);
+        }
+    }
+
+    function saveChanges() {
+        // Guardar cambios en localStorage
+        localStorage.setItem('sessions', JSON.stringify(sessions));
+        // Ya no hay alerta
+    }
+
+    function goBack() {
+        window.location.href = 'menu.html'; // Cambia esto al nombre de tu página de menú
+    }
+</script>
+
+</body>
+</html>

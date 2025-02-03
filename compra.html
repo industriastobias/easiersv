@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Compras</title>
+    <style>
+        /* Estilos modernos y minimalistas en blanco y gris */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .back-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+
+        .form-container {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .inventory-table {
+            flex: 1;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #333;
+            outline: none;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .inventory-table table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #e0e0e0;
+        }
+
+        .inventory-table th, .inventory-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .inventory-table th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .inventory-table td {
+            background-color: #ffffff;
+        }
+
+        .inventory-table td button {
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .inventory-table td button.edit {
+            background-color: #d1d1d1;
+        }
+
+        .inventory-table td button.edit:hover {
+            background-color: #bdbdbd;
+        }
+
+        .inventory-table td button:hover {
+            background-color: #c0c0c0;
+        }
+
+        .total-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 200px;
+        }
+
+        .total-container h2 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .total-container p {
+            font-size: 18px;
+            margin: 5px 0 0;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .other-category {
+            display: none;
+        }
+
+        .other-category.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    Gestión de Compras
+    <a href="menu.html" class="back-text">← Regresar al Menú</a>
+</div>
+
+<div class="container">
+    <div class="form-container">
+        <form id="purchaseForm">
+            <div class="form-group">
+                <label for="name">Nombre del Producto:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="code">Código:</label>
+                <input type="text" id="code" name="code" required>
+            </div>
+            <div class="form-group">
+                <label for="barcode">Código de Barras:</label>
+                <input type="text" id="barcode" name="barcode">
+            </div>
+            <div class="form-group">
+                <label for="price">Precio:</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="discount">Descuento (%):</label>
+                <input type="number" id="discount" name="discount" step="0.01" value="0">
+            </div>
+            <div class="form-group">
+                <label for="description">Descripción:</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="category">Categoría:</label>
+                <select id="category" name="category" onchange="toggleOtherCategory()">
+                    <option value="Cadenas">Cadenas</option>
+                    <option value="Pulseras">Pulseras</option>
+                    <option value="Aritos">Aritos</option>
+                    <option value="Carteras">Carteras</option>
+                    <option value="Otra">Otra</option>
+                </select>
+            </div>
+            <div class="form-group other-category" id="otherCategoryContainer">
+                <label for="otherCategory">Especificar Otra Categoría:</label>
+                <input type="text" id="otherCategory" name="otherCategory" disabled>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Cantidad en Stock:</label>
+                <input type="number" id="quantity" name="quantity" required>
+            </div>
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
+
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="total-container">
+    <h2>Total en Dólares Americanos:</h2>
+    <p id="totalAmount">$0.00</p>
+</div>
+
+<script>
+    // Recupera el inventario del almacenamiento local al cargar la página
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    let editIndex = -1; // Índice del item que se está editando
+
+    // Función para calcular el total en dólares
+    function calculateTotal() {
+        const total = inventory.reduce((sum, item) => {
+            const price = parseFloat(item.price) || 0;
+            const quantity = parseFloat(item.quantity) || 0;
+            return sum + price * quantity;
+        }, 0);
+        document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Función para renderizar la tabla
+    function renderTable() {
+        const inventoryList = document.getElementById('inventoryList');
+        inventoryList.innerHTML = inventory.map((item, index) => `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.code}</td>
+                <td>${item.barcode}</td>
+                <td>$${item.price}</td>
+                <td>${item.discount}%</td>
+                <td>${item.description}</td>
+                <td>${item.category}</td>
+                <td>${item.quantity}</td>
+                <td>
+                    <button class="edit" onclick="editItem(${index})">Editar</button>
+                    <button onclick="deleteItem(${index})">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Función para agregar o editar un item
+    document.getElementById('purchaseForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const code = document.getElementById('code').value;
+        const barcode = document.getElementById('barcode').value;
+        const price = document.getElementById('price').value;
+        const discount = document.getElementById('discount').value;
+        const description = document.getElementById('description').value;
+        const category = document.getElementById('category').value;
+        const quantity = document.getElementById('quantity').value;
+        
+        const newItem = {
+            name,
+            code,
+            barcode,
+            price,
+            discount,
+            description,
+            category,
+            quantity
+        };
+
+        if (editIndex === -1) {
+            // Agregar un nuevo producto
+            inventory.push(newItem);
+        } else {
+            // Editar un producto existente
+            inventory[editIndex] = newItem;
+            editIndex = -1; // Restablecer la edición
+        }
+
+        // Guardar el inventario en el almacenamiento local
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+
+        // Limpiar el formulario
+        document.getElementById('purchaseForm').reset();
+        
+        // Volver a renderizar la tabla
+        renderTable();
+        calculateTotal();
+    });
+
+    // Función para editar un item
+    function editItem(index) {
+        const item = inventory[index];
+        document.getElementById('name').value = item.name;
+        document.getElementById('code').value = item.code;
+        document.getElementById('barcode').value = item.barcode;
+        document.getElementById('price').value = item.price;
+        document.getElementById('discount').value = item.discount;
+        document.getElementById('description').value = item.description;
+        document.getElementById('category').value = item.category;
+        document.getElementById('quantity').value = item.quantity;
+        editIndex = index;
+    }
+
+    // Función para eliminar un item
+    function deleteItem(index) {
+        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            renderTable();
+            calculateTotal();
+        }
+    }
+
+    // Función para mostrar u ocultar el campo "Otra categoría"
+    function toggleOtherCategory() {
+        const otherCategoryContainer = document.getElementById('otherCategoryContainer');
+        const category = document.getElementById('category').value;
+        if (category === 'Otra') {
+            otherCategoryContainer.classList.add('active');
+            document.getElementById('otherCategory').disabled = false;
+        } else {
+            otherCategoryContainer.classList.remove('active');
+            document.getElementById('otherCategory').disabled = true;
+        }
+    }
+
+    // Llama a la función de renderizado inicial
+    renderTable();
+    calculateTotal();
+</script>
+
+</body>
+</html>
