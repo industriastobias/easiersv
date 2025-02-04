@@ -116,19 +116,19 @@
     (function() {
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function() {
-            window.history.go(1);
+            window.history.go(1);  // Bloquea el retroceso al historial
         };
     })();
     
     // Verifica si el usuario está autenticado
     function checkAuthentication() {
         if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.href = 'index.html';
+            window.location.href = 'index.html';  // Redirige a la página de inicio si no está autenticado
         }
     }
 
     window.onload = function() {
-        checkAuthentication();
+        checkAuthentication();  // Llama a la función para verificar la sesión al cargar la página
 
         const userID = sessionStorage.getItem('userID');
         const userLink = document.getElementById('usuarios-link');
