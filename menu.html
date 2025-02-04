@@ -12,7 +12,7 @@
             font-family: 'Arial', sans-serif;
         }
         body {
-            background-color: #f7f7f7; /* Fondo neutro */
+            background-color: #f7f7f7;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,17 +21,18 @@
             color: #444;
         }
         .container {
-            background-color: #fff; /* Fondo blanco para el contenedor */
-            border-radius: 16px; /* Bordes redondeados */
+            background-color: #fff;
+            border-radius: 16px;
             padding: 3em;
             width: 100%;
-            max-width: 1100px; /* Máximo tamaño del contenedor */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            max-width: 1100px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             gap: 3em;
+            position: relative;
         }
         .header {
             font-size: 3em;
@@ -49,7 +50,7 @@
             width: 100%;
         }
         .menu a {
-            background-color: #e3e8ed; /* Color suave */
+            background-color: #e3e8ed;
             color: #333;
             padding: 1.5em 2em;
             border-radius: 12px;
@@ -57,17 +58,17 @@
             font-size: 1.2em;
             text-align: center;
             transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         .menu a:hover {
-            background-color: #d2dae5; /* Color más suave al pasar el mouse */
-            transform: scale(1.05); /* Efecto de agrandado */
+            background-color: #d2dae5;
+            transform: scale(1.05);
         }
         .menu a.active {
-            background-color: #a2b3cc; /* Color resaltado para el enlace activo */
+            background-color: #a2b3cc;
             color: #fff;
         }
-        .logout {
+        .settings, .logout {
             position: absolute;
             top: 1.5em;
             right: 1.5em;
@@ -81,12 +82,15 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .logout img {
+        .settings {
+            right: 4.5em;
+        }
+        .settings img, .logout img {
             width: 20px;
             height: 20px;
         }
-        .logout:hover {
-            background-color: #8c9ab1; /* Color más oscuro al pasar el mouse */
+        .settings:hover, .logout:hover {
+            background-color: #8c9ab1;
         }
     </style>
 </head>
@@ -106,47 +110,44 @@
         <a href="lista.html" id="lista">Lista</a>
         <a href="descuentos.html" id="descuentos">Descuentos</a>
     </div>
+    <div class="settings" onclick="window.location.href='ajustes.html';">
+        <img src="ajustes.png" alt="Ajustes">
+    </div>
     <div class="logout" onclick="sessionStorage.removeItem('loggedIn'); window.location.href='index.html';">
         <img src="cerrar.png" alt="Cerrar Sesión">
     </div>
 </div>
 
 <script>
-    // Previene el retroceso en el navegador
     (function() {
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function() {
-            window.history.go(1);  // Bloquea el retroceso al historial
+            window.history.go(1);
         };
     })();
     
-    // Verifica si el usuario está autenticado
     function checkAuthentication() {
         if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.href = 'index.html';  // Redirige a la página de inicio si no está autenticado
+            window.location.href = 'index.html';
         }
     }
 
     window.onload = function() {
-        checkAuthentication();  // Llama a la función para verificar la sesión al cargar la página
-
+        checkAuthentication();
         const userID = sessionStorage.getItem('userID');
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
 
-        // Oculta la opción "Usuarios" si el ID no es 2005
         if (userID !== '2005') {
             userLink.style.display = 'none';
         }
 
-        // Oculta "Compra" y "Venta" para usuarios con ID que comienzan con "100"
         if (userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
         }
 
-        // Resalta el enlace activo
         const currentPage = window.location.pathname.split('/').pop();
         document.querySelectorAll('.menu a').forEach(link => {
             if (link.getAttribute('href') === currentPage) {
