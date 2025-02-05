@@ -325,40 +325,36 @@
         const discount = document.getElementById('discount').value;
         const description = document.getElementById('description').value;
         const category = document.getElementById('category').value;
+        const otherCategory = document.getElementById('otherCategory').value;
         const quantity = document.getElementById('quantity').value;
-        
-        const newItem = {
-            name,
-            code,
-            barcode,
-            price,
-            discount,
-            description,
-            category,
-            quantity
-        };
 
-        if (editIndex === -1) {
-            // Agregar un nuevo producto
-            inventory.push(newItem);
-        } else {
-            // Editar un producto existente
-            inventory[editIndex] = newItem;
-            editIndex = -1; // Restablecer la edición
+        if (category === 'Otra' && otherCategory === '') {
+            alert('Por favor, especifique la categoría.');
+            return;
         }
 
-        // Guardar el inventario en el almacenamiento local
-        localStorage.setItem('inventory', JSON.stringify(inventory));
+        // Si estamos editando un producto existente
+        if (editIndex > -1) {
+            inventory[editIndex] = {
+                name, code, barcode, price, discount, description, 
+                category: category === 'Otra' ? otherCategory : category, quantity
+            };
+            editIndex = -1; // Limpiar el índice de edición
+        } else {
+            // Si es un nuevo producto
+            inventory.push({
+                name, code, barcode, price, discount, description, 
+                category: category === 'Otra' ? otherCategory : category, quantity
+            });
+        }
 
-        // Limpiar el formulario
-        document.getElementById('purchaseForm').reset();
-        
-        // Volver a renderizar la tabla
+        localStorage.setItem('inventory', JSON.stringify(inventory));
         renderTable();
         calculateTotal();
+        event.target.reset();
     });
 
-    // Función para editar un item
+    // Función para editar un producto
     function editItem(index) {
         const item = inventory[index];
         document.getElementById('name').value = item.name;
@@ -372,9 +368,9 @@
         editIndex = index;
     }
 
-    // Función para eliminar un item
+    // Función para eliminar un producto
     function deleteItem(index) {
-        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        if (confirm('¿Estás seguro de que quieres eliminar este item?')) {
             inventory.splice(index, 1);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
@@ -382,10 +378,10 @@
         }
     }
 
-    // Función para mostrar u ocultar el campo "Otra categoría"
+    // Función para alternar la categoría "Otra"
     function toggleOtherCategory() {
-        const otherCategoryContainer = document.getElementById('otherCategoryContainer');
         const category = document.getElementById('category').value;
+        const otherCategoryContainer = document.getElementById('otherCategoryContainer');
         if (category === 'Otra') {
             otherCategoryContainer.classList.add('active');
             document.getElementById('otherCategory').disabled = false;
@@ -395,41 +391,50 @@
         }
     }
 
-    // Función para exportar datos a Excel
+    // Función para exportar a Excel en fragmentos de 100 registros
     function exportToExcel() {
-        const ws = XLSX.utils.json_to_sheet(inventory);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+        const chunkSize = 100; // Tamaño de cada fragmento
+        const totalChunks = Math.ceil(inventory.length / chunkSize); // Número total de fragmentos
+
+        let wb = XLSX.utils.book_new(); // Crea un nuevo libro de trabajo
+
+        for (let i = 0; i < totalChunks; i++) {
+            // Divide el inventario en fragmentos
+            const chunk = inventory.slice(i * chunkSize, (i + 1) * chunkSize);
+            
+            // Convierte el fragmento a una hoja de Excel
+            const ws = XLSX.utils.json_to_sheet(chunk);
+            
+            // Nombra cada hoja con un número de fragmento
+            XLSX.utils.book_append_sheet(wb, ws, `Inventario - Parte ${i + 1}`);
+        }
+
+        // Exporta el libro de trabajo con todas las hojas
         XLSX.writeFile(wb, "inventario.xlsx");
     }
 
-    // Función para importar datos desde Excel
+    // Función para importar desde Excel
     function importFromExcel(event) {
         const file = event.target.files[0];
-        if (!file) return;
-
         const reader = new FileReader();
-        reader.onload = function (e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const json = XLSX.utils.sheet_to_json(worksheet);
 
-            // Actualizar el inventario con los datos importados
+        reader.onload = function(e) {
+            const data = e.target.result;
+            const wb = XLSX.read(data, { type: 'binary' });
+            const sheet = wb.Sheets[wb.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
             inventory = json;
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
             calculateTotal();
-            alert('Datos importados correctamente.');
         };
-        reader.readAsArrayBuffer(file);
+
+        reader.readAsBinaryString(file);
     }
 
-    // Llama a la función de renderizado inicial
+    // Renderiza la tabla al cargar la página
     renderTable();
     calculateTotal();
 </script>
-
 </body>
 </html>
