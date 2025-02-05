@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Compras</title>
     <style>
-        /* Estilos modernos y minimalistas en blanco y gris */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #ffffff;
@@ -26,16 +25,6 @@
             font-weight: 600;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid #e0e0e0;
-        }
-
-        .back-text {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
         }
 
         .container {
@@ -86,11 +75,6 @@
             background-color: #ffffff;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: #333;
-            outline: none;
-        }
-
         button {
             background-color: #333;
             color: #fff;
@@ -126,34 +110,6 @@
             font-weight: 600;
         }
 
-        .inventory-table td {
-            background-color: #ffffff;
-        }
-
-        .inventory-table td button {
-            background-color: #e0e0e0;
-            color: #333;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-right: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .inventory-table td button.edit {
-            background-color: #d1d1d1;
-        }
-
-        .inventory-table td button.edit:hover {
-            background-color: #bdbdbd;
-        }
-
-        .inventory-table td button:hover {
-            background-color: #c0c0c0;
-        }
-
         .total-container {
             position: fixed;
             bottom: 20px;
@@ -179,21 +135,12 @@
             font-weight: 600;
             color: #fff;
         }
-
-        .other-category {
-            display: none;
-        }
-
-        .other-category.active {
-            display: block;
-        }
     </style>
 </head>
 <body>
 
 <div class="header">
     Gestión de Compras
-    <a href="menu.html" class="back-text">← Regresar al Menú</a>
 </div>
 
 <div class="container">
@@ -225,17 +172,12 @@
             </div>
             <div class="form-group">
                 <label for="category">Categoría:</label>
-                <select id="category" name="category" onchange="toggleOtherCategory()">
+                <select id="category" name="category">
                     <option value="Cadenas">Cadenas</option>
                     <option value="Pulseras">Pulseras</option>
                     <option value="Aritos">Aritos</option>
                     <option value="Carteras">Carteras</option>
-                    <option value="Otra">Otra</option>
                 </select>
-            </div>
-            <div class="form-group other-category" id="otherCategoryContainer">
-                <label for="otherCategory">Especificar Otra Categoría:</label>
-                <input type="text" id="otherCategory" name="otherCategory" disabled>
             </div>
             <div class="form-group">
                 <label for="quantity">Cantidad en Stock:</label>
@@ -264,8 +206,7 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="inventoryList">
-            </tbody>
+            <tbody id="inventoryList"></tbody>
         </table>
     </div>
 </div>
@@ -275,13 +216,11 @@
     <p id="totalAmount">$0.00</p>
 </div>
 
-<!-- Incluye la biblioteca xlsx -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 
 <script>
-    // Recupera el inventario del almacenamiento local al cargar la página
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    let editIndex = -1; // Índice del item que se está editando
+    let editIndex = -1;
 
     // Función para calcular el total en dólares
     function calculateTotal() {
@@ -307,7 +246,7 @@
                 <td>${item.category}</td>
                 <td>${item.quantity}</td>
                 <td>
-                    <button class="edit" onclick="editItem(${index})">Editar</button>
+                    <button onclick="editItem(${index})">Editar</button>
                     <button onclick="deleteItem(${index})">Eliminar</button>
                 </td>
             </tr>
@@ -325,36 +264,24 @@
         const discount = document.getElementById('discount').value;
         const description = document.getElementById('description').value;
         const category = document.getElementById('category').value;
-        const otherCategory = document.getElementById('otherCategory').value;
         const quantity = document.getElementById('quantity').value;
+        
+        const newItem = { name, code, barcode, price, discount, description, category, quantity };
 
-        if (category === 'Otra' && otherCategory === '') {
-            alert('Por favor, especifique la categoría.');
-            return;
-        }
-
-        // Si estamos editando un producto existente
-        if (editIndex > -1) {
-            inventory[editIndex] = {
-                name, code, barcode, price, discount, description, 
-                category: category === 'Otra' ? otherCategory : category, quantity
-            };
-            editIndex = -1; // Limpiar el índice de edición
+        if (editIndex === -1) {
+            inventory.push(newItem);
         } else {
-            // Si es un nuevo producto
-            inventory.push({
-                name, code, barcode, price, discount, description, 
-                category: category === 'Otra' ? otherCategory : category, quantity
-            });
+            inventory[editIndex] = newItem;
+            editIndex = -1;
         }
 
         localStorage.setItem('inventory', JSON.stringify(inventory));
+        document.getElementById('purchaseForm').reset();
         renderTable();
         calculateTotal();
-        event.target.reset();
     });
 
-    // Función para editar un producto
+    // Función para editar un item
     function editItem(index) {
         const item = inventory[index];
         document.getElementById('name').value = item.name;
@@ -368,9 +295,9 @@
         editIndex = index;
     }
 
-    // Función para eliminar un producto
+    // Función para eliminar un item
     function deleteItem(index) {
-        if (confirm('¿Estás seguro de que quieres eliminar este item?')) {
+        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
             inventory.splice(index, 1);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
@@ -378,42 +305,15 @@
         }
     }
 
-    // Función para alternar la categoría "Otra"
-    function toggleOtherCategory() {
-        const category = document.getElementById('category').value;
-        const otherCategoryContainer = document.getElementById('otherCategoryContainer');
-        if (category === 'Otra') {
-            otherCategoryContainer.classList.add('active');
-            document.getElementById('otherCategory').disabled = false;
-        } else {
-            otherCategoryContainer.classList.remove('active');
-            document.getElementById('otherCategory').disabled = true;
-        }
-    }
-
-    // Función para exportar a Excel en fragmentos de 100 registros
+    // Función para exportar datos a Excel
     function exportToExcel() {
-        const chunkSize = 100; // Tamaño de cada fragmento
-        const totalChunks = Math.ceil(inventory.length / chunkSize); // Número total de fragmentos
-
-        let wb = XLSX.utils.book_new(); // Crea un nuevo libro de trabajo
-
-        for (let i = 0; i < totalChunks; i++) {
-            // Divide el inventario en fragmentos
-            const chunk = inventory.slice(i * chunkSize, (i + 1) * chunkSize);
-            
-            // Convierte el fragmento a una hoja de Excel
-            const ws = XLSX.utils.json_to_sheet(chunk);
-            
-            // Nombra cada hoja con un número de fragmento
-            XLSX.utils.book_append_sheet(wb, ws, `Inventario - Parte ${i + 1}`);
-        }
-
-        // Exporta el libro de trabajo con todas las hojas
+        const ws = XLSX.utils.json_to_sheet(inventory);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
         XLSX.writeFile(wb, "inventario.xlsx");
     }
 
-    // Función para importar desde Excel
+    // Función para importar desde Excel en fragmentos
     function importFromExcel(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -423,18 +323,35 @@
             const wb = XLSX.read(data, { type: 'binary' });
             const sheet = wb.Sheets[wb.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
-            inventory = json;
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            renderTable();
-            calculateTotal();
+
+            const chunkSize = 100; // Tamaño del fragmento
+            let index = 0;
+
+            function processChunk() {
+                if (index < json.length) {
+                    const chunk = json.slice(index, index + chunkSize);
+                    inventory = inventory.concat(chunk);
+                    renderTable();
+                    calculateTotal();
+
+                    index += chunkSize;
+                    setTimeout(processChunk, 0); 
+                } else {
+                    localStorage.setItem('inventory', JSON.stringify(inventory));
+                    alert("Importación completada");
+                }
+            }
+
+            processChunk();
         };
 
         reader.readAsBinaryString(file);
     }
 
-    // Renderiza la tabla al cargar la página
+    // Renderizar tabla inicial y calcular total
     renderTable();
     calculateTotal();
 </script>
+
 </body>
 </html>
