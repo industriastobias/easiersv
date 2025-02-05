@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -106,20 +106,26 @@
 
 <script>
     function logout() {
-        localStorage.removeItem('loggedIn');
-        localStorage.removeItem('userID');
+        // No borrar localStorage para mantener los datos después del logout
         window.location.replace('index.html');
     }
 
+    (function() {
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.history.go(1);
+        };
+    })();
+    
     function checkAuthentication() {
-        if (localStorage.getItem('loggedIn') !== 'true') {
+        if (localStorage.getItem('loggedIn') !== 'true') { // Se usa localStorage en vez de sessionStorage
             window.location.replace('index.html');
         }
     }
 
     window.onload = function() {
         checkAuthentication();
-        const userID = localStorage.getItem('userID');
+        const userID = localStorage.getItem('userID'); // Usar localStorage para persistencia
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
