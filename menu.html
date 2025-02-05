@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -86,7 +86,6 @@
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="header">Industrias Tobias</div>
     <div class="menu">
@@ -105,27 +104,32 @@
 </div>
 
 <script>
+    function encryptData(data) {
+        return btoa(data); // Codifica los datos en base64
+    }
+    
+    function decryptData(data) {
+        return atob(data); // Decodifica los datos de base64
+    }
+
     function logout() {
-        // No borrar localStorage para mantener los datos después del logout
+        sessionStorage.removeItem('loggedIn');
+        localStorage.removeItem('userID');
         window.location.replace('index.html');
     }
 
-    (function() {
-        window.history.pushState(null, "", window.location.href);
-        window.onpopstate = function() {
-            window.history.go(1);
-        };
-    })();
-    
     function checkAuthentication() {
-        if (localStorage.getItem('loggedIn') !== 'true') { // Se usa localStorage en vez de sessionStorage
+        let loggedIn = sessionStorage.getItem('loggedIn');
+        let userID = localStorage.getItem('userID');
+
+        if (!loggedIn || !userID) {
             window.location.replace('index.html');
         }
     }
-
+    
     window.onload = function() {
         checkAuthentication();
-        const userID = localStorage.getItem('userID'); // Usar localStorage para persistencia
+        let userID = decryptData(localStorage.getItem('userID'));
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
@@ -134,19 +138,11 @@
             userLink.style.display = 'none';
         }
 
-        if (userID && userID.startsWith('100')) {
+        if (userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
         }
-
-        const currentPage = window.location.pathname.split('/').pop();
-        document.querySelectorAll('.menu a').forEach(link => {
-            if (link.getAttribute('href') === currentPage) {
-                link.classList.add('active');
-            }
-        });
     };
 </script>
-
 </body>
 </html>
