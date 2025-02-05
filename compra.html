@@ -111,9 +111,6 @@
         }
 
         .total-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
             background-color: #333;
             color: #fff;
             padding: 15px;
@@ -121,6 +118,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
             width: 200px;
+            margin-top: 20px;
         }
 
         .total-container h2 {
@@ -208,12 +206,13 @@
             </thead>
             <tbody id="inventoryList"></tbody>
         </table>
-    </div>
-</div>
 
-<div class="total-container">
-    <h2>Total en Dólares Americanos:</h2>
-    <p id="totalAmount">$0.00</p>
+        <!-- Total en USD -->
+        <div class="total-container">
+            <h2>Total en USD:</h2>
+            <p id="totalAmount">$0.00</p>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
@@ -222,7 +221,7 @@
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     let editIndex = -1;
 
-    // Función para calcular el total en dólares
+    // Función para calcular el total en USD
     function calculateTotal() {
         const total = inventory.reduce((sum, item) => {
             const price = parseFloat(item.price) || 0;
