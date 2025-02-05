@@ -106,8 +106,8 @@
 
 <script>
     function logout() {
-        // sessionStorage.clear(); // Eliminar si no deseas borrar la sesión al cerrar sesión
-        // localStorage.clear(); // Eliminar si no deseas borrar los datos al cerrar sesión
+        sessionStorage.removeItem('loggedIn'); // Solo elimina el estado de autenticación
+        sessionStorage.removeItem('userID'); // Elimina solo la sesión del usuario
         window.location.replace('index.html');
     }
 
@@ -135,7 +135,7 @@
             userLink.style.display = 'none';
         }
 
-        if (userID.startsWith('100')) {
+        if (userID && userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
         }
