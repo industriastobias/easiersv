@@ -68,28 +68,19 @@
             background-color: #a2b3cc;
             color: #fff;
         }
-        .settings, .logout {
+        .logout {
             position: absolute;
             top: 1.5em;
             right: 1.5em;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            padding: 10px 20px;
             background-color: #a3b0c3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .settings {
-            right: 4.5em;
-        }
-        .settings img, .logout img {
-            width: 20px;
-            height: 20px;
-        }
-        .settings:hover, .logout:hover {
+        .logout:hover {
             background-color: #8c9ab1;
         }
     </style>
@@ -110,15 +101,16 @@
         <a href="lista.html" id="lista">Lista</a>
         <a href="descuentos.html" id="descuentos">Descuentos</a>
     </div>
-    <div class="settings" onclick="window.location.href='ajustes.html';">
-        <img src="ajustes.png" alt="Ajustes">
-    </div>
-    <div class="logout" onclick="sessionStorage.removeItem('loggedIn'); window.location.href='index.html';">
-        <img src="cerrar.png" alt="Cerrar Sesión">
-    </div>
+    <button class="logout" onclick="logout();">Cerrar Sesión</button>
 </div>
 
 <script>
+    function logout() {
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.replace('index.html');
+    }
+
     (function() {
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function() {
@@ -128,7 +120,7 @@
     
     function checkAuthentication() {
         if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.href = 'index.html';
+            window.location.replace('index.html');
         }
     }
 
