@@ -94,8 +94,9 @@
             transform: translateX(0);
         }
     </style>
-    <!-- Agregar la librería XLSX -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <!-- Agregar las librerías jsPDF y html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -125,8 +126,8 @@
             </tbody>
         </table>
     </div>
-    <!-- Botón para descargar en Excel -->
-    <button class="ok-btn" onclick="generateExcel()">Descargar en Excel</button>
+    <!-- Botón para descargar en PDF -->
+    <button class="ok-btn" onclick="generatePDF()">Descargar en PDF</button>
 </div>
 
 <!-- Menú plegable -->
@@ -184,41 +185,52 @@
         loadSoldItems();
     });
 
-    // Función para generar el archivo Excel
-    function generateExcel() {
+    // Función para generar el archivo PDF
+    function generatePDF() {
         const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
 
         // Verificar si hay productos en localStorage
         if (soldItems.length === 0) {
-            alert("No hay productos vendidos para generar el Excel.");
+            alert("No hay productos vendidos para generar el PDF.");
             return;
         }
 
-        // Crear la hoja de trabajo
-        const ws = XLSX.utils.aoa_to_sheet([ 
-            ['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad Vendida'],
-            ...soldItems.map(item => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return [
-                    item.name,
-                    item.code,
-                    item.barcode,
-                    item.price.toFixed(2),
-                    item.discount ? item.discount : 0,
-                    priceWithDiscount.toFixed(2),
-                    item.description,
-                    item.category,
-                    item.quantitySold
-                ];
-            })
-        ]);
+        // Crear un nuevo documento PDF
+        const doc = new jspdf.jsPDF();
 
-        // Crear un libro de trabajo
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Productos Vendidos");
+        // Título del PDF
+        doc.setFontSize(18);
+        doc.text("Productos Vendidos", 10, 10);
 
-        // Generar y guardar el archivo Excel
-        XLSX.writeFile(wb, "productos_vendidos.xlsx");
+        // Crear la tabla en el PDF
+        const headers = [['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad Vendida']];
+        const data = soldItems.map(item => {
+            const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+            return [
+                item.name,
+                item.code,
+                item.barcode,
+                item.price.toFixed(2),
+                item.discount ? item.discount : 0,
+                priceWithDiscount.toFixed(2),
+                item.description,
+                item.category,
+                item.quantitySold
+            ];
+        });
+
+        // Agregar la tabla al PDF
+        doc.autoTable({
+            head: headers,
+            body: data,
+            startY: 20,
+            theme: 'grid',
+            styles: { fontSize: 10 },
+            headStyles: { fillColor: [22, 160, 133] }
+        });
+
+        // Guardar el PDF
+        doc.save("productos_vendidos.pdf");
     }
 
     // Función para mostrar/ocultar el menú
