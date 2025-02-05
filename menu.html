@@ -106,7 +106,8 @@
 
 <script>
     function logout() {
-        localStorage.setItem('loggedIn', 'false');
+        localStorage.removeItem('loggedIn');
+        localStorage.removeItem('userID');
         window.location.replace('index.html');
     }
 
