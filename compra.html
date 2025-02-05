@@ -243,6 +243,10 @@
             </div>
             <button type="submit">Guardar</button>
         </form>
+        <!-- Botones para exportar e importar -->
+        <button onclick="exportToExcel()">Exportar a Excel</button>
+        <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)">
+        <button onclick="document.getElementById('importFile').click()">Importar desde Excel</button>
     </div>
 
     <div class="inventory-table">
@@ -270,6 +274,9 @@
     <h2>Total en Dólares Americanos:</h2>
     <p id="totalAmount">$0.00</p>
 </div>
+
+<!-- Incluye la biblioteca xlsx -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 
 <script>
     // Recupera el inventario del almacenamiento local al cargar la página
@@ -386,6 +393,37 @@
             otherCategoryContainer.classList.remove('active');
             document.getElementById('otherCategory').disabled = true;
         }
+    }
+
+    // Función para exportar datos a Excel
+    function exportToExcel() {
+        const ws = XLSX.utils.json_to_sheet(inventory);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+        XLSX.writeFile(wb, "inventario.xlsx");
+    }
+
+    // Función para importar datos desde Excel
+    function importFromExcel(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(worksheet);
+
+            // Actualizar el inventario con los datos importados
+            inventory = json;
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            renderTable();
+            calculateTotal();
+            alert('Datos importados correctamente.');
+        };
+        reader.readAsArrayBuffer(file);
     }
 
     // Llama a la función de renderizado inicial
