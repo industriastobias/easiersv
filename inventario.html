@@ -69,9 +69,17 @@
             border: none;
             padding: 5px 10px;
             cursor: pointer;
+            margin-right: 5px;
+        }
+        .inventory-table button.delete {
+            background-color: #f44336;
+        }
+        .inventory-table button.delete-all {
+            background-color: #ff5722;
+            margin-top: 10px;
         }
         .inventory-table button:hover {
-            background-color: #45a049;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -110,6 +118,7 @@
                 <!-- Las filas de inventario se llenarán dinámicamente -->
             </tbody>
         </table>
+        <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
 
     <div class="total-container">
@@ -144,6 +153,7 @@
                         <td>${item.quantity}</td>
                         <td>
                             <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                            <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
                         </td>
                     </tr>
                 `;
@@ -200,6 +210,24 @@
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
             loadInventory(filterInventory(searchInput.value.toLowerCase()));
+        };
+
+        // Función para eliminar un producto
+        window.deleteItem = function(index) {
+            if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+                inventory.splice(index, 1);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            }
+        };
+
+        // Función para eliminar todos los productos
+        window.deleteAll = function() {
+            if (confirm("¿Estás seguro de que deseas eliminar todos los productos?")) {
+                inventory = [];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory([]);
+            }
         };
 
         // Debounce para la búsqueda
