@@ -86,6 +86,7 @@
     </style>
 </head>
 <body>
+
 <div class="container">
     <div class="header">Industrias Tobias</div>
     <div class="menu">
@@ -104,45 +105,55 @@
 </div>
 
 <script>
-    function encryptData(data) {
-        return btoa(data); // Codifica los datos en base64
-    }
-    
-    function decryptData(data) {
-        return atob(data); // Decodifica los datos de base64
-    }
-
     function logout() {
+        // Eliminar solo el estado de autenticación
         sessionStorage.removeItem('loggedIn');
-        localStorage.removeItem('userID');
+        sessionStorage.removeItem('userID');
         window.location.replace('index.html');
     }
 
-    function checkAuthentication() {
-        let loggedIn = sessionStorage.getItem('loggedIn');
-        let userID = localStorage.getItem('userID');
+    (function() {
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.history.go(1);
+        };
+    })();
 
-        if (!loggedIn || !userID) {
+    function checkAuthentication() {
+        // Verificar si el usuario está autenticado
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
             window.location.replace('index.html');
         }
     }
-    
+
     window.onload = function() {
         checkAuthentication();
-        let userID = decryptData(localStorage.getItem('userID'));
+
+        // Obtener el ID del usuario desde localStorage
+        const userID = localStorage.getItem('userID');
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
 
+        // Ocultar enlaces según el ID del usuario
         if (userID !== '2005') {
             userLink.style.display = 'none';
         }
 
-        if (userID.startsWith('100')) {
+        if (userID && userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
         }
+
+        // Resaltar el enlace de la página actual
+        const currentPage = window.location.pathname.split('/').pop();
+        document.querySelectorAll('.menu a').forEach(link => {
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            }
+        });
     };
 </script>
+
 </body>
 </html>
