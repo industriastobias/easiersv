@@ -125,12 +125,10 @@
         const searchInput = document.getElementById('searchInput');
         const totalCount = document.getElementById('totalCount');
 
-        // Cargar inventario desde localStorage
-        function loadInventory() {
-            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            const filteredInventory = filterInventory(inventory);
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-            // Renderizar la tabla
+        // Cargar inventario desde localStorage
+        function loadInventory(filteredInventory) {
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return `
@@ -149,20 +147,18 @@
                         </td>
                     </tr>
                 `;
-            }).join(''); 
+            }).join('');
 
-            // Calcular el total en dólares considerando el precio con descuento
             const total = filteredInventory.reduce((sum, item) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return sum + (priceWithDiscount * parseInt(item.quantity)); // Usar priceWithDiscount aquí
+                return sum + (priceWithDiscount * parseInt(item.quantity));
             }, 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
             totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
         }
 
         // Filtrar inventario según la búsqueda
-        function filterInventory(inventory) {
-            const query = searchInput.value.toLowerCase();
+        function filterInventory(query) {
             return inventory.filter(item => 
                 item.name.toLowerCase().includes(query) ||
                 item.code.toLowerCase().includes(query) ||
@@ -172,15 +168,10 @@
 
         // Función para marcar un producto como vendido
         window.markAsSold = function(index) {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-
             const item = inventory[index];
 
-            // Preguntar cuántas unidades se van a vender
             const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
-
-            // Validar la entrada del usuario
             if (quantityToSell === null || quantityToSell.trim() === "") {
                 alert("Operación cancelada o cantidad no válida.");
                 return;
@@ -197,31 +188,33 @@
                 return;
             }
 
-            // Actualizar la cantidad en stock
             item.quantity -= quantity;
             if (item.quantity <= 0) {
-                inventory.splice(index, 1); // Eliminar si no hay stock
+                inventory.splice(index, 1); 
             }
 
-            // Registrar la venta
             const soldItem = { ...item, quantitySold: quantity };
             soldItems.push(soldItem);
 
-            // Guardar en localStorage
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            // Recargar la tabla
-            loadInventory();
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
         };
 
-        // Escuchar cambios en la búsqueda
+        // Debounce para la búsqueda
+        let debounceTimeout;
         searchInput.addEventListener('input', function() {
-            loadInventory();
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(function() {
+                const query = searchInput.value.toLowerCase();
+                const filteredInventory = filterInventory(query);
+                loadInventory(filteredInventory);
+            }, 300); // 300ms de retraso
         });
 
-        // Cargar el inventario al iniciar
-        loadInventory();
+        // Cargar inventario al inicio
+        loadInventory(inventory);
     });
 </script>
 
