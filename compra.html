@@ -234,7 +234,7 @@
     // Función para renderizar la tabla
     function renderTable() {
         const inventoryList = document.getElementById('inventoryList');
-        inventoryList.innerHTML = inventory.map((item, index) => `
+        inventoryList.innerHTML = inventory.map((item, index) => ` 
             <tr>
                 <td>${item.name}</td>
                 <td>${item.code}</td>
@@ -312,7 +312,7 @@
         XLSX.writeFile(wb, "inventario.xlsx");
     }
 
-    // Función para importar desde Excel en fragmentos
+    // Función para importar desde Excel
     function importFromExcel(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -323,31 +323,22 @@
             const sheet = wb.Sheets[wb.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
 
-            const chunkSize = 100; // Tamaño del fragmento
-            let index = 0;
-
-            function processChunk() {
-                if (index < json.length) {
-                    const chunk = json.slice(index, index + chunkSize);
-                    inventory = inventory.concat(chunk);
-                    renderTable();
-                    calculateTotal();
-
-                    index += chunkSize;
-                    setTimeout(processChunk, 0); 
-                } else {
-                    localStorage.setItem('inventory', JSON.stringify(inventory));
-                    alert("Importación completada");
-                }
-            }
-
-            processChunk();
+            inventory = inventory.concat(json);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            renderTable();
+            calculateTotal();
+            alert("Importación completada");
         };
 
         reader.readAsBinaryString(file);
     }
 
-    // Renderizar tabla inicial y calcular total
+    // Guardar datos antes de salir o recargar
+    window.addEventListener("beforeunload", function() {
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+    });
+
+    // Renderizar la tabla y calcular total al cargar la página
     renderTable();
     calculateTotal();
 </script>
