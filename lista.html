@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Clientes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        label, input {
+            margin: 5px 0;
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .edit-btn {
+            background-color: #ffa500;
+        }
+        .delete-btn {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registro de Clientes con Tarjeta de Fidelidad</h1>
+
+    <div class="form-container">
+        <label for="id">ID:</label>
+        <input type="number" id="id" placeholder="ID del Cliente" required>
+        
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" placeholder="Nombre del Cliente" required>
+        
+        <label for="correo">Correo:</label>
+        <input type="email" id="correo" placeholder="Correo del Cliente" required>
+        
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" placeholder="Número de Teléfono" required>
+        
+        <label for="numero-tarjeta">Número de Tarjeta:</label>
+        <input type="text" id="numero-tarjeta" placeholder="Número de Tarjeta" required>
+        
+        <label for="monto">Monto:</label>
+        <input type="number" id="monto" placeholder="Monto en Tarjeta" required>
+        
+        <button onclick="registrarCliente()">Registrar Cliente</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Número de Tarjeta</th>
+                <th>Monto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-clientes">
+            <!-- Registros de clientes se mostrarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        let clientes = [];
+
+        function registrarCliente() {
+            const id = document.getElementById("id").value;
+            const nombre = document.getElementById("nombre").value;
+            const correo = document.getElementById("correo").value;
+            const telefono = document.getElementById("telefono").value;
+            const numeroTarjeta = document.getElementById("numero-tarjeta").value;
+            const monto = document.getElementById("monto").value;
+
+            const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto };
+
+            clientes.push(cliente);
+            mostrarClientes();
+            limpiarFormulario();
+        }
+
+        function mostrarClientes() {
+            const tablaClientes = document.getElementById("tabla-clientes");
+            tablaClientes.innerHTML = ""; // Limpiar la tabla
+
+            clientes.forEach(cliente => {
+                const fila = document.createElement("tr");
+
+                for (const key in cliente) {
+                    const celda = document.createElement("td");
+                    celda.textContent = cliente[key];
+                    fila.appendChild(celda);
+                }
+
+                const celdaAcciones = document.createElement("td");
+                celdaAcciones.innerHTML = `
+                    <button class="edit-btn" onclick="editarCliente('${cliente.id}')">Editar</button>
+                    <button class="delete-btn" onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
+                `;
+                fila.appendChild(celdaAcciones);
+                tablaClientes.appendChild(fila);
+            });
+        }
+
+        function eliminarCliente(id) {
+            clientes = clientes.filter(cliente => cliente.id !== id);
+            mostrarClientes();
+        }
+
+        function editarCliente(id) {
+            const cliente = clientes.find(cliente => cliente.id === id);
+
+            document.getElementById("id").value = cliente.id;
+            document.getElementById("nombre").value = cliente.nombre;
+            document.getElementById("correo").value = cliente.correo;
+            document.getElementById("telefono").value = cliente.telefono;
+            document.getElementById("numero-tarjeta").value = cliente.numeroTarjeta;
+            document.getElementById("monto").value = cliente.monto;
+
+            eliminarCliente(id); // Eliminar el cliente original para actualizarlo después de la edición
+        }
+
+        function limpiarFormulario() {
+            document.getElementById("id").value = "";
+            document.getElementById("nombre").value = "";
+            document.getElementById("correo").value = "";
+            document.getElementById("telefono").value = "";
+            document.getElementById("numero-tarjeta").value = "";
+            document.getElementById("monto").value = "";
+        }
+    </script>
+</body>
+</html>
