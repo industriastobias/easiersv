@@ -95,7 +95,7 @@
     </table>
 
     <script>
-        let clientes = [];
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
 
         function registrarCliente() {
             const id = document.getElementById("id").value;
@@ -108,6 +108,7 @@
             const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto };
 
             clientes.push(cliente);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
             mostrarClientes();
             limpiarFormulario();
         }
@@ -137,6 +138,7 @@
 
         function eliminarCliente(id) {
             clientes = clientes.filter(cliente => cliente.id !== id);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
             mostrarClientes();
         }
 
@@ -161,6 +163,9 @@
             document.getElementById("numero-tarjeta").value = "";
             document.getElementById("monto").value = "";
         }
+
+        // Mostrar los clientes al cargar la página
+        mostrarClientes();
     </script>
 </body>
 </html>
