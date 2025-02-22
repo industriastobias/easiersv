@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Clientes</title>
+    <title>Registro de Clientes con Tarjeta de Fidelidad</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,10 +50,24 @@
         .delete-btn {
             background-color: #f44336;
         }
+        .search-container {
+            margin-bottom: 15px;
+        }
+        input[type="search"] {
+            padding: 8px;
+            font-size: 16px;
+            width: 250px;
+        }
     </style>
 </head>
 <body>
     <h1>Registro de Clientes con Tarjeta de Fidelidad</h1>
+
+    <!-- Barra de búsqueda -->
+    <div class="search-container">
+        <label for="search">Buscar Cliente: </label>
+        <input type="search" id="search" placeholder="Buscar por nombre, correo o tarjeta" onkeyup="buscarCliente()">
+    </div>
 
     <div class="form-container">
         <label for="id">ID:</label>
@@ -105,6 +119,27 @@
             const numeroTarjeta = document.getElementById("numero-tarjeta").value;
             const monto = document.getElementById("monto").value;
 
+            // Validación
+            if (!id || !nombre || !correo || !telefono || !numeroTarjeta || !monto) {
+                alert("Todos los campos son obligatorios.");
+                return;
+            }
+
+            if (clientes.some(cliente => cliente.id == id)) {
+                alert("El ID ya está registrado.");
+                return;
+            }
+
+            if (!validateEmail(correo)) {
+                alert("Por favor ingresa un correo válido.");
+                return;
+            }
+
+            if (monto <= 0) {
+                alert("El monto debe ser mayor que 0.");
+                return;
+            }
+
             const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto };
 
             clientes.push(cliente);
@@ -136,12 +171,6 @@
             });
         }
 
-        function eliminarCliente(id) {
-            clientes = clientes.filter(cliente => cliente.id !== id);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
-            mostrarClientes();
-        }
-
         function editarCliente(id) {
             const cliente = clientes.find(cliente => cliente.id === id);
 
@@ -155,6 +184,12 @@
             eliminarCliente(id); // Eliminar el cliente original para actualizarlo después de la edición
         }
 
+        function eliminarCliente(id) {
+            clientes = clientes.filter(cliente => cliente.id !== id);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+            mostrarClientes();
+        }
+
         function limpiarFormulario() {
             document.getElementById("id").value = "";
             document.getElementById("nombre").value = "";
@@ -162,6 +197,44 @@
             document.getElementById("telefono").value = "";
             document.getElementById("numero-tarjeta").value = "";
             document.getElementById("monto").value = "";
+        }
+
+        // Validación de correo
+        function validateEmail(email) {
+            const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            return re.test(email);
+        }
+
+        // Función de búsqueda
+        function buscarCliente() {
+            const searchTerm = document.getElementById("search").value.toLowerCase();
+            const tablaClientes = document.getElementById("tabla-clientes");
+
+            tablaClientes.innerHTML = ""; // Limpiar la tabla
+
+            clientes
+                .filter(cliente => 
+                    cliente.nombre.toLowerCase().includes(searchTerm) ||
+                    cliente.correo.toLowerCase().includes(searchTerm) ||
+                    cliente.numeroTarjeta.toLowerCase().includes(searchTerm)
+                )
+                .forEach(cliente => {
+                    const fila = document.createElement("tr");
+
+                    for (const key in cliente) {
+                        const celda = document.createElement("td");
+                        celda.textContent = cliente[key];
+                        fila.appendChild(celda);
+                    }
+
+                    const celdaAcciones = document.createElement("td");
+                    celdaAcciones.innerHTML = `
+                        <button class="edit-btn" onclick="editarCliente('${cliente.id}')">Editar</button>
+                        <button class="delete-btn" onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
+                    `;
+                    fila.appendChild(celdaAcciones);
+                    tablaClientes.appendChild(fila);
+                });
         }
 
         // Mostrar los clientes al cargar la página
