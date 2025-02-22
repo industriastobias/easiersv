@@ -63,7 +63,6 @@
 <body>
     <h1>Registro de Clientes con Tarjeta de Fidelidad</h1>
 
-    <!-- Barra de búsqueda -->
     <div class="search-container">
         <label for="search">Buscar Cliente: </label>
         <input type="search" id="search" placeholder="Buscar por nombre, correo o tarjeta" onkeyup="buscarCliente()">
@@ -88,6 +87,15 @@
         <label for="monto">Monto:</label>
         <input type="number" id="monto" placeholder="Monto en Tarjeta" required>
         
+        <label for="estado-tarjeta">Estado de la Tarjeta:</label>
+        <select id="estado-tarjeta">
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+        </select>
+
+        <label for="puntos">Puntos Acumulados:</label>
+        <input type="number" id="puntos" placeholder="Puntos acumulados" value="0" required>
+
         <button onclick="registrarCliente()">Registrar Cliente</button>
     </div>
 
@@ -100,11 +108,12 @@
                 <th>Teléfono</th>
                 <th>Número de Tarjeta</th>
                 <th>Monto</th>
+                <th>Estado</th>
+                <th>Puntos</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody id="tabla-clientes">
-            <!-- Registros de clientes se mostrarán aquí -->
         </tbody>
     </table>
 
@@ -118,29 +127,15 @@
             const telefono = document.getElementById("telefono").value;
             const numeroTarjeta = document.getElementById("numero-tarjeta").value;
             const monto = document.getElementById("monto").value;
+            const estadoTarjeta = document.getElementById("estado-tarjeta").value;
+            const puntos = document.getElementById("puntos").value;
 
-            // Validación
-            if (!id || !nombre || !correo || !telefono || !numeroTarjeta || !monto) {
+            if (!id || !nombre || !correo || !telefono || !numeroTarjeta || !monto || !puntos) {
                 alert("Todos los campos son obligatorios.");
                 return;
             }
 
-            if (clientes.some(cliente => cliente.id == id)) {
-                alert("El ID ya está registrado.");
-                return;
-            }
-
-            if (!validateEmail(correo)) {
-                alert("Por favor ingresa un correo válido.");
-                return;
-            }
-
-            if (monto <= 0) {
-                alert("El monto debe ser mayor que 0.");
-                return;
-            }
-
-            const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto };
+            const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
 
             clientes.push(cliente);
             localStorage.setItem("clientes", JSON.stringify(clientes));
@@ -150,7 +145,7 @@
 
         function mostrarClientes() {
             const tablaClientes = document.getElementById("tabla-clientes");
-            tablaClientes.innerHTML = ""; // Limpiar la tabla
+            tablaClientes.innerHTML = "";
 
             clientes.forEach(cliente => {
                 const fila = document.createElement("tr");
@@ -180,8 +175,10 @@
             document.getElementById("telefono").value = cliente.telefono;
             document.getElementById("numero-tarjeta").value = cliente.numeroTarjeta;
             document.getElementById("monto").value = cliente.monto;
+            document.getElementById("estado-tarjeta").value = cliente.estadoTarjeta;
+            document.getElementById("puntos").value = cliente.puntos;
 
-            eliminarCliente(id); // Eliminar el cliente original para actualizarlo después de la edición
+            eliminarCliente(id);
         }
 
         function eliminarCliente(id) {
@@ -197,20 +194,15 @@
             document.getElementById("telefono").value = "";
             document.getElementById("numero-tarjeta").value = "";
             document.getElementById("monto").value = "";
+            document.getElementById("estado-tarjeta").value = "activo";
+            document.getElementById("puntos").value = "0";
         }
 
-        // Validación de correo
-        function validateEmail(email) {
-            const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-            return re.test(email);
-        }
-
-        // Función de búsqueda
         function buscarCliente() {
             const searchTerm = document.getElementById("search").value.toLowerCase();
             const tablaClientes = document.getElementById("tabla-clientes");
 
-            tablaClientes.innerHTML = ""; // Limpiar la tabla
+            tablaClientes.innerHTML = "";
 
             clientes
                 .filter(cliente => 
@@ -237,7 +229,6 @@
                 });
         }
 
-        // Mostrar los clientes al cargar la página
         mostrarClientes();
     </script>
 </body>
