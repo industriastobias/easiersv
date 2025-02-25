@@ -57,6 +57,8 @@
 <body>
     <h1>Registro de Clientes con Tarjeta de Fidelidad</h1>
 
+    <p>Total de Clientes: <span id="total-clientes">0</span></p>
+
     <div class="search-container">
         <label for="search">Buscar Cliente: </label>
         <input type="search" id="search" placeholder="Buscar por ID, nombre, correo o tarjeta" onkeyup="buscarCliente()">
@@ -112,16 +114,7 @@
     </table>
 
     <script>
-        function getClientes() {
-            const data = localStorage.getItem("clientes");
-            return data ? JSON.parse(atob(data)) : [];
-        }
-
-        function setClientes(clientes) {
-            localStorage.setItem("clientes", btoa(JSON.stringify(clientes)));
-        }
-
-        let clientes = getClientes();
+        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
 
         function registrarCliente() {
             const id = document.getElementById("id").value.trim();
@@ -138,15 +131,17 @@
                 return;
             }
 
-            if (clientes.some(cliente => cliente.id === id || cliente.numeroTarjeta === numeroTarjeta)) {
-                alert("El ID o número de tarjeta ya están registrados.");
+            if (clientes.some(cliente => cliente.id === id)) {
+                alert("El ID ya está registrado.");
                 return;
             }
 
             const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
+
             clientes.push(cliente);
-            setClientes(clientes);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
             mostrarClientes();
+            actualizarContador();
         }
 
         function buscarCliente() {
@@ -157,7 +152,7 @@
             
             clientes
                 .filter(cliente => 
-                    cliente.id.includes(searchTerm) ||
+                    cliente.id.toLowerCase().includes(searchTerm) ||
                     cliente.nombre.toLowerCase().includes(searchTerm) ||
                     cliente.correo.toLowerCase().includes(searchTerm) ||
                     cliente.numeroTarjeta.toLowerCase().includes(searchTerm)
@@ -181,8 +176,20 @@
                 });
         }
 
+        function eliminarCliente(id) {
+            clientes = clientes.filter(cliente => cliente.id !== id);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+            mostrarClientes();
+            actualizarContador();
+        }
+
         function mostrarClientes() {
             buscarCliente();
+            actualizarContador();
+        }
+
+        function actualizarContador() {
+            document.getElementById("total-clientes").textContent = clientes.length;
         }
 
         mostrarClientes();
