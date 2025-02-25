@@ -17,6 +17,7 @@
             overflow: hidden;
         }
         .container {
+            display: none; /* Ocultar el contenedor al inicio */
             background: rgba(255, 255, 255, 0.9); /* Fondo blanco con transparencia */
             padding: 2em 1em; /* Reducir el padding */
             border-radius: 20px;
@@ -105,7 +106,7 @@
 </div>
 
 <script>
-    // Establecer un retraso de 4 segundos
+    // Establecer un retraso de 4 segundos al cargar la página
     window.onload = function() {
         setTimeout(function() {
             document.querySelector('.container').style.display = 'block';
@@ -139,7 +140,11 @@
             sessionStorage.setItem('loggedIn', 'true');
             sessionStorage.setItem('userID', user.id);
             sessionStorage.setItem('userClave', userClave); // Guardar la clave del usuario
-            window.location.href = 'menu.html'; // Redirigir al menú principal
+
+            // Agregar un retraso de 3 segundos antes de redirigir
+            setTimeout(function() {
+                window.location.href = 'menu.html'; // Redirigir al menú principal después del retraso
+            }, 3000); // 3000 ms = 3 segundos
         } else {
             alert('ID o contraseña incorrectos.');
         }
