@@ -105,6 +105,16 @@
 </div>
 
 <script>
+    // Establecer un retraso de 4 segundos
+    window.onload = function() {
+        setTimeout(function() {
+            document.querySelector('.container').style.display = 'block';
+        }, 4000); // 4000 milisegundos = 4 segundos
+
+        // Ocultar el contenedor de inicio de sesión inicialmente
+        document.querySelector('.container').style.display = 'none';
+    };
+
     const users = [
         { id: '2005', clave: 'admin2024' },
         { id: '1001', clave: 'viewer2024' },
