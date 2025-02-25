@@ -44,12 +44,6 @@
         button:hover {
             background-color: #45a049;
         }
-        .edit-btn {
-            background-color: #ffa500;
-        }
-        .delete-btn {
-            background-color: #f44336;
-        }
         .search-container {
             margin-bottom: 15px;
         }
@@ -65,7 +59,7 @@
 
     <div class="search-container">
         <label for="search">Buscar Cliente: </label>
-        <input type="search" id="search" placeholder="Buscar por nombre, correo o tarjeta" onkeyup="buscarCliente()">
+        <input type="search" id="search" placeholder="Buscar por ID, nombre, correo o tarjeta" onkeyup="buscarCliente()">
     </div>
 
     <div class="form-container">
@@ -118,94 +112,52 @@
     </table>
 
     <script>
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        function getClientes() {
+            const data = localStorage.getItem("clientes");
+            return data ? JSON.parse(atob(data)) : [];
+        }
+
+        function setClientes(clientes) {
+            localStorage.setItem("clientes", btoa(JSON.stringify(clientes)));
+        }
+
+        let clientes = getClientes();
 
         function registrarCliente() {
-            const id = document.getElementById("id").value;
-            const nombre = document.getElementById("nombre").value;
-            const correo = document.getElementById("correo").value;
-            const telefono = document.getElementById("telefono").value;
-            const numeroTarjeta = document.getElementById("numero-tarjeta").value;
-            const monto = document.getElementById("monto").value;
+            const id = document.getElementById("id").value.trim();
+            const nombre = document.getElementById("nombre").value.trim();
+            const correo = document.getElementById("correo").value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+            const numeroTarjeta = document.getElementById("numero-tarjeta").value.trim();
+            const monto = document.getElementById("monto").value.trim();
             const estadoTarjeta = document.getElementById("estado-tarjeta").value;
-            const puntos = document.getElementById("puntos").value;
+            const puntos = document.getElementById("puntos").value.trim();
 
             if (!id || !nombre || !correo || !telefono || !numeroTarjeta || !monto || !puntos) {
                 alert("Todos los campos son obligatorios.");
                 return;
             }
 
+            if (clientes.some(cliente => cliente.id === id || cliente.numeroTarjeta === numeroTarjeta)) {
+                alert("El ID o número de tarjeta ya están registrados.");
+                return;
+            }
+
             const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
-
             clientes.push(cliente);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
+            setClientes(clientes);
             mostrarClientes();
-            limpiarFormulario();
-        }
-
-        function mostrarClientes() {
-            const tablaClientes = document.getElementById("tabla-clientes");
-            tablaClientes.innerHTML = "";
-
-            clientes.forEach(cliente => {
-                const fila = document.createElement("tr");
-
-                for (const key in cliente) {
-                    const celda = document.createElement("td");
-                    celda.textContent = cliente[key];
-                    fila.appendChild(celda);
-                }
-
-                const celdaAcciones = document.createElement("td");
-                celdaAcciones.innerHTML = `
-                    <button class="edit-btn" onclick="editarCliente('${cliente.id}')">Editar</button>
-                    <button class="delete-btn" onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
-                `;
-                fila.appendChild(celdaAcciones);
-                tablaClientes.appendChild(fila);
-            });
-        }
-
-        function editarCliente(id) {
-            const cliente = clientes.find(cliente => cliente.id === id);
-
-            document.getElementById("id").value = cliente.id;
-            document.getElementById("nombre").value = cliente.nombre;
-            document.getElementById("correo").value = cliente.correo;
-            document.getElementById("telefono").value = cliente.telefono;
-            document.getElementById("numero-tarjeta").value = cliente.numeroTarjeta;
-            document.getElementById("monto").value = cliente.monto;
-            document.getElementById("estado-tarjeta").value = cliente.estadoTarjeta;
-            document.getElementById("puntos").value = cliente.puntos;
-
-            eliminarCliente(id);
-        }
-
-        function eliminarCliente(id) {
-            clientes = clientes.filter(cliente => cliente.id !== id);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
-            mostrarClientes();
-        }
-
-        function limpiarFormulario() {
-            document.getElementById("id").value = "";
-            document.getElementById("nombre").value = "";
-            document.getElementById("correo").value = "";
-            document.getElementById("telefono").value = "";
-            document.getElementById("numero-tarjeta").value = "";
-            document.getElementById("monto").value = "";
-            document.getElementById("estado-tarjeta").value = "activo";
-            document.getElementById("puntos").value = "0";
         }
 
         function buscarCliente() {
             const searchTerm = document.getElementById("search").value.toLowerCase();
             const tablaClientes = document.getElementById("tabla-clientes");
-
+            
             tablaClientes.innerHTML = "";
-
+            
             clientes
                 .filter(cliente => 
+                    cliente.id.includes(searchTerm) ||
                     cliente.nombre.toLowerCase().includes(searchTerm) ||
                     cliente.correo.toLowerCase().includes(searchTerm) ||
                     cliente.numeroTarjeta.toLowerCase().includes(searchTerm)
@@ -221,12 +173,16 @@
 
                     const celdaAcciones = document.createElement("td");
                     celdaAcciones.innerHTML = `
-                        <button class="edit-btn" onclick="editarCliente('${cliente.id}')">Editar</button>
-                        <button class="delete-btn" onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
+                        <button onclick="editarCliente('${cliente.id}')">Editar</button>
+                        <button onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
                     `;
                     fila.appendChild(celdaAcciones);
                     tablaClientes.appendChild(fila);
                 });
+        }
+
+        function mostrarClientes() {
+            buscarCliente();
         }
 
         mostrarClientes();
