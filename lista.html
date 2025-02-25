@@ -93,6 +93,7 @@
         <input type="number" id="puntos" placeholder="Puntos acumulados" value="0" required>
 
         <button onclick="registrarCliente()">Registrar Cliente</button>
+        <button onclick="actualizarCliente()">Actualizar Cliente</button>
     </div>
 
     <table>
@@ -144,6 +145,48 @@
             actualizarContador();
         }
 
+        function editarCliente(id) {
+            const cliente = clientes.find(cliente => cliente.id === id);
+
+            document.getElementById("id").value = cliente.id;
+            document.getElementById("nombre").value = cliente.nombre;
+            document.getElementById("correo").value = cliente.correo;
+            document.getElementById("telefono").value = cliente.telefono;
+            document.getElementById("numero-tarjeta").value = cliente.numeroTarjeta;
+            document.getElementById("monto").value = cliente.monto;
+            document.getElementById("estado-tarjeta").value = cliente.estadoTarjeta;
+            document.getElementById("puntos").value = cliente.puntos;
+        }
+
+        function actualizarCliente() {
+            const id = document.getElementById("id").value.trim();
+            const nombre = document.getElementById("nombre").value.trim();
+            const correo = document.getElementById("correo").value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+            const numeroTarjeta = document.getElementById("numero-tarjeta").value.trim();
+            const monto = document.getElementById("monto").value.trim();
+            const estadoTarjeta = document.getElementById("estado-tarjeta").value;
+            const puntos = document.getElementById("puntos").value.trim();
+
+            const clienteIndex = clientes.findIndex(cliente => cliente.id === id);
+            if (clienteIndex === -1) {
+                alert("Cliente no encontrado.");
+                return;
+            }
+
+            clientes[clienteIndex] = { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+            mostrarClientes();
+            actualizarContador();
+        }
+
+        function eliminarCliente(id) {
+            clientes = clientes.filter(cliente => cliente.id !== id);
+            localStorage.setItem("clientes", JSON.stringify(clientes));
+            mostrarClientes();
+            actualizarContador();
+        }
+
         function buscarCliente() {
             const searchTerm = document.getElementById("search").value.toLowerCase();
             const tablaClientes = document.getElementById("tabla-clientes");
@@ -174,13 +217,6 @@
                     fila.appendChild(celdaAcciones);
                     tablaClientes.appendChild(fila);
                 });
-        }
-
-        function eliminarCliente(id) {
-            clientes = clientes.filter(cliente => cliente.id !== id);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
-            mostrarClientes();
-            actualizarContador();
         }
 
         function mostrarClientes() {
