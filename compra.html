@@ -1,3 +1,5 @@
+compra 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,12 +38,13 @@
         }
 
         .form-container {
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 250px;
-            border: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 250px; /* Se ha reducido el ancho */
+    border: 1px solid #e0e0e0;
+
         }
 
         .inventory-table {
@@ -181,10 +184,6 @@
                 <label for="quantity">Cantidad en Stock:</label>
                 <input type="number" id="quantity" name="quantity" required>
             </div>
-            <div class="form-group">
-                <label for="image">Imagen del Producto:</label>
-                <input type="file" id="image" name="image" accept="image/*">
-            </div>
             <button type="submit">Guardar</button>
         </form>
         <!-- Botones para exportar e importar -->
@@ -205,7 +204,6 @@
                     <th>Descripción</th>
                     <th>Categoría</th>
                     <th>Cantidad en Stock</th>
-                    <th>Imagen</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -249,7 +247,6 @@
                 <td>${item.description}</td>
                 <td>${item.category}</td>
                 <td>${item.quantity}</td>
-                <td><img src="${item.imageUrl}" alt="Imagen" style="width: 50px; height: 50px; object-fit: cover;"></td>
                 <td>
                     <button onclick="editItem(${index})">Editar</button>
                     <button onclick="deleteItem(${index})">Eliminar</button>
@@ -270,14 +267,8 @@
         const description = document.getElementById('description').value;
         const category = document.getElementById('category').value;
         const quantity = document.getElementById('quantity').value;
-        const image = document.getElementById('image').files[0];
-
-        let imageUrl = "";
-        if (image) {
-            imageUrl = URL.createObjectURL(image);
-        }
-
-        const newItem = { name, code, barcode, price, discount, description, category, quantity, imageUrl };
+        
+        const newItem = { name, code, barcode, price, discount, description, category, quantity };
 
         if (editIndex === -1) {
             inventory.push(newItem);
@@ -332,18 +323,25 @@
         reader.onload = function(e) {
             const data = e.target.result;
             const wb = XLSX.read(data, { type: 'binary' });
-            const ws = wb.Sheets[wb.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(ws, { raw: true });  // Mejor forma de obtener datos sin errores
-            inventory = json;
+            const sheet = wb.Sheets[wb.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(sheet);
+
+            inventory = inventory.concat(json);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
             calculateTotal();
+            alert("Importación completada");
         };
 
         reader.readAsBinaryString(file);
     }
 
-    // Inicialización
+    // Guardar datos antes de salir o recargar
+    window.addEventListener("beforeunload", function() {
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+    });
+
+    // Renderizar la tabla y calcular total al cargar la página
     renderTable();
     calculateTotal();
 </script>
