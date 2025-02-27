@@ -1,10 +1,10 @@
--<!DOCTYPE html>
-HTM lang = " es ">
-* Cabeza *
-    meta carbonaje = " UTF-8 ">
-    meta nombre = " viewport " content = " width=device-width, initial-scale=1.0 ">
-    * Título *Inicio de la sesión* / título>
-    <Estilo>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de sesión</title>
+    <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
@@ -13,7 +13,6 @@ HTM lang = " es ">
             align-items: center;
             height: 100vh;
             margin: 0;
-            position: relative;
             overflow: hidden;
         }
         .container {
@@ -25,8 +24,6 @@ HTM lang = " es ">
             width: 90%;
             max-width: 300px;
             text-align: center;
-            position: relative;
-            z-index: 10;
             animation: fadeIn 0.5s ease-in-out;
         }
         @keyframes fadeIn {
@@ -39,10 +36,6 @@ HTM lang = " es ">
                 transform: translateY(0);
             }
         }
-        .header {
-            text-align: center;
-            margin-bottom: 1em;
-        }
         h1 {
             color: #4a6a41;
             font-size: 2.5em;
@@ -51,7 +44,6 @@ HTM lang = " es ">
         h3 {
             color: #2c3e50;
             font-size: 1.5em;
-            margin: 0;
             margin-bottom: 1em;
         }
         input {
@@ -61,11 +53,6 @@ HTM lang = " es ">
             border: 2px solid #4a6a41;
             border-radius: 10px;
             font-size: 1em;
-            transition: border-color 0.3s;
-        }
-        input:focus {
-            border-color: #00796b;
-            outline: none;
         }
         .button {
             background-color: #4a6a41;
@@ -76,16 +63,10 @@ HTM lang = " es ">
             cursor: pointer;
             width: 100%;
             font-size: 1.1em;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .button:hover {
-            background-color: #3b5e38;
-            transform: scale(1.05);
         }
         .logo {
             max-width: 80px;
             margin-bottom: 0.5em;
-            margin-top: -30px;
         }
         #loading {
             display: none;
@@ -102,80 +83,78 @@ HTM lang = " es ">
     <h3>A FAMILY COMPANY</h3>
 </div>
 
-. img src = " logo.jpg " alt = " Logo de Industrias Tobias " clase = " logo " loadingcargar = " perezoso ">
+<img src="logo.jpg" alt="Logo de Industrias Tobías" class="logo" loading="lazy">
 
-<Div class = " contenedor ">
-    H2>Bienvenido*/ h2 *>
-    etiqueta para = " userID ">ID de Usuario:*/ etiqueta>
-    de entrada type= " texto " id = " userID " placeholderer = " ID de Usuario " requerido autofocus>
-    <Etiqueta para = " userClave ">Contraseña:*/ etiqueta>
-    Tipo de  = " contraseña " id = " userClave " placeholder = " Contraseña " required>
-    Clase de botón class= " botón " onclick = " login() ">Iniciar sesión* / botón *
-    <Div id = " carga ">Cargando...</div>
+<div class="container">
+    <h2>Bienvenido</h2>
+    <label for="userID">ID de Usuario:</label>
+    <input type="text" id="userID" placeholder="ID de Usuario" required autofocus>
+    <label for="userClave">Contraseña:</label>
+    <input type="password" id="userClave" placeholder="Contraseña" required>
+    <button class="button" onclick="login()">Iniciar sesión</button>
+    <div id="loading">Cargando...</div>
 </div>
 
-El guión>
-    window.onload = function()
-        setTimeout (función (solución)
-            documento.querySelector('.container').style.display = 'bloque';
-        - 4000);
+<script>
+    window.onload = function() {
+        setTimeout(function() {
+            document.querySelector('.container').style.display = 'block';
+        }, 4000);
+    };
 
-        documento.querySelector('.container').style.display = 'none';
-    -
-
-    conteus usuarios = [
-        Idio: '2005', clave: 'admin2024',
-        "1001", clave: 'viewer2024',
-        "1002", clave: 'claveViewer2',
-        Idio: '1003', clave: 'claveViewer3',
-        Idio: '1004', clave: 'claveViewer4',
-        Idio: '1005', clave: 'claveViewer5'
+    const users = [
+        { id: '2005', clave: 'admin2024' },
+        { id: '1001', clave: 'viewer2024' },
+        { id: '1002', clave: 'claveViewer2' },
+        { id: '1003', clave: 'claveViewer3' },
+        { id: '1004', clave: 'claveViewer4' },
+        { id: '1005', clave: 'claveViewer5' }
     ];
 
-    mango de funciónSuccessfulLogin(user)
-        conste timestamp = nueva Fecha().toLocaleString ();
-        sesiones de const = JSON.parse(localStorage.getItem('sessions')
-        sessions.push(. id: user.id, time: timestamp .);
-        localStorage.setItem (sesións', JSON.stringify(sessions));
+    function successfulLogin(user) {
+        const timestamp = new Date().toLocaleString();
+        let sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+        sessions.push({ id: user.id, time: timestamp });
+        localStorage.setItem('sessions', JSON.stringify(sessions));
 
-        sessionStorage.setItem('loggedIn', 'verdad');
+        sessionStorage.setItem('loggedIn', 'true');
         sessionStorage.setItem('userID', user.id);
 
-        document.getElementById('loading').style.display = 'bloque';
-        setTimeout (función (solución)
-            ventana.location.href = 'menu.html';
-        - 3000);
-    -
+        document.getElementById('loading').style.display = 'block';
+        setTimeout(function() {
+            window.location.href = 'menu.html';
+        }, 3000);
+    }
 
-    función login ()
-        const userID = document.getElementById('userID').value.trim (;
-        const userClave = document.getElementById('userClave').value.trim ();
+    function login() {
+        const userID = document.getElementById('userID').value.trim();
+        const userClave = document.getElementById('userClave').value.trim();
 
-        si, si. userID userClave)
-            alertas 'Por favor, completa todos los campos'.') ;
-            retorno;
-        -
+        if (!userID || !userClave) {
+            alert('Por favor, completa todos los campos.');
+            return;
+        }
 
-        const user = users.find(u =- u.id === userID & u.clave === userClave;
+        const user = users.find(u => u.id === userID && u.clave === userClave);
+        
+        if (user) {
+            successfulLogin(user);
+        } else {
+            alert('ID o contraseña incorrectos');
+        }
+    }
 
-        si (usuario)
-            mangoSucessfulLogin (usuario);
-        Si no,
-            alertas 'ID o contraseña incorrectos') ;
-        -
-    -
+    document.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            const activeElement = document.activeElement;
+            if (activeElement.id === 'userID') {
+                document.getElementById('userClave').focus();
+            } else if (activeElement.id === 'userClave') {
+                login();
+            }
+        }
+    });
+</script>
 
-    document.addEventListener ('keypress', function(evento)
-        si (evento.key === 'Enter')
-            const activeElement = documento.activeElement;
-            si (activeElement.id === 'userID')
-                documento.getElementById('userClave').focus ();
-            Si no es (activa Element.id === 'userClave')
-                login ();
-            -
-        -
-    -);
-* / script *>
-
-*/ cuerpo *
-*/ html>
+</body>
+</html>
