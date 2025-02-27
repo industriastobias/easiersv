@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Almacenamiento</title>
+    <style>
+        /* Estilos básicos para la tabla */
+    </style>
+</head>
+<body>
+
+<div class="header">
+    Almacenamiento de Productos
+</div>
+
+<div class="container">
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+                <!-- Las filas de inventario se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inventoryList = document.getElementById('inventoryList');
+
+        // Obtener el inventario almacenado en localStorage
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+        // Función para cargar el inventario en la tabla
+        function loadInventory() {
+            inventoryList.innerHTML = inventory.map(item => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount ? item.discount : 0}%</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Cargar el inventario cuando la página se cargue
+        loadInventory();
+    });
+</script>
+
+</body>
+</html>
