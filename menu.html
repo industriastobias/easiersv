@@ -19,7 +19,7 @@
             height: 100vh;
             padding: 2em;
             color: #444;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out; /* Suaviza la transición de la carga de la página */
         }
         .container {
             background-color: #fff;
@@ -106,48 +106,60 @@
 </div>
 
 <script>
-    // Función de cierre de sesión
-    function logout() {
-        // Eliminar solo el estado de autenticación
-        sessionStorage.clear(); // Limpiar toda la sessionStorage
-        window.location.replace('index.html');
-    }
-
-    // Función para verificar autenticación
+    // Función para comprobar la autenticación del usuario
     function checkAuthentication() {
-        // Verificar si el usuario está autenticado
+        // Verificamos si la sesión está activa
         if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.replace('index.html');
+            window.location.replace('index.html'); // Redirige si no está autenticado
         }
     }
 
-    // Ejecutar al cargar la página
-    document.addEventListener("DOMContentLoaded", function() {
-        checkAuthentication();
+    // Función para cerrar la sesión de forma segura
+    function logout() {
+        // Limpiamos la sessionStorage para evitar el acceso no autorizado
+        sessionStorage.clear();
+        localStorage.removeItem('userID'); // Limpiamos localStorage también por seguridad
+        window.location.replace('index.html'); // Redirige a la página de inicio
+    }
 
-        // Obtener el ID del usuario desde localStorage
+    // Función que establece el estado de los enlaces según el tipo de usuario
+    function configureUserLinks() {
         const userID = localStorage.getItem('userID');
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
 
-        // Ocultar enlaces según el ID del usuario
+        // Ocultar el enlace de "Usuarios" si el ID no es '2005'
         if (userID !== '2005') {
             userLink.style.display = 'none';
         }
 
+        // Ocultar los enlaces de "Compra" y "Venta" para usuarios cuyo ID comienza con '100'
         if (userID && userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
         }
+    }
 
-        // Resaltar el enlace de la página actual
-        const currentPage = window.location.pathname.split('/').pop();
+    // Resaltar el enlace de la página actual
+    function highlightCurrentPage() {
+        const currentPage = window.location.pathname.split('/').pop(); // Obtener el nombre de la página actual
         document.querySelectorAll('.menu a').forEach(link => {
             if (link.getAttribute('href') === currentPage) {
-                link.classList.add('active');
+                link.classList.add('active'); // Añadir clase "active" al enlace correspondiente
             }
         });
+    }
+
+    // Función que se ejecuta al cargar la página
+    document.addEventListener("DOMContentLoaded", function() {
+        checkAuthentication(); // Comprobar si el usuario está autenticado
+
+        // Configurar enlaces según el ID del usuario
+        configureUserLinks();
+
+        // Resaltar el enlace de la página actual
+        highlightCurrentPage();
     });
 </script>
 
