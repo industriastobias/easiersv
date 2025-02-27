@@ -63,21 +63,6 @@
             background-color: #ddd;
         }
 
-        .add-row {
-            background-color: #2ECC40;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 10px 0;
-        }
-
-        .add-row:hover {
-            background-color: #28a745;
-        }
-
         .delete-btn {
             background-color: #FF4136;
             color: white;
@@ -90,28 +75,14 @@
         .delete-btn:hover {
             background-color: #c0392b;
         }
-
-        input {
-            width: 100%;
-            border: none;
-            padding: 5px;
-            background: transparent;
-        }
-
-        input:focus {
-            outline: none;
-            border-bottom: 2px solid #0074D9;
-        }
     </style>
 </head>
 <body>
-
     <div class="header">
         Almacenamiento
     </div>
 
     <div class="container">
-        <button class="add-row" onclick="addRow()">Añadir Producto</button>
         <div class="table-container">
             <table id="storageTable">
                 <thead>
@@ -137,57 +108,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let storageData = JSON.parse(localStorage.getItem('storageData')) || [];
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             const tableBody = document.querySelector("#storageTable tbody");
 
             function renderTable() {
-                tableBody.innerHTML = storageData.map((item, index) => `
+                tableBody.innerHTML = inventory.map((item, index) => `
                     <tr>
-                        <td><input type="text" value="${item.name}" onchange="updateValue(${index}, 'name', this.value)"></td>
-                        <td><input type="text" value="${item.code}" onchange="updateValue(${index}, 'code', this.value)"></td>
-                        <td><input type="text" value="${item.barcode}" onchange="updateValue(${index}, 'barcode', this.value)"></td>
-                        <td><input type="number" value="${item.price}" step="0.01" onchange="updateValue(${index}, 'price', this.value)"></td>
-                        <td><input type="number" value="${item.discount}" step="0.1" onchange="updateValue(${index}, 'discount', this.value)"></td>
-                        <td><input type="text" value="${calculateFinalPrice(item.price, item.discount)}" disabled></td>
-                        <td><input type="text" value="${item.description}" onchange="updateValue(${index}, 'description', this.value)"></td>
-                        <td><input type="text" value="${item.category}" onchange="updateValue(${index}, 'category', this.value)"></td>
-                        <td><input type="number" value="${item.quantity}" onchange="updateValue(${index}, 'quantity', this.value)"></td>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount}</td>
+                        <td>${calculateFinalPrice(item.price, item.discount)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
                         <td><button class="delete-btn" onclick="deleteRow(${index})">Eliminar</button></td>
                     </tr>
                 `).join("");
-                localStorage.setItem('storageData', JSON.stringify(storageData));
             }
 
             function calculateFinalPrice(price, discount) {
                 return (price - (price * (discount / 100))).toFixed(2);
             }
 
-            window.addRow = function() {
-                storageData.push({
-                    name: "",
-                    code: "",
-                    barcode: "",
-                    price: 0,
-                    discount: 0,
-                    description: "",
-                    category: "",
-                    quantity: 0
-                });
-                renderTable();
-            };
-
-            window.updateValue = function(index, key, value) {
-                if (key === 'price' || key === 'discount' || key === 'quantity') {
-                    value = parseFloat(value);
-                    if (isNaN(value)) value = 0;
-                }
-                storageData[index][key] = value;
-                renderTable();
-            };
-
             window.deleteRow = function(index) {
                 if (confirm("¿Estás seguro de eliminar este producto?")) {
-                    storageData.splice(index, 1);
+                    inventory.splice(index, 1);
+                    localStorage.setItem('inventory', JSON.stringify(inventory));
                     renderTable();
                 }
             };
@@ -195,6 +143,5 @@
             renderTable();
         });
     </script>
-
 </body>
 </html>
