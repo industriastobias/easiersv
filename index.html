@@ -101,10 +101,14 @@
 
 <div class="loading-screen" id="loading">Cargando...</div>
 
-<div class="container">
+<div class="header">
     <h1>INDUSTRIAS MONTOVI</h1>
     <h3>A FAMILY COMPANY</h3>
-    <img src="logo.jpg" alt="Logo de Industrias Tobias" class="logo">
+</div>
+
+<img src="logo.jpg" alt="Logo de Industrias Tobias" class="logo">
+
+<div class="container" id="login-container">
     <h2>Welcome</h2>
     <input type="text" id="userID" placeholder="ID de Usuario" required autofocus>
     <input type="password" id="userClave" placeholder="Contraseña" required>
@@ -132,7 +136,7 @@
             
             // Mostrar pantalla de carga
             document.getElementById('loading').style.display = 'flex';
-            document.querySelector('.container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'none';
 
             // Simular carga y redirigir después de 3-4 segundos
             setTimeout(() => {
