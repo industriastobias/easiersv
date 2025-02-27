@@ -5,105 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Almacenamiento</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0fff0; /* Verde muy claro */
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #2e7d32; /* Verde oscuro */
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #a5d6a7; /* Verde suave */
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #81c784; /* Verde más fuerte */
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #e8f5e9; /* Verde muy claro */
-        }
-        tr:hover {
-            background-color: #c8e6c9;
-        }
+        /* Estilos básicos para la tabla */
     </style>
 </head>
 <body>
 
+<div class="header">
+    Almacenamiento de Productos
+</div>
+
 <div class="container">
-    <h2>Almacenamiento de Inventario</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Código de Barras</th>
-                <th>Precio</th>
-                <th>Descuento (%)</th>
-                <th>Precio con Descuento</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Cantidad en Stock</th>
-            </tr>
-        </thead>
-        <tbody id="almacenamientoTable">
-            <!-- Aquí se cargarán los datos dinámicamente -->
-        </tbody>
-    </table>
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+                <!-- Las filas de inventario se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    function loadStorageData() {
-        const almacenamientoTable = document.getElementById('almacenamientoTable');
+    document.addEventListener('DOMContentLoaded', function() {
+        const inventoryList = document.getElementById('inventoryList');
 
-        // Obtener el inventario desde localStorage
+        // Obtener el inventario almacenado en localStorage
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-        if (inventory.length === 0) {
-            almacenamientoTable.innerHTML = `<tr><td colspan="9" style="text-align:center;">No hay productos en almacenamiento</td></tr>`;
-            return;
+        // Función para cargar el inventario en la tabla
+        function loadInventory() {
+            inventoryList.innerHTML = inventory.map(item => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount ? item.discount : 0}%</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        almacenamientoTable.innerHTML = inventory.map(item => {
-            const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-            return `
-                <tr>
-                    <td>${item.name}</td>
-                    <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>$${item.price.toFixed(2)}</td>
-                    <td>${item.discount ? item.discount : 0}%</td>
-                    <td>$${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.quantity}</td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    // Forzar actualización al cargar la página
-    window.onload = loadStorageData;
+        // Cargar el inventario cuando la página se cargue
+        loadInventory();
+    });
 </script>
 
 </body>
