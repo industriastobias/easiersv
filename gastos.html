@@ -3,141 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gastos</title>
+    <title>Página de Gastos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
+        table, th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+        }
+        th, td {
+            padding: 10px;
             text-align: left;
         }
-        th {
-            background-color: #e0cbf8;
-            color: white;
+        .form-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 0 auto;
         }
-        input[type="text"], input[type="number"] {
+        .form-container input {
+            padding: 10px;
+            margin: 5px;
             width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
-        #totalCost {
-            margin-top: 20px;
-            font-size: 1.5em;
-        }
-        .add-button {
-            padding: 10px 20px;
-            background-color: #947de6;
+        .form-container button {
+            background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 10px;
             cursor: pointer;
+            border-radius: 5px;
         }
-        .add-button:hover {
-            background-color: #6b6ff0;
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+        .total {
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: right;
         }
     </style>
 </head>
 <body>
+    <h1>Control de Gastos</h1>
 
-<h2>Análisis de Costos</h2>
+    <!-- Formulario para agregar gasto -->
+    <div class="form-container">
+        <h2>Agregar Gasto</h2>
+        <input type="text" id="descripcion" placeholder="Descripción" required>
+        <input type="number" id="monto" placeholder="Monto" required>
+        <input type="date" id="fecha" required>
+        <input type="text" id="metodo" placeholder="Método de pago" required>
+        <button onclick="agregarGasto()">Agregar Gasto</button>
+    </div>
 
-<table id="gastosTable">
-    <thead>
-        <tr>
-            <th>Producto</th>
-            <th>Costo de Adquisición</th>
-            <th>Gastos Operativos</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+    <!-- Tabla de gastos -->
+    <table id="tablaGastos">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+                <th>Método de Pago</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los gastos se agregarán aquí -->
+        </tbody>
+    </table>
 
-<div>
-    <input type="text" id="producto" placeholder="Nombre del Producto" required>
-    <input type="number" id="costoAdquisicion" placeholder="Costo de Adquisición" required>
-    <input type="number" id="gastosOperativos" placeholder="Gastos Operativos" required>
-    <button class="add-button" onclick="agregarGasto()">Agregar Gasto</button>
-</div>
+    <!-- Resumen de gasto total -->
+    <div class="total" id="totalGasto">Total Gasto: $0.00</div>
 
-<p id="totalCost"></p>
+    <script>
+        let totalGasto = 0;
 
-<script>
-    const gastos = JSON.parse(localStorage.getItem('gastos')) || [];
+        // Función para agregar un gasto a la tabla
+        function agregarGasto() {
+            // Obtener los valores del formulario
+            const descripcion = document.getElementById('descripcion').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+            const fecha = document.getElementById('fecha').value;
+            const metodo = document.getElementById('metodo').value;
 
-    function actualizarTabla() {
-        const tableBody = document.querySelector('#gastosTable tbody');
-        tableBody.innerHTML = '';
-
-        gastos.forEach((gasto, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${gasto.producto}</td>
-                <td>$${gasto.costoAdquisicion}</td>
-                <td>$${gasto.gastosOperativos}</td>
-                <td><button onclick="eliminarGasto(${index})">Eliminar</button></td>
-            `;
-            tableBody.appendChild(row);
-        });
-
-        calcularTotal();
-    }
-
-    function agregarGasto() {
-        const producto = document.getElementById('producto').value;
-        const costoAdquisicion = parseFloat(document.getElementById('costoAdquisicion').value);
-        const gastosOperativos = parseFloat(document.getElementById('gastosOperativos').value);
-
-        if (producto && !isNaN(costoAdquisicion) && !isNaN(gastosOperativos)) {
-            gastos.push({ producto, costoAdquisicion, gastosOperativos });
-            localStorage.setItem('gastos', JSON.stringify(gastos));
-            document.getElementById('producto').value = '';
-            document.getElementById('costoAdquisicion').value = '';
-            document.getElementById('gastosOperativos').value = '';
-            actualizarTabla();
-        } else {
-            alert('Por favor, completa todos los campos.');
-        }
-    }
-
-    function eliminarGasto(index) {
-        gastos.splice(index, 1);
-        localStorage.setItem('gastos', JSON.stringify(gastos));
-        actualizarTabla();
-    }
-
-    function calcularTotal() {
-        const total = gastos.reduce((acc, gasto) => acc + gasto.costoAdquisicion + gasto.gastosOperativos, 0);
-        document.getElementById('totalCost').innerText = `Total de Gastos: $${total}`;
-    }
-
-    // Manejo de desplazamiento con Enter
-    document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
-        input.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Evita el comportamiento predeterminado
-                const nextInput = this.nextElementSibling;
-                if (nextInput) {
-                    nextInput.focus(); // Mueve el foco al siguiente input
-                } else {
-                    agregarGasto(); // Agrega gasto si no hay siguiente
-                }
+            // Validar que los campos no estén vacíos
+            if (!descripcion || !monto || !fecha || !metodo) {
+                alert("Por favor, complete todos los campos.");
+                return;
             }
-        });
-    });
 
-    // Inicializar la tabla al cargar la página
-    window.onload = actualizarTabla;
-</script>
+            // Agregar el monto al total
+            totalGasto += monto;
+            document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
 
+            // Crear una nueva fila para la tabla
+            const nuevaFila = document.createElement('tr');
+
+            // Crear celdas para cada campo
+            nuevaFila.innerHTML = `
+                <td>${descripcion}</td>
+                <td>$${monto.toFixed(2)}</td>
+                <td>${fecha}</td>
+                <td>${metodo}</td>
+                <td><button onclick="eliminarGasto(this, ${monto})">Eliminar</button></td>
+            `;
+
+            // Agregar la fila a la tabla
+            document.querySelector('#tablaGastos tbody').appendChild(nuevaFila);
+
+            // Limpiar los campos del formulario
+            document.getElementById('descripcion').value = '';
+            document.getElementById('monto').value = '';
+            document.getElementById('fecha').value = '';
+            document.getElementById('metodo').value = '';
+        }
+
+        // Función para eliminar un gasto
+        function eliminarGasto(button, monto) {
+            // Restar el monto del total
+            totalGasto -= monto;
+            document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
+
+            // Eliminar la fila
+            const fila = button.parentElement.parentElement;
+            fila.remove();
+        }
+    </script>
 </body>
 </html>
