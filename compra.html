@@ -333,7 +333,7 @@
             const data = e.target.result;
             const wb = XLSX.read(data, { type: 'binary' });
             const ws = wb.Sheets[wb.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(ws);
+            const json = XLSX.utils.sheet_to_json(ws, { raw: true });  // Mejor forma de obtener datos sin errores
             inventory = json;
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
