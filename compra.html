@@ -119,11 +119,9 @@
         localStorage.setItem('inventory', JSON.stringify(inventory));
     });
 
-    // Renderizar la tabla y calcular total al cargar la página de manera asíncrona
-    window.onload = function() {
-        setTimeout(() => {
-            renderTable();
-            calculateTotal();
-        }, 100); // Asegura que el renderizado se haga después de la carga completa
-    }
+    // Renderizar la tabla y calcular total al cargar la página
+    document.addEventListener("DOMContentLoaded", function() {
+        renderTable();
+        calculateTotal();
+    });
 </script>
