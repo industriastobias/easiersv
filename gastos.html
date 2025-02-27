@@ -28,14 +28,14 @@
         .form-container {
             margin-bottom: 20px;
             display: flex;
-            flex-direction: column;
-            width: 300px;
-            margin: 0 auto;
+            justify-content: space-between;
+            max-width: 600px;
+            margin: 20px auto;
         }
         .form-container input {
             padding: 10px;
             margin: 5px;
-            width: 100%;
+            width: 22%;
             border-radius: 5px;
             border: 1px solid #ddd;
         }
@@ -46,6 +46,7 @@
             padding: 10px;
             cursor: pointer;
             border-radius: 5px;
+            width: 100px;
         }
         .form-container button:hover {
             background-color: #45a049;
@@ -62,7 +63,6 @@
 
     <!-- Formulario para agregar gasto -->
     <div class="form-container">
-        <h2>Agregar Gasto</h2>
         <input type="text" id="descripcion" placeholder="Descripción" required>
         <input type="number" id="monto" placeholder="Monto" required>
         <input type="date" id="fecha" required>
@@ -92,6 +92,18 @@
     <script>
         let totalGasto = 0;
 
+        // Cargar los gastos almacenados en localStorage cuando se carga la página
+        window.onload = function() {
+            if (localStorage.getItem("gastos")) {
+                const gastos = JSON.parse(localStorage.getItem("gastos"));
+                gastos.forEach(gasto => {
+                    totalGasto += gasto.monto;
+                    agregarFilaTabla(gasto);
+                });
+                document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
+            }
+        }
+
         // Función para agregar un gasto a la tabla
         function agregarGasto() {
             // Obtener los valores del formulario
@@ -106,30 +118,40 @@
                 return;
             }
 
-            // Agregar el monto al total
+            // Agregar el gasto al array
+            const gasto = { descripcion, monto, fecha, metodo };
             totalGasto += monto;
+
+            // Agregar el gasto a la tabla
+            agregarFilaTabla(gasto);
+
+            // Actualizar el total
             document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
 
-            // Crear una nueva fila para la tabla
-            const nuevaFila = document.createElement('tr');
-
-            // Crear celdas para cada campo
-            nuevaFila.innerHTML = `
-                <td>${descripcion}</td>
-                <td>$${monto.toFixed(2)}</td>
-                <td>${fecha}</td>
-                <td>${metodo}</td>
-                <td><button onclick="eliminarGasto(this, ${monto})">Eliminar</button></td>
-            `;
-
-            // Agregar la fila a la tabla
-            document.querySelector('#tablaGastos tbody').appendChild(nuevaFila);
+            // Almacenar los datos en localStorage
+            guardarGastos();
 
             // Limpiar los campos del formulario
             document.getElementById('descripcion').value = '';
             document.getElementById('monto').value = '';
             document.getElementById('fecha').value = '';
             document.getElementById('metodo').value = '';
+        }
+
+        // Función para agregar una fila a la tabla
+        function agregarFilaTabla(gasto) {
+            const nuevaFila = document.createElement('tr');
+
+            nuevaFila.innerHTML = `
+                <td>${gasto.descripcion}</td>
+                <td>$${gasto.monto.toFixed(2)}</td>
+                <td>${gasto.fecha}</td>
+                <td>${gasto.metodo}</td>
+                <td><button onclick="eliminarGasto(this, ${gasto.monto})">Eliminar</button></td>
+            `;
+
+            // Agregar la fila a la tabla
+            document.querySelector('#tablaGastos tbody').appendChild(nuevaFila);
         }
 
         // Función para eliminar un gasto
@@ -141,6 +163,24 @@
             // Eliminar la fila
             const fila = button.parentElement.parentElement;
             fila.remove();
+
+            // Actualizar el almacenamiento en localStorage
+            guardarGastos();
+        }
+
+        // Función para guardar los gastos en localStorage
+        function guardarGastos() {
+            const filas = document.querySelectorAll('#tablaGastos tbody tr');
+            const gastos = [];
+            filas.forEach(fila => {
+                const celdas = fila.querySelectorAll('td');
+                const descripcion = celdas[0].textContent;
+                const monto = parseFloat(celdas[1].textContent.replace('$', ''));
+                const fecha = celdas[2].textContent;
+                const metodo = celdas[3].textContent;
+                gastos.push({ descripcion, monto, fecha, metodo });
+            });
+            localStorage.setItem("gastos", JSON.stringify(gastos));
         }
     </script>
 </body>
