@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5e6ca; /* Color arena marfil */
+            background-color: #f0fff0; /* Verde muy claro */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -24,7 +24,7 @@
         }
         h2 {
             text-align: center;
-            color: #8b6f47; /* Tono marrón arena */
+            color: #2e7d32; /* Verde oscuro */
         }
         table {
             width: 100%;
@@ -32,19 +32,19 @@
             margin-top: 20px;
         }
         th, td {
-            border: 1px solid #d4c2a8; /* Borde en tono arena */
+            border: 1px solid #a5d6a7; /* Verde suave */
             padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #e4d5b7; /* Encabezados en tono más oscuro */
-            color: #5a4631;
+            background-color: #81c784; /* Verde más fuerte */
+            color: white;
         }
         tr:nth-child(even) {
-            background-color: #f9f2e7;
+            background-color: #e8f5e9; /* Verde muy claro */
         }
         tr:hover {
-            background-color: #e6d8c4;
+            background-color: #c8e6c9;
         }
     </style>
 </head>
@@ -73,32 +73,37 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    function loadStorageData() {
         const almacenamientoTable = document.getElementById('almacenamientoTable');
 
+        // Obtener el inventario desde localStorage
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-        function loadStorageData() {
-            almacenamientoTable.innerHTML = inventory.map(item => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>$${item.price.toFixed(2)}</td>
-                        <td>${item.discount ? item.discount : 0}%</td>
-                        <td>$${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                    </tr>
-                `;
-            }).join('');
+        if (inventory.length === 0) {
+            almacenamientoTable.innerHTML = `<tr><td colspan="9" style="text-align:center;">No hay productos en almacenamiento</td></tr>`;
+            return;
         }
 
-        loadStorageData();
-    });
+        almacenamientoTable.innerHTML = inventory.map(item => {
+            const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+            return `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>${item.discount ? item.discount : 0}%</td>
+                    <td>$${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantity}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Forzar actualización al cargar la página
+    window.onload = loadStorageData;
 </script>
 
 </body>
