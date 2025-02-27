@@ -7,140 +7,75 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f4e6d2;
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
-
-        .header {
-            background-color: #0074D9;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
         .container {
-            max-width: 95%;
-            margin: 20px auto;
-            overflow-x: auto;
-        }
-
-        .table-container {
-            background-color: white;
-            padding: 15px;
+            max-width: 1200px;
+            margin: auto;
+            background-color: #fff8e1;
+            padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            overflow: auto;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
+        h2 {
+            text-align: center;
+            color: #8b6f47;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            background-color: #fff;
         }
-
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #d8c3a5;
+            padding: 10px;
             text-align: left;
-            min-width: 120px;
         }
-
         th {
-            background-color: #0074D9;
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #ddd;
-        }
-
-        .delete-btn {
-            background-color: #FF4136;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .delete-btn:hover {
-            background-color: #c0392b;
+            background-color: #e4c9a2;
+            color: #5e4630;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        Almacenamiento
-    </div>
-
     <div class="container">
-        <div class="table-container">
-            <table id="storageTable">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Código</th>
-                        <th>Código de Barras</th>
-                        <th>Precio</th>
-                        <th>Descuento (%)</th>
-                        <th>Precio Final</th>
-                        <th>Descripción</th>
-                        <th>Categoría</th>
-                        <th>Cantidad</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Filas dinámicas aquí -->
-                </tbody>
-            </table>
-        </div>
+        <h2>Almacenamiento</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                </tr>
+            </thead>
+            <tbody id="storageList">
+                <!-- Datos de almacenamiento se llenarán dinámicamente -->
+            </tbody>
+        </table>
     </div>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const storageList = document.getElementById('storageList');
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            const tableBody = document.querySelector("#storageTable tbody");
-
-            function renderTable() {
-                tableBody.innerHTML = inventory.map((item, index) => `
+            
+            function loadStorage() {
+                storageList.innerHTML = inventory.map(item => `
                     <tr>
                         <td>${item.name}</td>
                         <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount}</td>
-                        <td>${calculateFinalPrice(item.price, item.discount)}</td>
-                        <td>${item.description}</td>
+                        <td>$${item.price}</td>
                         <td>${item.category}</td>
                         <td>${item.quantity}</td>
-                        <td><button class="delete-btn" onclick="deleteRow(${index})">Eliminar</button></td>
                     </tr>
-                `).join("");
+                `).join('');
             }
-
-            function calculateFinalPrice(price, discount) {
-                return (price - (price * (discount / 100))).toFixed(2);
-            }
-
-            window.deleteRow = function(index) {
-                if (confirm("¿Estás seguro de eliminar este producto?")) {
-                    inventory.splice(index, 1);
-                    localStorage.setItem('inventory', JSON.stringify(inventory));
-                    renderTable();
-                }
-            };
-
-            renderTable();
+            
+            loadStorage();
         });
     </script>
 </body>
