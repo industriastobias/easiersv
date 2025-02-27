@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,6 +83,28 @@
         .logout:hover {
             background-color: #8c9ab1;
         }
+        /* Nuevo botón */
+        .settings-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #f0e1c1; /* color arena marfil */
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+        .settings-button:hover {
+            background-color: #e1d0a2;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +125,11 @@
     </div>
     <button class="logout" onclick="logout();">Cerrar Sesión</button>
 </div>
+
+<!-- Botón de configuración fuera del contenedor -->
+<button class="settings-button" onclick="window.location.href='configuracion.html';">
+    ⚙️
+</button>
 
 <script>
     function logout() {
