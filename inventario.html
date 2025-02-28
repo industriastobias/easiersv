@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -291,20 +291,7 @@
             }
         };
 
-        // Manejo de la búsqueda
-        searchButton.addEventListener('click', function() {
-            const query = searchInput.value.toLowerCase();
-            if (query.trim()) {
-                searchingScreen.style.display = 'block';  // Muestra la pantalla de búsqueda
-                setTimeout(function() {
-                    const filteredInventory = filterInventory(query);
-                    loadInventory(filteredInventory);
-                    searchingScreen.style.display = 'none';  // Oculta la pantalla de búsqueda después de la búsqueda
-                }, 1000); // Simula una búsqueda de 1 segundo
-            }
-        });
-
-        // Debounce mejorado para la búsqueda
+        // Mejorar el rendimiento de la búsqueda usando un debounce
         let debounceTimeout;
         searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimeout);
@@ -312,7 +299,7 @@
                 const query = searchInput.value.toLowerCase();
                 const filteredInventory = filterInventory(query);
                 loadInventory(filteredInventory);
-            }, 200); // Reducción a 200ms de retraso para mejorar la respuesta del usuario
+            }, 300); // Ajusta el retraso (en milisegundos) según sea necesario
         });
 
         // Cargar inventario al inicio
