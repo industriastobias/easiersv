@@ -159,6 +159,28 @@
         .modal .close:hover {
             background-color: darkred;
         }
+
+        /* Nuevos estilos para mejoras */
+        .clear-search {
+            background-color: #ccc;
+            color: #333;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .clear-search:hover {
+            background-color: #bbb;
+        }
+
+        .sortable {
+            cursor: pointer;
+        }
+
+        .sortable:hover {
+            background-color: #ddd;
+        }
     </style>
 </head>
 <body>
@@ -172,6 +194,7 @@
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
         <button id="searchButton">Buscar</button>
+        <button class="clear-search" id="clearSearchButton">Limpiar</button>
         <br><br>
     </div>
     
@@ -184,15 +207,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
+                    <th class="sortable" onclick="sortTable(0)">Nombre</th>
+                    <th class="sortable" onclick="sortTable(1)">Código</th>
+                    <th class="sortable" onclick="sortTable(2)">Código de Barras</th>
+                    <th class="sortable" onclick="sortTable(3)">Precio</th>
+                    <th class="sortable" onclick="sortTable(4)">Descuento (%)</th>
+                    <th class="sortable" onclick="sortTable(5)">Precio Con Descuento</th>
+                    <th class="sortable" onclick="sortTable(6)">Descripción</th>
+                    <th class="sortable" onclick="sortTable(7)">Categoría</th>
+                    <th class="sortable" onclick="sortTable(8)">Cantidad en Stock</th>
                     <th>Vender</th>
                     <th>Eliminar</th>
                 </tr>
@@ -234,6 +257,7 @@
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
+        const clearSearchButton = document.getElementById('clearSearchButton');
         const totalCount = document.getElementById('totalCount');
         const noProductsMessage = document.getElementById('noProductsMessage');
         const searchingScreen = document.getElementById('searchingScreen');
@@ -379,6 +403,49 @@
                 loadInventory(inventory);
             }
         });
+
+        // Limpiar búsqueda
+        clearSearchButton.addEventListener('click', function() {
+            searchInput.value = '';
+            loadInventory(inventory);
+        });
+
+        // Función para ordenar la tabla
+        window.sortTable = function(n) {
+            let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc"; 
+            while (switching) {
+                switching = false;
+                rows = inventoryList.rows;
+                for (i = 0; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++; 
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        };
 
         // Cargar inventario al inicio
         loadInventory(inventory);
