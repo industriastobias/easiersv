@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -98,7 +97,28 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        loadInventory();
+    });
+
     document.getElementById('searchButton').addEventListener('click', function() {
+        searchInventory();
+    });
+
+    function loadInventory() {
+        const inventoryList = document.getElementById('inventoryList');
+        inventoryList.innerHTML = '';
+        const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        
+        if (inventory.length === 0) {
+            document.getElementById('noResultsMessage').style.display = 'block';
+        } else {
+            document.getElementById('noResultsMessage').style.display = 'none';
+            inventoryList.innerHTML = inventory.map(item => createTableRow(item)).join('');
+        }
+    }
+
+    function searchInventory() {
         const searchInput = document.getElementById('searchInput').value.toLowerCase();
         const inventoryList = document.getElementById('inventoryList');
         const loadingMessage = document.getElementById('loadingMessage');
@@ -121,22 +141,26 @@
                 noResultsMessage.style.display = 'block';
             } else {
                 noResultsMessage.style.display = 'none';
-                inventoryList.innerHTML = filteredInventory.map(item => `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount}%</td>
-                        <td>${(item.price - (item.price * (item.discount / 100))).toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                    </tr>
-                `).join('');
+                inventoryList.innerHTML = filteredInventory.map(item => createTableRow(item)).join('');
             }
-        }, 2000);
-    });
+        }, 1000);
+    }
+
+    function createTableRow(item) {
+        return `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.code}</td>
+                <td>${item.barcode}</td>
+                <td>${item.price}</td>
+                <td>${item.discount}%</td>
+                <td>${(item.price - (item.price * (item.discount / 100))).toFixed(2)}</td>
+                <td>${item.description}</td>
+                <td>${item.category}</td>
+                <td>${item.quantity}</td>
+            </tr>
+        `;
+    }
 </script>
 
 </body>
