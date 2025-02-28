@@ -83,6 +83,12 @@
         .highlighted {
             background-color: #e8f7e1; /* Color verde clarito para el resaltado */
         }
+
+        /* Mensaje cuando no hay productos disponibles */
+        .no-products-message {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +123,7 @@
     
     <div class="info-container">
         <p id="totalCount">Número de productos disponibles: 0</p>
+        <p id="noProductsMessage" class="no-products-message" style="display: none;">No se encontraron productos</p>
     </div>
     
     <div class="inventory-table">
@@ -157,6 +164,7 @@
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
         const totalCount = document.getElementById('totalCount');
+        const noProductsMessage = document.getElementById('noProductsMessage');
         const minPriceInput = document.getElementById('minPrice');
         const maxPriceInput = document.getElementById('maxPrice');
         const sortBySelect = document.getElementById('sortBy');
@@ -191,7 +199,15 @@
                 return sum + (priceWithDiscount * parseInt(item.quantity));
             }, 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos disponibles: ${filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0)}`;
+
+            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+            if (totalQuantity === 0) {
+                noProductsMessage.style.display = 'block';
+            } else {
+                noProductsMessage.style.display = 'none';
+            }
+
+            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
         }
 
         // Filtrar inventario según la búsqueda y filtros adicionales
