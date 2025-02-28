@@ -265,10 +265,12 @@
             const soldItem = { ...item, quantitySold: quantity };
             soldItems.push(soldItem);
 
+            // Guarda el inventario y los productos vendidos en localStorage
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            loadInventory(filterInventory(searchInput.value.toLowerCase())); // Recargar el inventario
+            // Recarga el inventario y actualiza la interfaz de usuario
+            loadInventory(filterInventory(searchInput.value.toLowerCase())); // Recargar el inventario con el filtro de búsqueda
         };
 
         // Función para eliminar un producto
