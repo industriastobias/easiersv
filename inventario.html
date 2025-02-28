@@ -5,42 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
+        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
         }
+
         .header {
-            background-color: #8c8c8c;
+            background-color: #8c8c8c; /* Gris suave */
             color: white;
             text-align: center;
             padding: 10px;
             font-size: 24px;
         }
+
         .container {
             padding: 20px;
         }
+
         .search-container, .info-container, .total-container {
             margin-bottom: 20px;
         }
+
         .inventory-table table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
+
         .inventory-table th, .inventory-table td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: center;
         }
+
+        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
-            background-color: #dcdcdc;
+            background-color: #dcdcdc; /* Gris claro */
             color: #333;
         }
+
         .inventory-table tr:hover {
-            background-color: #e8f7e1;
+            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
         }
+
+        .inventory-table tr.highlight {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado cuando está seleccionado */
+        }
+
         .delete-all {
             background-color: red;
             color: white;
@@ -48,9 +62,11 @@
             border: none;
             cursor: pointer;
         }
+
         .delete-all:hover {
             background-color: darkred;
         }
+
         .storage-button {
             display: inline-block;
             background-color: #333;
@@ -59,9 +75,16 @@
             text-decoration: none;
             text-align: center;
         }
+
         .storage-button:hover {
             background-color: #555;
         }
+
+        .highlighted {
+            background-color: #e8f7e1; /* Color verde clarito para el resaltado */
+        }
+
+        /* Pantalla de búsqueda */
         .searching-screen {
             display: none;
             position: fixed;
@@ -75,10 +98,14 @@
             padding-top: 20%;
             font-size: 24px;
         }
+
+        /* Mensaje cuando no hay productos disponibles */
         .no-products-message {
             color: red;
             font-weight: bold;
         }
+
+        /* Modal de cantidad para vender */
         .modal {
             display: none;
             position: fixed;
@@ -91,6 +118,7 @@
             text-align: center;
             padding-top: 20%;
         }
+
         .modal-content {
             background-color: #333;
             padding: 20px;
@@ -98,6 +126,7 @@
             width: 300px;
             margin: auto;
         }
+
         .modal input {
             width: 100%;
             padding: 10px;
@@ -105,6 +134,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         .modal button {
             padding: 10px;
             background-color: #4CAF50;
@@ -113,9 +143,11 @@
             cursor: pointer;
             width: 100%;
         }
+
         .modal button:hover {
             background-color: #45a049;
         }
+
         .modal .close {
             background-color: red;
             color: white;
@@ -123,8 +155,31 @@
             border: none;
             cursor: pointer;
         }
+
         .modal .close:hover {
             background-color: darkred;
+        }
+
+        /* Nuevos estilos para mejoras */
+        .clear-search {
+            background-color: #ccc;
+            color: #333;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .clear-search:hover {
+            background-color: #bbb;
+        }
+
+        .sortable {
+            cursor: pointer;
+        }
+
+        .sortable:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
@@ -135,10 +190,11 @@
 </div>
 
 <div class="container">
+    <!-- Filtros Avanzados -->
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
         <button id="searchButton">Buscar</button>
-        <button id="clearSearchButton">Limpiar</button>
+        <button class="clear-search" id="clearSearchButton">Limpiar</button>
         <br><br>
     </div>
     
@@ -151,15 +207,15 @@
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
+                    <th class="sortable" onclick="sortTable(0)">Nombre</th>
+                    <th class="sortable" onclick="sortTable(1)">Código</th>
+                    <th class="sortable" onclick="sortTable(2)">Código de Barras</th>
+                    <th class="sortable" onclick="sortTable(3)">Precio</th>
+                    <th class="sortable" onclick="sortTable(4)">Descuento (%)</th>
+                    <th class="sortable" onclick="sortTable(5)">Precio Con Descuento</th>
+                    <th class="sortable" onclick="sortTable(6)">Descripción</th>
+                    <th class="sortable" onclick="sortTable(7)">Categoría</th>
+                    <th class="sortable" onclick="sortTable(8)">Cantidad en Stock</th>
                     <th>Vender</th>
                     <th>Eliminar</th>
                 </tr>
@@ -176,13 +232,16 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <a href="venta.html" class="storage-button">Ir a Ventas</a>
+    <!-- Botón para redirigir a la página de almacenamiento -->
+    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
+<!-- Pantalla de búsqueda -->
 <div id="searchingScreen" class="searching-screen">
     Buscando producto...
 </div>
 
+<!-- Modal para ingresar cantidad a vender -->
 <div id="sellModal" class="modal">
     <div class="modal-content">
         <h2>¿Cuántas unidades deseas vender?</h2>
@@ -210,6 +269,7 @@
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentItemIndex = null;
 
+        // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchingScreen.style.display = 'block';
             inventoryList.innerHTML = '';
@@ -223,7 +283,7 @@
                     <td>${item.code}</td>
                     <td>${item.barcode}</td>
                     <td>${item.price}</td>
-                    <td>${item.discount || 0}%</td>
+                    <td>${item.discount ? item.discount : 0}%</td>
                     <td>${priceWithDiscount.toFixed(2)}</td>
                     <td>${item.description}</td>
                     <td>${item.category}</td>
@@ -256,8 +316,10 @@
             searchingScreen.style.display = 'none';
         }
 
+        // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
+
             return inventory.filter(item => {
                 return item.name.toLowerCase().includes(normalizedQuery) || 
                        item.code.toLowerCase().includes(normalizedQuery) || 
@@ -266,11 +328,13 @@
             });
         }
 
+        // Función para abrir el modal de cantidad a vender
         window.openSellModal = function(index) {
             currentItemIndex = index;
             sellModal.style.display = 'block';
         };
 
+        // Función para marcar un producto como vendido
         sellButton.addEventListener('click', function() {
             const quantityToSell = parseInt(sellQuantityInput.value);
             const item = inventory[currentItemIndex];
@@ -285,37 +349,30 @@
                 return;
             }
 
+            // Resta la cantidad del inventario
             item.quantity -= quantityToSell;
 
+            // Si la cantidad llega a 0, eliminamos el producto
             if (item.quantity <= 0) {
                 inventory.splice(currentItemIndex, 1);
+            } else {
+                inventory[currentItemIndex] = item;
             }
 
+            // Actualizar inventario en localStorage
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
-            const sale = {
-                name: item.name,
-                code: item.code,
-                quantity: quantityToSell,
-                price: item.price,
-                discount: item.discount || 0,
-                total: (item.price - (item.price * (item.discount / 100))) * quantityToSell,
-                date: new Date().toLocaleString()
-            };
-
-            const sales = JSON.parse(localStorage.getItem('sales')) || [];
-            sales.push(sale);
-            localStorage.setItem('sales', JSON.stringify(sales));
-
+            // Recargar el inventario y cerrar el modal
             loadInventory(filterInventory(searchInput.value.toLowerCase()));
             sellModal.style.display = 'none';
-            window.location.href = "venta.html";
         });
 
+        // Cerrar modal
         closeModalButton.addEventListener('click', function() {
             sellModal.style.display = 'none';
         });
 
+        // Función para eliminar un producto
         window.deleteItem = function(index) {
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
                 inventory.splice(index, 1);
@@ -324,6 +381,7 @@
             }
         };
 
+        // Función para eliminar todos los productos
         window.deleteAll = function() {
             if (confirm("¿Estás seguro de que deseas eliminar todos los productos?")) {
                 inventory = [];
@@ -332,17 +390,64 @@
             }
         };
 
+        // Manejo de la búsqueda
         searchButton.addEventListener('click', function() {
             const query = searchInput.value.toLowerCase();
-            const filtered = filterInventory(query);
-            loadInventory(filtered);
+            
+            if (query) {
+                // Filtrar y cargar los productos
+                const filtered = filterInventory(query);
+                loadInventory(filtered);
+            } else {
+                // Mostrar todos los productos
+                loadInventory(inventory);
+            }
         });
 
+        // Limpiar búsqueda
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
             loadInventory(inventory);
         });
 
+        // Función para ordenar la tabla
+        window.sortTable = function(n) {
+            let rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            switching = true;
+            dir = "asc"; 
+            while (switching) {
+                switching = false;
+                rows = inventoryList.rows;
+                for (i = 0; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++; 
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        };
+
+        // Cargar inventario al inicio
         loadInventory(inventory);
     });
 </script>
