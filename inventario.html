@@ -29,6 +29,22 @@
             margin-bottom: 20px;
         }
 
+        /* Contenedor de los filtros */
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Estilo de los inputs de búsqueda */
+        input[type="text"], input[type="number"], select {
+            padding: 8px;
+            margin: 5px;
+            width: auto;
+            min-width: 200px;
+        }
+
         .inventory-table table {
             width: 100%;
             border-collapse: collapse;
@@ -41,7 +57,6 @@
             text-align: center;
         }
 
-        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
             background-color: #dcdcdc; /* Gris claro */
             color: #333;
@@ -84,7 +99,11 @@
             background-color: #e8f7e1; /* Color verde clarito para el resaltado */
         }
 
-        /* Mensaje cuando no hay productos disponibles */
+        /* Barra deslizante de precios */
+        .range-label {
+            margin-right: 10px;
+        }
+
         .no-products-message {
             color: red;
             font-weight: bold;
@@ -99,26 +118,28 @@
 
 <div class="container">
     <!-- Filtros Avanzados -->
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
-        <br><br>
+    <div class="filters">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        </div>
 
-        <!-- Filtros por rango de precio -->
-        <label for="minPrice">Precio mínimo:</label>
-        <input type="number" id="minPrice" placeholder="Min Precio" step="0.01">
-        <label for="maxPrice">Precio máximo:</label>
-        <input type="number" id="maxPrice" placeholder="Max Precio" step="0.01">
-        <br><br>
+        <div class="price-filters">
+            <label for="minPrice" class="range-label">Precio mínimo:</label>
+            <input type="number" id="minPrice" placeholder="Min Precio" step="0.01" min="0">
+            <label for="maxPrice" class="range-label">Precio máximo:</label>
+            <input type="number" id="maxPrice" placeholder="Max Precio" step="0.01" min="0">
+        </div>
 
-        <!-- Opciones de ordenamiento -->
-        <label for="sortBy">Ordenar por:</label>
-        <select id="sortBy">
-            <option value="name">Nombre (A-Z)</option>
-            <option value="priceAsc">Precio (Menor a Mayor)</option>
-            <option value="priceDesc">Precio (Mayor a Menor)</option>
-            <option value="quantityAsc">Cantidad (Menor a Mayor)</option>
-            <option value="quantityDesc">Cantidad (Mayor a Menor)</option>
-        </select>
+        <div class="sort-container">
+            <label for="sortBy">Ordenar por:</label>
+            <select id="sortBy">
+                <option value="name">Nombre (A-Z)</option>
+                <option value="priceAsc">Precio (Menor a Mayor)</option>
+                <option value="priceDesc">Precio (Mayor a Menor)</option>
+                <option value="quantityAsc">Cantidad (Menor a Mayor)</option>
+                <option value="quantityDesc">Cantidad (Mayor a Menor)</option>
+            </select>
+        </div>
     </div>
     
     <div class="info-container">
@@ -248,44 +269,6 @@
             }
         }
 
-        // Función para marcar un producto como vendido
-        window.markAsSold = function(index) {
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            const item = inventory[index];
-
-            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
-            if (quantityToSell === null || quantityToSell.trim() === "") {
-                alert("Operación cancelada o cantidad no válida.");
-                return;
-            }
-
-            const quantity = parseInt(quantityToSell);
-            if (isNaN(quantity) || quantity <= 0) {
-                alert("Por favor, ingresa un número válido mayor que 0.");
-                return;
-            }
-
-            if (quantity > item.quantity) {
-                alert("No hay suficiente stock para realizar la venta.");
-                return;
-            }
-
-            // Resta la cantidad del inventario
-            item.quantity -= quantity;
-            if (item.quantity <= 0) {
-                inventory.splice(index, 1); // Elimina el producto si la cantidad llega a 0
-            }
-
-            // Guarda los productos vendidos
-            const soldItem = { ...item, quantitySold: quantity };
-            soldItems.push(soldItem);
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
-        };
-
         // Función para eliminar un producto
         window.deleteItem = function(index) {
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
@@ -328,21 +311,6 @@
             const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
             loadInventory(sortedInventory);
         }
-
-        // Resaltar la fila al pasar el puntero
-        inventoryList.addEventListener('mouseover', function(e) {
-            if (e.target.closest('tr')) {
-                const tr = e.target.closest('tr');
-                tr.classList.add('highlighted');
-            }
-        });
-
-        inventoryList.addEventListener('mouseout', function(e) {
-            if (e.target.closest('tr')) {
-                const tr = e.target.closest('tr');
-                tr.classList.remove('highlighted');
-            }
-        });
 
         // Cargar inventario al inicio
         loadInventory(inventory);
