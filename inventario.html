@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* Estilos generales */
+        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -16,8 +16,8 @@
         .header {
             background-color: #333;
             color: white;
-            padding: 10px;
             text-align: center;
+            padding: 10px;
             font-size: 24px;
         }
 
@@ -25,14 +25,18 @@
             padding: 20px;
         }
 
-        /* Estilos para la tabla */
+        .search-container, .info-container, .total-container {
+            margin-bottom: 20px;
+        }
+
         .inventory-table table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         .inventory-table th, .inventory-table td {
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             text-align: center;
         }
@@ -42,63 +46,41 @@
             color: white;
         }
 
-        /* Estilo de fila al pasar el puntero */
         .inventory-table tr:hover {
-            background-color: #f2f2f2;
+            background-color: #f0f0f0;
         }
 
-        /* Estilos de los botones */
-        button {
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        button:hover {
-            background-color: #45a049;
+        .inventory-table tr.highlight {
+            background-color: #ffff99;
         }
 
         .delete-all {
-            background-color: #f44336;
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
         }
 
         .delete-all:hover {
-            background-color: #e53935;
-        }
-
-        /* Estilos de los filtros */
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-container input, .search-container select {
-            padding: 8px;
-            margin: 5px;
-        }
-
-        .total-container {
-            margin-top: 20px;
+            background-color: darkred;
         }
 
         .storage-button {
             display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #333;
             color: white;
+            padding: 10px 20px;
             text-decoration: none;
+            text-align: center;
         }
 
         .storage-button:hover {
-            background-color: #0056b3;
+            background-color: #555;
         }
 
-        /* Estilo para el número total de productos */
-        #totalCount {
-            font-weight: bold;
+        .highlighted {
+            background-color: #ffff99; /* Color que resalta la fila al pasar el puntero */
         }
     </style>
 </head>
@@ -109,19 +91,19 @@
 </div>
 
 <div class="container">
-    <!-- Advanced Filters Section -->
+    <!-- Filtros Avanzados -->
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
         <br><br>
 
-        <!-- Price Range Filter -->
+        <!-- Filtros por rango de precio -->
         <label for="minPrice">Precio mínimo:</label>
         <input type="number" id="minPrice" placeholder="Min Precio" step="0.01">
         <label for="maxPrice">Precio máximo:</label>
         <input type="number" id="maxPrice" placeholder="Max Precio" step="0.01">
         <br><br>
 
-        <!-- Sorting Options -->
+        <!-- Opciones de ordenamiento -->
         <label for="sortBy">Ordenar por:</label>
         <select id="sortBy">
             <option value="name">Nombre (A-Z)</option>
@@ -185,7 +167,7 @@
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return `
-                    <tr>
+                    <tr data-index="${index}">
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -203,17 +185,12 @@
                 `;
             }).join('');
 
-            // Calcular el total en dólares y la cantidad total en stock
             const total = filteredInventory.reduce((sum, item) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return sum + (priceWithDiscount * parseInt(item.quantity));
             }, 0);
-
-            // Sumar todas las cantidades de stock para mostrar el total de productos disponibles
-            const totalQuantity = filteredInventory.reduce((sum, item) => sum + item.quantity, 0);
-
             totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
+            totalCount.textContent = `Número de productos disponibles: ${filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0)}`;
         }
 
         // Filtrar inventario según la búsqueda y filtros adicionales
@@ -324,6 +301,21 @@
             const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
             loadInventory(sortedInventory);
         }
+
+        // Resaltar la fila al pasar el puntero
+        inventoryList.addEventListener('mouseover', function(e) {
+            if (e.target.closest('tr')) {
+                const tr = e.target.closest('tr');
+                tr.classList.add('highlighted');
+            }
+        });
+
+        inventoryList.addEventListener('mouseout', function(e) {
+            if (e.target.closest('tr')) {
+                const tr = e.target.closest('tr');
+                tr.classList.remove('highlighted');
+            }
+        });
 
         // Cargar inventario al inicio
         loadInventory(inventory);
