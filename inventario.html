@@ -5,7 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* CSS remains the same */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #fff;
+            color: #333;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #ddd;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .info-container {
+            margin-bottom: 20px;
+        }
+        .inventory-table {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .inventory-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table th, .inventory-table td {
+            border: 1px solid #ddd;
+            padding: 5px 10px; /* Reduced padding */
+            text-align: left;
+            font-size: 12px; /* Reduced font size */
+        }
+        .inventory-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .inventory-table td {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .total-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .total-container p {
+            font-size: 18px;
+        }
+        .inventory-table button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .inventory-table button.delete {
+            background-color: #f44336;
+        }
+        .inventory-table button.delete-all {
+            background-color: #ff5722;
+            margin-top: 10px;
+        }
+        .inventory-table button:hover {
+            opacity: 0.8;
+        }
+        .storage-button {
+            background-color: #3b7ddd;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .storage-button:hover {
+            background-color: #336bbf;
+        }
     </style>
 </head>
 <body>
@@ -15,27 +111,8 @@
 </div>
 
 <div class="container">
-    <!-- Advanced Filters Section -->
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
-        <br><br>
-
-        <!-- Price Range Filter -->
-        <label for="minPrice">Precio mínimo:</label>
-        <input type="number" id="minPrice" placeholder="Min Precio" step="0.01">
-        <label for="maxPrice">Precio máximo:</label>
-        <input type="number" id="maxPrice" placeholder="Max Precio" step="0.01">
-        <br><br>
-
-        <!-- Sorting Options -->
-        <label for="sortBy">Ordenar por:</label>
-        <select id="sortBy">
-            <option value="name">Nombre (A-Z)</option>
-            <option value="priceAsc">Precio (Menor a Mayor)</option>
-            <option value="priceDesc">Precio (Mayor a Menor)</option>
-            <option value="quantityAsc">Cantidad (Menor a Mayor)</option>
-            <option value="quantityDesc">Cantidad (Mayor a Menor)</option>
-        </select>
     </div>
     
     <div class="info-container">
@@ -80,9 +157,6 @@
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
         const totalCount = document.getElementById('totalCount');
-        const minPriceInput = document.getElementById('minPrice');
-        const maxPriceInput = document.getElementById('maxPrice');
-        const sortBySelect = document.getElementById('sortBy');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
@@ -117,34 +191,13 @@
             totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
         }
 
-        // Filtrar inventario según la búsqueda y filtros adicionales
-        function filterInventory(query, minPrice, maxPrice) {
-            return inventory.filter(item => {
-                const matchesQuery = item.name.toLowerCase().includes(query) || 
-                                     item.code.toLowerCase().includes(query) || 
-                                     item.category.toLowerCase().includes(query);
-                const matchesPrice = (minPrice ? item.price >= minPrice : true) && 
-                                     (maxPrice ? item.price <= maxPrice : true);
-                return matchesQuery && matchesPrice;
-            });
-        }
-
-        // Función para ordenar el inventario
-        function sortInventory(filteredInventory, sortBy) {
-            switch(sortBy) {
-                case 'name':
-                    return filteredInventory.sort((a, b) => a.name.localeCompare(b.name));
-                case 'priceAsc':
-                    return filteredInventory.sort((a, b) => a.price - b.price);
-                case 'priceDesc':
-                    return filteredInventory.sort((a, b) => b.price - a.price);
-                case 'quantityAsc':
-                    return filteredInventory.sort((a, b) => a.quantity - b.quantity);
-                case 'quantityDesc':
-                    return filteredInventory.sort((a, b) => b.quantity - a.quantity);
-                default:
-                    return filteredInventory;
-            }
+        // Filtrar inventario según la búsqueda
+        function filterInventory(query) {
+            return inventory.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.code.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query)
+            );
         }
 
         // Función para marcar un producto como vendido
@@ -180,7 +233,7 @@
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
         };
 
         // Función para eliminar un producto
@@ -188,7 +241,7 @@
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
                 inventory.splice(index, 1);
                 localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
+                loadInventory(filterInventory(searchInput.value.toLowerCase()));
             }
         };
 
@@ -207,24 +260,10 @@
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(function() {
                 const query = searchInput.value.toLowerCase();
-                const filteredInventory = filterInventory(query, minPriceInput.value, maxPriceInput.value);
-                const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
-                loadInventory(sortedInventory);
+                const filteredInventory = filterInventory(query);
+                loadInventory(filteredInventory);
             }, 300); // 300ms de retraso
         });
-
-        // Filtrar y ordenar inventario al cambiar los filtros
-        minPriceInput.addEventListener('input', updateFilters);
-        maxPriceInput.addEventListener('input', updateFilters);
-        sortBySelect.addEventListener('change', updateFilters);
-
-        // Actualizar filtros
-        function updateFilters() {
-            const query = searchInput.value.toLowerCase();
-            const filteredInventory = filterInventory(query, minPriceInput.value, maxPriceInput.value);
-            const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
-            loadInventory(sortedInventory);
-        }
 
         // Cargar inventario al inicio
         loadInventory(inventory);
