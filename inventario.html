@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -191,7 +191,7 @@
                         <td>${item.category}</td>
                         <td>${item.quantity}</td>
                         <td>
-                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                            <button onclick="markAsSold(${index})" ${item.quantity <= 0 ? 'disabled' : ''}>Marcar como Vendido</button>
                         </td>
                         <td>
                             <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
