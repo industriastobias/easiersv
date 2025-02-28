@@ -151,6 +151,7 @@
                 });
                 localStorage.setItem('inventory', JSON.stringify(inventory));
                 loadInventory(filterInventory(searchInput.value.toLowerCase()));
+                window.location.href = 'venta.html';
             } else {
                 alert("Cantidad inválida.");
             }
