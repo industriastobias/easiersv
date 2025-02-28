@@ -5,51 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* Diseño tipo tabla de Excel */
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        /* Estilos para la tabla */
         .inventory-table table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid #ddd;
         }
+
         .inventory-table th, .inventory-table td {
-            padding: 10px;
-            text-align: center;
+            padding: 12px;
             border: 1px solid #ddd;
+            text-align: center;
         }
+
         .inventory-table th {
+            background-color: #333;
+            color: white;
+        }
+
+        /* Estilo de fila al pasar el puntero */
+        .inventory-table tr:hover {
             background-color: #f2f2f2;
-            font-weight: bold;
         }
-        .inventory-table td {
-            background-color: #fff;
-        }
-        .inventory-table tr:nth-child(even) td {
-            background-color: #f9f9f9;
-        }
-        .inventory-table tr:hover td {
-            background-color: #f1f1f1;
-        }
-        .delete-all {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #ff4d4d;
+
+        /* Estilos de los botones */
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            margin-right: 5px;
         }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .delete-all {
+            background-color: #f44336;
+        }
+
         .delete-all:hover {
-            background-color: #ff1a1a;
+            background-color: #e53935;
         }
+
+        /* Estilos de los filtros */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input, .search-container select {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        .total-container {
+            margin-top: 20px;
+        }
+
         .storage-button {
+            display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #007bff;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
         }
+
         .storage-button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
+        }
+
+        /* Estilo para el número total de productos */
+        #totalCount {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -154,12 +203,17 @@
                 `;
             }).join('');
 
+            // Calcular el total en dólares y la cantidad total en stock
             const total = filteredInventory.reduce((sum, item) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return sum + (priceWithDiscount * parseInt(item.quantity));
             }, 0);
+
+            // Sumar todas las cantidades de stock para mostrar el total de productos disponibles
+            const totalQuantity = filteredInventory.reduce((sum, item) => sum + item.quantity, 0);
+
             totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
+            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
         }
 
         // Filtrar inventario según la búsqueda y filtros adicionales
