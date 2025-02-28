@@ -262,11 +262,13 @@
                 return;
             }
 
+            // Resta la cantidad del inventario
             item.quantity -= quantity;
             if (item.quantity <= 0) {
-                inventory.splice(index, 1); 
+                inventory.splice(index, 1); // Elimina el producto si la cantidad llega a 0
             }
 
+            // Guarda los productos vendidos
             const soldItem = { ...item, quantitySold: quantity };
             soldItems.push(soldItem);
 
