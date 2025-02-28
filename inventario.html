@@ -230,3 +230,130 @@
                     item.normalizedCategory.includes(keyword)
                 );
                 const matchesPrice = (
+                    minPrice ? item.price >= minPrice : true) &&
+                    (maxPrice ? item.price <= maxPrice : true);
+                return matchesQuery && matchesPrice;
+            });
+        }
+
+        // Función para ordenar el inventario
+        function sortInventory(filteredInventory, sortBy) {
+            switch(sortBy) {
+                case 'name':
+                    return filteredInventory.sort((a, b) => a.name.localeCompare(b.name));
+                case 'priceAsc':
+                    return filteredInventory.sort((a, b) => a.price - b.price);
+                case 'priceDesc':
+                    return filteredInventory.sort((a, b) => b.price - a.price);
+                case 'quantityAsc':
+                    return filteredInventory.sort((a, b) => a.quantity - b.quantity);
+                case 'quantityDesc':
+                    return filteredInventory.sort((a, b) => b.quantity - a.quantity);
+                default:
+                    return filteredInventory;
+            }
+        }
+
+        // Función para marcar un producto como vendido
+        window.markAsSold = function(index) {
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            const item = inventory[index];
+
+            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
+            if (quantityToSell === null || quantityToSell.trim() === "") {
+                alert("Operación cancelada o cantidad no válida.");
+                return;
+            }
+
+            const quantity = parseInt(quantityToSell);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Por favor, ingresa un número válido mayor que 0.");
+                return;
+            }
+
+            if (quantity > item.quantity) {
+                alert("No hay suficiente stock para realizar la venta.");
+                return;
+            }
+
+            // Resta la cantidad del inventario
+            item.quantity -= quantity;
+            if (item.quantity <= 0) {
+                inventory.splice(index, 1); // Elimina el producto si la cantidad llega a 0
+            }
+
+            // Guarda los productos vendidos
+            const soldItem = { ...item, quantitySold: quantity };
+            soldItems.push(soldItem);
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+
+            loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
+        };
+
+        // Función para eliminar un producto
+        window.deleteItem = function(index) {
+            if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+                inventory.splice(index, 1);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
+            }
+        };
+
+        // Función para eliminar todos los productos
+        window.deleteAll = function() {
+            if (confirm("¿Estás seguro de que deseas eliminar todos los productos?")) {
+                inventory = [];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory([]);
+            }
+        };
+
+        // Debounce para la búsqueda
+        let debounceTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(function() {
+                const query = searchInput.value.toLowerCase();
+                const filteredInventory = filterInventory(query, minPriceInput.value, maxPriceInput.value);
+                const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
+                loadInventory(sortedInventory);
+            }, 300); // 300ms de retraso
+        });
+
+        // Filtrar y ordenar inventario al cambiar los filtros
+        minPriceInput.addEventListener('input', updateFilters);
+        maxPriceInput.addEventListener('input', updateFilters);
+        sortBySelect.addEventListener('change', updateFilters);
+
+        // Actualizar filtros
+        function updateFilters() {
+            const query = searchInput.value.toLowerCase();
+            const filteredInventory = filterInventory(query, minPriceInput.value, maxPriceInput.value);
+            const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
+            loadInventory(sortedInventory);
+        }
+
+        // Resaltar la fila al pasar el puntero
+        inventoryList.addEventListener('mouseover', function(e) {
+            if (e.target.closest('tr')) {
+                const tr = e.target.closest('tr');
+                tr.classList.add('highlighted');
+            }
+        });
+
+        inventoryList.addEventListener('mouseout', function(e) {
+            if (e.target.closest('tr')) {
+                const tr = e.target.closest('tr');
+                tr.classList.remove('highlighted');
+            }
+        });
+
+        // Cargar inventario al inicio
+        loadInventory(inventory);
+    });
+</script>
+
+</body>
+</html>
