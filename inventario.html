@@ -84,6 +84,21 @@
             background-color: #e8f7e1; /* Color verde clarito para el resaltado */
         }
 
+        /* Pantalla de búsqueda */
+        .searching-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 24px;
+        }
+
         /* Mensaje cuando no hay productos disponibles */
         .no-products-message {
             color: red;
@@ -101,6 +116,7 @@
     <!-- Filtros Avanzados -->
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <button id="searchButton">Buscar</button>
         <br><br>
     </div>
     
@@ -142,13 +158,20 @@
     <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
+<!-- Pantalla de búsqueda -->
+<div id="searchingScreen" class="searching-screen">
+    Buscando producto...
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
         const totalCount = document.getElementById('totalCount');
         const noProductsMessage = document.getElementById('noProductsMessage');
+        const searchingScreen = document.getElementById('searchingScreen');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
@@ -261,6 +284,19 @@
             }
         };
 
+        // Manejo de la búsqueda
+        searchButton.addEventListener('click', function() {
+            const query = searchInput.value.toLowerCase();
+            if (query.trim()) {
+                searchingScreen.style.display = 'block';  // Muestra la pantalla de búsqueda
+                setTimeout(function() {
+                    const filteredInventory = filterInventory(query);
+                    loadInventory(filteredInventory);
+                    searchingScreen.style.display = 'none';  // Oculta la pantalla de búsqueda después de la búsqueda
+                }, 1000); // Simula una búsqueda de 1 segundo
+            }
+        });
+
         // Debounce mejorado para la búsqueda
         let debounceTimeout;
         searchInput.addEventListener('input', function() {
@@ -270,21 +306,6 @@
                 const filteredInventory = filterInventory(query);
                 loadInventory(filteredInventory);
             }, 200); // Reducción a 200ms de retraso para mejorar la respuesta del usuario
-        });
-
-        // Resaltar la fila al pasar el puntero
-        inventoryList.addEventListener('mouseover', function(e) {
-            if (e.target.closest('tr')) {
-                const tr = e.target.closest('tr');
-                tr.classList.add('highlighted');
-            }
-        });
-
-        inventoryList.addEventListener('mouseout', function(e) {
-            if (e.target.closest('tr')) {
-                const tr = e.target.closest('tr');
-                tr.classList.remove('highlighted');
-            }
         });
 
         // Cargar inventario al inicio
