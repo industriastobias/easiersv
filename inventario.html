@@ -83,9 +83,6 @@
         .highlighted {
             background-color: #e8f7e1; /* Color verde clarito para el resaltado */
         }
-        .highlighted-text{
-            background-color: yellow;
-        }
 
         /* Mensaje cuando no hay productos disponibles */
         .no-products-message {
@@ -101,16 +98,19 @@
 </div>
 
 <div class="container">
+    <!-- Filtros Avanzados -->
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
         <br><br>
 
+        <!-- Filtros por rango de precio -->
         <label for="minPrice">Precio mínimo:</label>
         <input type="number" id="minPrice" placeholder="Min Precio" step="0.01">
         <label for="maxPrice">Precio máximo:</label>
         <input type="number" id="maxPrice" placeholder="Max Precio" step="0.01">
         <br><br>
 
+        <!-- Opciones de ordenamiento -->
         <label for="sortBy">Ordenar por:</label>
         <select id="sortBy">
             <option value="name">Nombre (A-Z)</option>
@@ -120,12 +120,12 @@
             <option value="quantityDesc">Cantidad (Mayor a Menor)</option>
         </select>
     </div>
-
+    
     <div class="info-container">
         <p id="totalCount">Número de productos disponibles: 0</p>
         <p id="noProductsMessage" class="no-products-message" style="display: none;">No se encontraron productos</p>
     </div>
-
+    
     <div class="inventory-table">
         <table>
             <thead>
@@ -143,7 +143,8 @@
                 </tr>
             </thead>
             <tbody id="inventoryList">
-                </tbody>
+                <!-- Las filas de inventario se llenarán dinámicamente -->
+            </tbody>
         </table>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
@@ -153,6 +154,7 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
+    <!-- Botón para redirigir a la página de almacenamiento -->
     <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
@@ -168,37 +170,25 @@
         const sortBySelect = document.getElementById('sortBy');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        inventory = inventory.map(item => ({
-            ...item,
-            normalizedName: item.name.toLowerCase(),
-            normalizedCode: item.code.toLowerCase(),
-            normalizedCategory: item.category.toLowerCase()
-        }));
-
-        function highlightText(text, query) {
-            if (!query) return text;
-            const regex = new RegExp(`(<span class="math-inline">\{query\.replace\(/\[\.\*\+?^</span>{}()|[\]\\]/g, '\\$&')})`, 'gi');
-            return text.replace(regex, '<span class="highlighted-text">$1</span>');
-        }
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return `
-                    <tr data-index="<span class="math-inline">\{index\}"\>
-<td\></span>{highlightText(item.name, searchInput.value)}</td>
-                        <td><span class="math-inline">\{highlightText\(item\.code, searchInput\.value\)\}</td\>
-<td\></span>{item.barcode}</td>
-                        <td><span class="math-inline">\{item\.price\}</td\>
-<td\></span>{item.discount ? item.discount : 0}%</td>
-                        <td><span class="math-inline">\{priceWithDiscount\.toFixed\(2\)\}</td\>
-<td\></span>{item.description}</td>
-                        <td><span class="math-inline">\{highlightText\(item\.category, searchInput\.value\)\}</td\>
-<td\></span>{item.quantity}</td>
+                    <tr data-index="${index}">
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount ? item.discount : 0}%</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
                         <td>
-                            <button onclick="markAsSold(<span class="math-inline">\{index\}\)"\>Marcar como Vendido</button\>
-<button class\="delete" onclick\="deleteItem\(</span>{index})">Eliminar</button>
+                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                            <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
                         </td>
                     </tr>
                 `;
@@ -222,16 +212,12 @@
 
         // Filtrar inventario según la búsqueda y filtros adicionales
         function filterInventory(query, minPrice, maxPrice) {
-            const keywords = query.split(' ').filter(word => word.length > 0);
             return inventory.filter(item => {
-                const matchesQuery = keywords.every(keyword =>
-                    item.normalizedName.includes(keyword) ||
-                    item.normalizedCode.includes(keyword) ||
-                    item.normalizedCategory.includes(keyword)
-                );
-                const matchesPrice = (
-                    minPrice ? item.price >= minPrice : true) &&
-                    (maxPrice ? item.price <= maxPrice : true);
+                const matchesQuery = item.name.toLowerCase().includes(query) || 
+                                     item.code.toLowerCase().includes(query) || 
+                                     item.category.toLowerCase().includes(query);
+                const matchesPrice = (minPrice ? item.price >= minPrice : true) && 
+                                     (maxPrice ? item.price <= maxPrice : true);
                 return matchesQuery && matchesPrice;
             });
         }
