@@ -3,105 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos Vendidos</title>
+    <title>Venta</title>
     <style>
+        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f4;
         }
+
         .header {
-            background-color: #fff;
-            color: #333;
-            padding: 10px 20px;
+            background-color: #8c8c8c; /* Gris suave */
+            color: white;
             text-align: center;
-            font-size: 18px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            font-size: 24px;
         }
+
         .container {
             padding: 20px;
-            max-width: 1200px;
-            margin: auto;
         }
-        .inventory-table {
-            background-color: #fff;
-            padding: 20px;
-        }
+
         .inventory-table table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
+
         .inventory-table th, .inventory-table td {
+            padding: 10px;
             border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .ok-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: block;
-            width: 100px;
-            margin: 20px auto;
-        }
-        /* Estilos para el menú plegable */
-        #menu-toggle {
-            display: none;
-        }
-        #menu-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
             text-align: center;
-            width: 35px;  /* Menú más pequeño */
-            height: 35px; /* Menú más pequeño */
         }
-        #menu {
+
+        /* Color de la barra de encabezado de la tabla */
+        .inventory-table th {
+            background-color: #dcdcdc; /* Gris claro */
+            color: #333;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
+        }
+
+        .inventory-table tr.highlight {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado cuando está seleccionado */
+        }
+
+        .delete-all {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-all:hover {
+            background-color: darkred;
+        }
+
+        .highlighted {
+            background-color: #e8f7e1; /* Color verde clarito para el resaltado */
+        }
+
+        /* Modal de cantidad para vender */
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
-            right: 0;
-            background-color: #333;
-            color: white;
-            width: 150px; /* Menú más estrecho */
+            left: 0;
+            width: 100%;
             height: 100%;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            padding-top: 60px;
-        }
-        #menu a {
-            display: block;
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
-            padding: 8px 16px; /* Menú más pequeño */
-            text-decoration: none;
-            font-size: 14px; /* Fuente más pequeña */
+            text-align: center;
+            padding-top: 20%;
         }
-        #menu a:hover {
-            background-color: #575757;
+
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            margin: auto;
         }
-        #menu.open {
-            transform: translateX(0);
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .modal button:hover {
+            background-color: #45a049;
+        }
+
+        .modal .close {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal .close:hover {
+            background-color: darkred;
         }
     </style>
-    <!-- Agregar las librerías jsPDF y html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
 <div class="header">
-    Productos Vendidos
+    Venta de Productos
 </div>
 
 <div class="container">
@@ -117,136 +142,110 @@
                     <th>Precio Con Descuento</th>
                     <th>Descripción</th>
                     <th>Categoría</th>
-                    <th>Cantidad Vendida</th>
-                    <th>Acciones</th>
+                    <th>Cantidad en Stock</th>
+                    <th>Vender</th>
                 </tr>
             </thead>
-            <tbody id="soldList">
-                <!-- Las filas de productos vendidos se llenarán dinámicamente -->
+            <tbody id="inventoryList">
+                <!-- Las filas de inventario se llenarán dinámicamente -->
             </tbody>
         </table>
     </div>
-    <!-- Botón para descargar en PDF -->
-    <button class="ok-btn" onclick="generatePDF()">Descargar en PDF</button>
-</div>
 
-<!-- Menú plegable -->
-<button id="menu-btn" onclick="toggleMenu(event)">=</button>
-
-<div id="menu">
-    <a href="menu.html">Menú Principal</a>
-    <a href="compra.html">Compra</a>
-    <a href="inventario.html">Inventario</a>
-    <a href="clientes.html">Clientes</a>
-    <a href="traslados.html">Traslados</a>
-    <a href="facturas.html">Facturas</a>
-    <a href="gastos.html">Gastos</a>
-    <a href="usuarios.html">Usuarios</a>
-    <a href="lista.html">Lista</a>
+    <!-- Modal para ingresar cantidad a vender -->
+    <div id="sellModal" class="modal">
+        <div class="modal-content">
+            <h2>¿Cuántas unidades deseas vender?</h2>
+            <input type="number" id="sellQuantityInput" placeholder="Cantidad a vender" min="1">
+            <button id="sellButton">Vender</button>
+            <button class="close" id="closeModalButton">Cerrar</button>
+        </div>
+    </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const soldList = document.getElementById('soldList');
+        const inventoryList = document.getElementById('inventoryList');
+        const sellModal = document.getElementById('sellModal');
+        const sellQuantityInput = document.getElementById('sellQuantityInput');
+        const sellButton = document.getElementById('sellButton');
+        const closeModalButton = document.getElementById('closeModalButton');
+        
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let currentItemIndex = null;
 
-        // Cargar productos vendidos desde localStorage
-        function loadSoldItems() {
-            const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-
-            // Renderizar la tabla de productos vendidos
-            soldList.innerHTML = soldItems.map((item, index) => {
+        // Cargar inventario desde localStorage
+        function loadInventory() {
+            inventoryList.innerHTML = '';
+            inventory.forEach((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount ? item.discount : 0}%</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantitySold}</td>
-                        <td><span class="delete-btn" onclick="deleteItem(${index})">Eliminar</span></td>
-                    </tr>
+                const row = document.createElement('tr');
+                row.dataset.index = index;
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>${item.price}</td>
+                    <td>${item.discount ? item.discount : 0}%</td>
+                    <td>${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantity}</td>
+                    <td>
+                        <button onclick="openSellModal(${index})">Marcar como Vendido</button>
+                    </td>
                 `;
-            }).join('');
+                inventoryList.appendChild(row);
+            });
         }
 
-        // Eliminar un producto
-        window.deleteItem = function(index) {
-            const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            soldItems.splice(index, 1); // Eliminar el producto seleccionado
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-            loadSoldItems(); // Recargar la tabla
-        }
+        // Función para abrir el modal de cantidad a vender
+        window.openSellModal = function(index) {
+            currentItemIndex = index;
+            sellModal.style.display = 'block';
+        };
 
-        // Cargar los productos vendidos al iniciar
-        loadSoldItems();
-    });
+        // Función para marcar un producto como vendido
+        sellButton.addEventListener('click', function() {
+            const quantityToSell = parseInt(sellQuantityInput.value);
+            const item = inventory[currentItemIndex];
 
-    // Función para generar el archivo PDF
-    function generatePDF() {
-        const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-
-        // Verificar si hay productos en localStorage
-        if (soldItems.length === 0) {
-            alert("No hay productos vendidos para generar el PDF.");
-            return;
-        }
-
-        // Crear un nuevo documento PDF
-        const doc = new jspdf.jsPDF();
-
-        // Título del PDF
-        doc.setFontSize(18);
-        doc.text("Productos Vendidos", 10, 10);
-
-        // Crear la tabla en el PDF
-        const headers = [['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad Vendida']];
-        const data = soldItems.map(item => {
-            const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-            return [
-                item.name,
-                item.code,
-                item.barcode,
-                item.price.toFixed(2),
-                item.discount ? item.discount : 0,
-                priceWithDiscount.toFixed(2),
-                item.description,
-                item.category,
-                item.quantitySold
-            ];
-        });
-
-        // Agregar la tabla al PDF
-        doc.autoTable({
-            head: headers,
-            body: data,
-            startY: 20,
-            theme: 'grid',
-            styles: { fontSize: 10 },
-            headStyles: { fillColor: [22, 160, 133] }
-        });
-
-        // Guardar el PDF
-        doc.save("productos_vendidos.pdf");
-    }
-
-    // Función para mostrar/ocultar el menú
-    function toggleMenu(event) {
-        const menu = document.getElementById('menu');
-        menu.classList.toggle('open');
-        event.stopPropagation(); // Evita que el clic en el botón cierre el menú
-
-        // Cerrar el menú si se hace clic en cualquier parte fuera del menú
-        document.addEventListener('click', function closeMenu(e) {
-            if (!menu.contains(e.target) && e.target !== document.getElementById('menu-btn')) {
-                menu.classList.remove('open');
-                document.removeEventListener('click', closeMenu); // Eliminar el evento de cierre
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
+                alert("Por favor, ingresa una cantidad válida.");
+                return;
             }
+
+            if (quantityToSell > item.quantity) {
+                alert("No hay suficiente stock para realizar la venta.");
+                return;
+            }
+
+            // Resta la cantidad del inventario
+            item.quantity -= quantityToSell;
+
+            // Si la cantidad llega a 0, eliminamos el producto
+            if (item.quantity <= 0) {
+                inventory.splice(currentItemIndex, 1);
+            } else {
+                inventory[currentItemIndex] = item;
+            }
+
+            // Actualizar inventario en localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            // Recargar el inventario y cerrar el modal
+            loadInventory();
+            sellModal.style.display = 'none';
         });
-    }
+
+        // Cerrar modal
+        closeModalButton.addEventListener('click', function() {
+            sellModal.style.display = 'none';
+        });
+
+        // Cargar inventario al inicio
+        loadInventory();
+    });
 </script>
 
 </body>
