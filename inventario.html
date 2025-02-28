@@ -252,8 +252,13 @@
 
             // Resta la cantidad del inventario
             item.quantity -= quantity;
+
+            // Si la cantidad llega a 0, eliminamos el producto
             if (item.quantity <= 0) {
-                inventory.splice(index, 1); // Elimina el producto si la cantidad llega a 0
+                inventory.splice(index, 1);
+            } else {
+                // Si no, actualizamos el producto con la nueva cantidad
+                inventory[index] = item;
             }
 
             // Guarda los productos vendidos
@@ -263,7 +268,7 @@
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            loadInventory(filterInventory(searchInput.value.toLowerCase())); // Recargar el inventario
         };
 
         // Función para eliminar un producto
