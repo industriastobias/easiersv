@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venta</title>
+    <title>Venta de Productos</title>
     <style>
         /* Estilos básicos */
         body {
@@ -14,7 +14,7 @@
         }
 
         .header {
-            background-color: #8c8c8c; /* Gris suave */
+            background-color: #8c8c8c;
             color: white;
             text-align: center;
             padding: 10px;
@@ -28,7 +28,6 @@
         .inventory-table table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
         }
 
         .inventory-table th, .inventory-table td {
@@ -37,18 +36,13 @@
             text-align: center;
         }
 
-        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
-            background-color: #dcdcdc; /* Gris claro */
+            background-color: #dcdcdc;
             color: #333;
         }
 
         .inventory-table tr:hover {
-            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
-        }
-
-        .inventory-table tr.highlight {
-            background-color: #e8f7e1; /* Color verde clarito de resaltado cuando está seleccionado */
+            background-color: #e8f7e1;
         }
 
         .delete-all {
@@ -64,7 +58,7 @@
         }
 
         .highlighted {
-            background-color: #e8f7e1; /* Color verde clarito para el resaltado */
+            background-color: #e8f7e1;
         }
 
         /* Modal de cantidad para vender */
@@ -152,8 +146,29 @@
         </table>
     </div>
 
-    <!-- Modal para ingresar cantidad a vender -->
-    <div id="sellModal" class="modal">
+    <div class="inventory-table">
+        <h2>Productos Vendidos</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad Vendida</th>
+                </tr>
+            </thead>
+            <tbody id="soldItems">
+                <!-- Las filas de productos vendidos se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal" id="sellModal">
         <div class="modal-content">
             <h2>¿Cuántas unidades deseas vender?</h2>
             <input type="number" id="sellQuantityInput" placeholder="Cantidad a vender" min="1">
@@ -166,12 +181,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
+        const soldItemsList = document.getElementById('soldItems');
         const sellModal = document.getElementById('sellModal');
         const sellQuantityInput = document.getElementById('sellQuantityInput');
         const sellButton = document.getElementById('sellButton');
         const closeModalButton = document.getElementById('closeModalButton');
         
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
         let currentItemIndex = null;
 
         // Cargar inventario desde localStorage
@@ -226,15 +243,22 @@
             // Si la cantidad llega a 0, eliminamos el producto
             if (item.quantity <= 0) {
                 inventory.splice(currentItemIndex, 1);
-            } else {
-                inventory[currentItemIndex] = item;
             }
+
+            // Agregar el producto a la lista de vendidos
+            soldItems.push({
+                ...item,
+                quantitySold: quantityToSell
+            });
 
             // Actualizar inventario en localStorage
             localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            // Recargar el inventario y cerrar el modal
+            // Recargar el inventario y los productos vendidos
             loadInventory();
+            loadSoldItems();
+
             sellModal.style.display = 'none';
         });
 
@@ -243,8 +267,30 @@
             sellModal.style.display = 'none';
         });
 
-        // Cargar inventario al inicio
+        // Cargar los productos vendidos al iniciar
+        function loadSoldItems() {
+            soldItemsList.innerHTML = '';
+            soldItems.forEach((item) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>${item.price}</td>
+                    <td>${item.discount ? item.discount : 0}%</td>
+                    <td>${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantitySold}</td>
+                `;
+                soldItemsList.appendChild(row);
+            });
+        }
+
+        // Cargar inventario y productos vendidos al inicio
         loadInventory();
+        loadSoldItems();
     });
 </script>
 
