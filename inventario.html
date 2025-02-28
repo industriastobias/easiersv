@@ -247,13 +247,9 @@
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
-            // Mostrar el mensaje de búsqueda
             searchingScreen.style.display = 'block';
-            
-            // Limpiar la lista de inventario
             inventoryList.innerHTML = '';
 
-            // Mostrar los productos
             filteredInventory.forEach((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 const row = document.createElement('tr');
@@ -293,7 +289,6 @@
 
             totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
 
-            // Ocultar el mensaje de búsqueda después de la carga
             searchingScreen.style.display = 'none';
         }
 
@@ -337,7 +332,6 @@
             if (item.quantity <= 0) {
                 inventory.splice(currentItemIndex, 1);
             } else {
-                // Si no, actualizamos el producto con la nueva cantidad
                 inventory[currentItemIndex] = item;
             }
 
