@@ -52,26 +52,11 @@
         .delete-all:hover {
             background-color: darkred;
         }
-
-        .storage-button {
-            display: inline-block;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .storage-button:hover {
-            background-color: #555;
-        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    Inventario
-</div>
+<div class="header">Inventario</div>
 
 <div class="container">
     <div class="inventory-table">
@@ -80,70 +65,60 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Código</th>
-                    <th>Código de Barras</th>
                     <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
                     <th>Cantidad en Stock</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
-                <!-- Las filas de inventario se llenarán dinámicamente -->
             </tbody>
         </table>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
-
-    <div class="total-container">
-        <h2>Total en Dólares Americanos:</h2>
-        <p id="totalAmount">$0.00</p>
-    </div>
-
-    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
-        const totalAmount = document.getElementById('totalAmount');
-
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
         function loadInventory() {
-            inventoryList.innerHTML = inventory.map((item, index) => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return `
-                    <tr data-index="${index}">
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount ? item.discount : 0}%</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <button onclick="deleteItem(${index})">Eliminar</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            const total = inventory.reduce((sum, item) => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return sum + (priceWithDiscount * parseInt(item.quantity));
-            }, 0);
-            totalAmount.textContent = `$${total.toFixed(2)}`;
+            inventoryList.innerHTML = inventory.map((item, index) => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.price}</td>
+                    <td>${item.quantity}</td>
+                    <td>
+                        <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                        <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+            localStorage.setItem('inventory', JSON.stringify(inventory));
         }
+
+        window.markAsSold = function(index) {
+            let item = inventory[index];
+            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
+            if (quantityToSell !== null && quantityToSell.trim() !== "") {
+                let quantity = parseInt(quantityToSell);
+                if (!isNaN(quantity) && quantity > 0 && quantity <= item.quantity) {
+                    item.quantity -= quantity;
+                    if (item.quantity === 0) {
+                        inventory.splice(index, 1);
+                    }
+                    alert(`${quantity} unidades de "${item.name}" marcadas como vendidas.`);
+                    loadInventory();
+                } else {
+                    alert("Cantidad no válida o insuficiente.");
+                }
+            }
+        };
 
         window.deleteItem = function(index) {
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
                 inventory.splice(index, 1);
-                localStorage.setItem('inventory', JSON.stringify(inventory));
                 loadInventory();
             }
         };
@@ -151,7 +126,6 @@
         window.deleteAll = function() {
             if (confirm("¿Estás seguro de que deseas eliminar todos los productos?")) {
                 inventory = [];
-                localStorage.setItem('inventory', JSON.stringify(inventory));
                 loadInventory();
             }
         };
