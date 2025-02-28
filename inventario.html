@@ -115,7 +115,8 @@
 <div class="container">
     <!-- Filtros Avanzados -->
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría" autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <button id="searchButton">Buscar</button>
         <br><br>
     </div>
     
@@ -167,6 +168,7 @@
         const inventoryList = document.getElementById('inventoryList');
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
         const totalCount = document.getElementById('totalCount');
         const noProductsMessage = document.getElementById('noProductsMessage');
         const searchingScreen = document.getElementById('searchingScreen');
@@ -227,8 +229,8 @@
             });
         }
 
-        // Función para manejar la búsqueda en tiempo real
-        searchInput.addEventListener('input', function() {
+        // Función para manejar la búsqueda
+        searchButton.addEventListener('click', function() {
             const query = searchInput.value.trim();
             if (query) {
                 const filteredInventory = filterInventory(query);
