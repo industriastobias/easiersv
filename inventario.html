@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -14,7 +13,7 @@
         }
 
         .header {
-            background-color: #8c8c8c; /* Gris suave */
+            background-color: #8c8c8c;
             color: white;
             text-align: center;
             padding: 10px;
@@ -23,10 +22,6 @@
 
         .container {
             padding: 20px;
-        }
-
-        .search-container, .info-container, .total-container {
-            margin-bottom: 20px;
         }
 
         .inventory-table table {
@@ -41,18 +36,9 @@
             text-align: center;
         }
 
-        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
-            background-color: #dcdcdc; /* Gris claro */
+            background-color: #dcdcdc;
             color: #333;
-        }
-
-        .inventory-table tr:hover {
-            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
-        }
-
-        .inventory-table tr.highlight {
-            background-color: #e8f7e1; /* Color verde clarito de resaltado cuando está seleccionado */
         }
 
         .delete-all {
@@ -79,16 +65,6 @@
         .storage-button:hover {
             background-color: #555;
         }
-
-        .highlighted {
-            background-color: #e8f7e1; /* Color verde clarito para el resaltado */
-        }
-
-        /* Mensaje cuando no hay productos disponibles */
-        .no-products-message {
-            color: red;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -98,34 +74,6 @@
 </div>
 
 <div class="container">
-    <!-- Filtros Avanzados -->
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
-        <br><br>
-
-        <!-- Filtros por rango de precio -->
-        <label for="minPrice">Precio mínimo:</label>
-        <input type="number" id="minPrice" placeholder="Min Precio" step="0.01">
-        <label for="maxPrice">Precio máximo:</label>
-        <input type="number" id="maxPrice" placeholder="Max Precio" step="0.01">
-        <br><br>
-
-        <!-- Opciones de ordenamiento -->
-        <label for="sortBy">Ordenar por:</label>
-        <select id="sortBy">
-            <option value="name">Nombre (A-Z)</option>
-            <option value="priceAsc">Precio (Menor a Mayor)</option>
-            <option value="priceDesc">Precio (Mayor a Menor)</option>
-            <option value="quantityAsc">Cantidad (Menor a Mayor)</option>
-            <option value="quantityDesc">Cantidad (Mayor a Menor)</option>
-        </select>
-    </div>
-    
-    <div class="info-container">
-        <p id="totalCount">Número de productos disponibles: 0</p>
-        <p id="noProductsMessage" class="no-products-message" style="display: none;">No se encontraron productos</p>
-    </div>
-    
     <div class="inventory-table">
         <table>
             <thead>
@@ -154,7 +102,6 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <!-- Botón para redirigir a la página de almacenamiento -->
     <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
@@ -162,18 +109,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
         const totalAmount = document.getElementById('totalAmount');
-        const searchInput = document.getElementById('searchInput');
-        const totalCount = document.getElementById('totalCount');
-        const noProductsMessage = document.getElementById('noProductsMessage');
-        const minPriceInput = document.getElementById('minPrice');
-        const maxPriceInput = document.getElementById('maxPrice');
-        const sortBySelect = document.getElementById('sortBy');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-        // Cargar inventario desde localStorage
-        function loadInventory(filteredInventory) {
-            inventoryList.innerHTML = filteredInventory.map((item, index) => {
+        function loadInventory() {
+            inventoryList.innerHTML = inventory.map((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return `
                     <tr data-index="${index}">
@@ -187,157 +127,36 @@
                         <td>${item.category}</td>
                         <td>${item.quantity}</td>
                         <td>
-                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
-                            <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
+                            <button onclick="deleteItem(${index})">Eliminar</button>
                         </td>
                     </tr>
                 `;
             }).join('');
 
-            const total = filteredInventory.reduce((sum, item) => {
+            const total = inventory.reduce((sum, item) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 return sum + (priceWithDiscount * parseInt(item.quantity));
             }, 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
-
-            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
-            if (totalQuantity === 0) {
-                noProductsMessage.style.display = 'block';
-            } else {
-                noProductsMessage.style.display = 'none';
-            }
-
-            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
         }
 
-        // Filtrar inventario según la búsqueda y filtros adicionales
-        function filterInventory(query, minPrice, maxPrice) {
-            return inventory.filter(item => {
-                const matchesQuery = item.name.toLowerCase().includes(query) || 
-                                     item.code.toLowerCase().includes(query) || 
-                                     item.category.toLowerCase().includes(query);
-                const matchesPrice = (minPrice ? item.price >= minPrice : true) && 
-                                     (maxPrice ? item.price <= maxPrice : true);
-                return matchesQuery && matchesPrice;
-            });
-        }
-
-        // Función para ordenar el inventario
-        function sortInventory(filteredInventory, sortBy) {
-            switch(sortBy) {
-                case 'name':
-                    return filteredInventory.sort((a, b) => a.name.localeCompare(b.name));
-                case 'priceAsc':
-                    return filteredInventory.sort((a, b) => a.price - b.price);
-                case 'priceDesc':
-                    return filteredInventory.sort((a, b) => b.price - a.price);
-                case 'quantityAsc':
-                    return filteredInventory.sort((a, b) => a.quantity - b.quantity);
-                case 'quantityDesc':
-                    return filteredInventory.sort((a, b) => b.quantity - a.quantity);
-                default:
-                    return filteredInventory;
-            }
-        }
-
-        // Función para marcar un producto como vendido
-        window.markAsSold = function(index) {
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            const item = inventory[index];
-
-            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
-            if (quantityToSell === null || quantityToSell.trim() === "") {
-                alert("Operación cancelada o cantidad no válida.");
-                return;
-            }
-
-            const quantity = parseInt(quantityToSell);
-            if (isNaN(quantity) || quantity <= 0) {
-                alert("Por favor, ingresa un número válido mayor que 0.");
-                return;
-            }
-
-            if (quantity > item.quantity) {
-                alert("No hay suficiente stock para realizar la venta.");
-                return;
-            }
-
-            // Resta la cantidad del inventario
-            item.quantity -= quantity;
-            if (item.quantity <= 0) {
-                inventory.splice(index, 1); // Elimina el producto si la cantidad llega a 0
-            }
-
-            // Guarda los productos vendidos
-            const soldItem = { ...item, quantitySold: quantity };
-            soldItems.push(soldItem);
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
-        };
-
-        // Función para eliminar un producto
         window.deleteItem = function(index) {
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
                 inventory.splice(index, 1);
                 localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
+                loadInventory();
             }
         };
 
-        // Función para eliminar todos los productos
         window.deleteAll = function() {
             if (confirm("¿Estás seguro de que deseas eliminar todos los productos?")) {
                 inventory = [];
                 localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory([]);
+                loadInventory();
             }
         };
 
-        // Debounce para la búsqueda
-        let debounceTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(function() {
-                const query = searchInput.value.toLowerCase();
-                const filteredInventory = filterInventory(query, minPriceInput.value, maxPriceInput.value);
-                const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
-                loadInventory(sortedInventory);
-            }, 300); // 300ms de retraso
-        });
-
-        // Filtrar y ordenar inventario al cambiar los filtros
-        minPriceInput.addEventListener('input', updateFilters);
-        maxPriceInput.addEventListener('input', updateFilters);
-        sortBySelect.addEventListener('change', updateFilters);
-
-        // Actualizar filtros
-        function updateFilters() {
-            const query = searchInput.value.toLowerCase();
-            const filteredInventory = filterInventory(query, minPriceInput.value, maxPriceInput.value);
-            const sortedInventory = sortInventory(filteredInventory, sortBySelect.value);
-            loadInventory(sortedInventory);
-        }
-
-        // Resaltar la fila al pasar el puntero
-        inventoryList.addEventListener('mouseover', function(e) {
-            if (e.target.closest('tr')) {
-                const tr = e.target.closest('tr');
-                tr.classList.add('highlighted');
-            }
-        });
-
-        inventoryList.addEventListener('mouseout', function(e) {
-            if (e.target.closest('tr')) {
-                const tr = e.target.closest('tr');
-                tr.classList.remove('highlighted');
-            }
-        });
-
-        // Cargar inventario al inicio
-        loadInventory(inventory);
+        loadInventory();
     });
 </script>
 
