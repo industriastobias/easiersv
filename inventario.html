@@ -5,9 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* (Tus estilos CSS existentes) */
-        .highlighted-text {
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #8c8c8c; /* Gris suave */
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .search-container, .info-container, .total-container {
+            margin-bottom: 20px;
+        }
+
+        .inventory-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .inventory-table th, .inventory-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* Color de la barra de encabezado de la tabla */
+        .inventory-table th {
+            background-color: #dcdcdc; /* Gris claro */
+            color: #333;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
+        }
+
+        .inventory-table tr.highlight {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado cuando está seleccionado */
+        }
+
+        .delete-all {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-all:hover {
+            background-color: darkred;
+        }
+
+        .storage-button {
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .storage-button:hover {
+            background-color: #555;
+        }
+
+        .highlighted {
+            background-color: #e8f7e1; /* Color verde clarito para el resaltado */
+        }
+        .highlighted-text{
             background-color: yellow;
+        }
+
+        /* Mensaje cuando no hay productos disponibles */
+        .no-products-message {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -36,7 +119,6 @@
             <option value="quantityAsc">Cantidad (Menor a Mayor)</option>
             <option value="quantityDesc">Cantidad (Mayor a Menor)</option>
         </select>
-        <button id="resetFilters">Resetear Filtros</button>
     </div>
 
     <div class="info-container">
@@ -76,12 +158,51 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // (Variables y normalización de datos como en la respuesta anterior)
-        // ...
+        const inventoryList = document.getElementById('inventoryList');
+        const totalAmount = document.getElementById('totalAmount');
+        const searchInput = document.getElementById('searchInput');
+        const totalCount = document.getElementById('totalCount');
+        const noProductsMessage = document.getElementById('noProductsMessage');
+        const minPriceInput = document.getElementById('minPrice');
+        const maxPriceInput = document.getElementById('maxPrice');
+        const sortBySelect = document.getElementById('sortBy');
 
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        inventory = inventory.map(item => ({
+            ...item,
+            normalizedName: item.name.toLowerCase(),
+            normalizedCode: item.code.toLowerCase(),
+            normalizedCategory: item.category.toLowerCase()
+        }));
+
+        function highlightText(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(<span class="math-inline">\{query\.replace\(/\[\.\*\+?^</span>{}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="highlighted-text">$1</span>');
+        }
+
+        // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
-            // (Función loadInventory con resaltado de texto como en la respuesta anterior)
-            // ...
+            inventoryList.innerHTML = filteredInventory.map((item, index) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return `
+                    <tr data-index="<span class="math-inline">\{index\}"\>
+<td\></span>{highlightText(item.name, searchInput.value)}</td>
+                        <td><span class="math-inline">\{highlightText\(item\.code, searchInput\.value\)\}</td\>
+<td\></span>{item.barcode}</td>
+                        <td><span class="math-inline">\{item\.price\}</td\>
+<td\></span>{item.discount ? item.discount : 0}%</td>
+                        <td><span class="math-inline">\{priceWithDiscount\.toFixed\(2\)\}</td\>
+<td\></span>{item.description}</td>
+                        <td><span class="math-inline">\{highlightText\(item\.category, searchInput\.value\)\}</td\>
+<td\></span>{item.quantity}</td>
+                        <td>
+                            <button onclick="markAsSold(<span class="math-inline">\{index\}\)"\>Marcar como Vendido</button\>
+<button class\="delete" onclick\="deleteItem\(</span>{index})">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
             const total = filteredInventory.reduce((sum, item) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
@@ -99,68 +220,13 @@
             totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
         }
 
+        // Filtrar inventario según la búsqueda y filtros adicionales
         function filterInventory(query, minPrice, maxPrice) {
-            // (Función filterInventory como en la respuesta anterior)
-            // ...
-        }
-
-        function sortInventory(filteredInventory, sortBy) {
-            // (Función sortInventory como en la respuesta anterior)
-            // ...
-        }
-
-        window.markAsSold = function(index) {
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            const item = inventory[index];
-
-            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
-            if (quantityToSell === null || quantityToSell.trim() === "") {
-                alert("Operación cancelada o cantidad no válida.");
-                return;
-            }
-
-            const quantity = parseInt(quantityToSell);
-            if (isNaN(quantity) || quantity <= 0) {
-                alert("Por favor, ingresa un número válido mayor que 0.");
-                return;
-            }
-
-            if (quantity > item.quantity) {
-                alert("No hay suficiente stock para realizar la venta.");
-                return;
-            }
-
-            item.quantity -= quantity;
-            if (item.quantity <= 0) {
-                inventory.splice(index, 1);
-            }
-
-            const soldItem = { ...item, quantitySold: quantity };
-            soldItems.push(soldItem);
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
-        };
-
-        window.deleteItem = function(index) {
-            // (Función deleteItem como en la respuesta anterior)
-            // ...
-        };
-
-        window.deleteAll = function() {
-            // (Función deleteAll como en la respuesta anterior)
-            // ...
-        };
-
-        // (Event listeners como en la respuesta anterior)
-        // ...
-
-        // Cargar inventario al inicio
-        loadInventory(inventory);
-    });
-</script>
-
-</body>
-</html>
+            const keywords = query.split(' ').filter(word => word.length > 0);
+            return inventory.filter(item => {
+                const matchesQuery = keywords.every(keyword =>
+                    item.normalizedName.includes(keyword) ||
+                    item.normalizedCode.includes(keyword) ||
+                    item.normalizedCategory.includes(keyword)
+                );
+                const matchesPrice = (
