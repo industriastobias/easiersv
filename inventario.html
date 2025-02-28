@@ -100,7 +100,7 @@
 <div class="container">
     <!-- Filtros Avanzados -->
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, código, categoría o código de barras">
         <br><br>
 
         <!-- Filtros por rango de precio -->
@@ -215,7 +215,8 @@
             return inventory.filter(item => {
                 const matchesQuery = item.name.toLowerCase().includes(query) || 
                                      item.code.toLowerCase().includes(query) || 
-                                     item.category.toLowerCase().includes(query);
+                                     item.category.toLowerCase().includes(query) || 
+                                     item.barcode.toLowerCase().includes(query);
                 const matchesPrice = (minPrice ? item.price >= minPrice : true) && 
                                      (maxPrice ? item.price <= maxPrice : true);
                 return matchesQuery && matchesPrice;
