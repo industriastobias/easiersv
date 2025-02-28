@@ -104,6 +104,61 @@
             color: red;
             font-weight: bold;
         }
+
+        /* Modal de cantidad para vender */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
+
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            margin: auto;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .modal button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .modal button:hover {
+            background-color: #45a049;
+        }
+
+        .modal .close {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal .close:hover {
+            background-color: darkred;
+        }
     </style>
 </head>
 <body>
@@ -163,6 +218,16 @@
     Buscando producto...
 </div>
 
+<!-- Modal para ingresar cantidad a vender -->
+<div id="sellModal" class="modal">
+    <div class="modal-content">
+        <h2>¿Cuántas unidades deseas vender?</h2>
+        <input type="number" id="sellQuantityInput" placeholder="Cantidad a vender" min="1">
+        <button id="sellButton">Vender</button>
+        <button class="close" id="closeModalButton">Cerrar</button>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
@@ -172,13 +237,18 @@
         const totalCount = document.getElementById('totalCount');
         const noProductsMessage = document.getElementById('noProductsMessage');
         const searchingScreen = document.getElementById('searchingScreen');
+        const sellModal = document.getElementById('sellModal');
+        const sellQuantityInput = document.getElementById('sellQuantityInput');
+        const sellButton = document.getElementById('sellButton');
+        const closeModalButton = document.getElementById('closeModalButton');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let currentItemIndex = null;
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchingScreen.style.display = 'block';
-            inventoryList.innerHTML = ''; // Limpiar la tabla
+            inventoryList.innerHTML = '';
 
             filteredInventory.forEach((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
@@ -194,8 +264,12 @@
                     <td>${item.description}</td>
                     <td>${item.category}</td>
                     <td>${item.quantity}</td>
-                    <td><button onclick="openSellModal(${index})">Marcar como Vendido</button></td>
-                    <td><button class="delete" onclick="deleteItem(${index})">Eliminar</button></td>
+                    <td>
+                        <button onclick="openSellModal(${index})">Marcar como Vendido</button>
+                    </td>
+                    <td>
+                        <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
+                    </td>
                 `;
                 inventoryList.appendChild(row);
             });
@@ -221,6 +295,7 @@
         // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
+
             return inventory.filter(item => {
                 return item.name.toLowerCase().includes(normalizedQuery) || 
                        item.code.toLowerCase().includes(normalizedQuery) || 
@@ -229,68 +304,81 @@
             });
         }
 
-        // Función para manejar la búsqueda
-        searchButton.addEventListener('click', function() {
-            const query = searchInput.value.trim();
-            if (query) {
-                const filteredInventory = filterInventory(query);
-                loadInventory(filteredInventory); // Cargar los productos filtrados
-            } else {
-                loadInventory(inventory); // Cargar todos los productos si no hay búsqueda
-            }
-        });
+        // Función para abrir el modal de cantidad a vender
+        window.openSellModal = function(index) {
+            currentItemIndex = index;
+            sellModal.style.display = 'block';
+        };
 
         // Función para marcar un producto como vendido
-        window.openSellModal = function(index) {
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            const item = inventory[index];
+        sellButton.addEventListener('click', function() {
+            const quantityToSell = parseInt(sellQuantityInput.value);
+            const item = inventory[currentItemIndex];
 
-            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
-            if (quantityToSell === null || quantityToSell.trim() === "") {
-                alert("Operación cancelada o cantidad no válida.");
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
+                alert("Por favor, ingresa una cantidad válida.");
                 return;
             }
 
-            const quantity = parseInt(quantityToSell);
-            if (isNaN(quantity) || quantity <= 0) {
-                alert("Por favor, ingresa un número válido mayor que 0.");
-                return;
-            }
-
-            if (quantity > item.quantity) {
+            if (quantityToSell > item.quantity) {
                 alert("No hay suficiente stock para realizar la venta.");
                 return;
             }
 
             // Resta la cantidad del inventario
-            item.quantity -= quantity;
+            item.quantity -= quantityToSell;
 
             // Si la cantidad llega a 0, eliminamos el producto
             if (item.quantity <= 0) {
-                inventory.splice(index, 1);
+                inventory.splice(currentItemIndex, 1);
             } else {
-                // Si no, actualizamos el producto con la nueva cantidad
-                inventory[index] = item;
+                inventory[currentItemIndex] = item;
             }
 
-            // Guarda los productos vendidos
-            const soldItem = { ...item, quantitySold: quantity };
-            soldItems.push(soldItem);
-
+            // Actualizar inventario en localStorage
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            loadInventory(filterInventory(searchInput.value.trim())); // Recargar el inventario
-        };
+            // Recargar el inventario y cerrar el modal
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            sellModal.style.display = 'none';
+        });
+
+        // Cerrar modal
+        closeModalButton.addEventListener('click', function() {
+            sellModal.style.display = 'none';
+        });
 
         // Función para eliminar un producto
         window.deleteItem = function(index) {
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
                 inventory.splice(index, 1);
                 localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory(filterInventory(searchInput.value.trim()));
+                loadInventory(filterInventory(searchInput.value.toLowerCase()));
             }
         };
+
+        // Función para eliminar todos los productos
+        window.deleteAll = function() {
+            if (confirm("¿Estás seguro de que deseas eliminar todos los productos?")) {
+                inventory = [];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory([]);
+            }
+        };
+
+        // Manejo de la búsqueda
+        searchButton.addEventListener('click', function() {
+            const query = searchInput.value.toLowerCase();
+            
+            if (query) {
+                // Filtrar y cargar los productos
+                const filtered = filterInventory(query);
+                loadInventory(filtered);
+            } else {
+                // Mostrar todos los productos
+                loadInventory(inventory);
+            }
+        });
 
         // Cargar inventario al inicio
         loadInventory(inventory);
