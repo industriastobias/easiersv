@@ -76,81 +76,89 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const inventoryList = document.getElementById('inventoryList');
-        const totalAmount = document.getElementById('totalAmount');
-        const searchInput = document.getElementById('searchInput');
-        const totalCount = document.getElementById('totalCount');
-        const noProductsMessage = document.getElementById('noProductsMessage');
-        const minPriceInput = document.getElementById('minPrice');
-        const maxPriceInput = document.getElementById('maxPrice');
-        const sortBySelect = document.getElementById('sortBy');
-        const resetFiltersButton = document.getElementById('resetFilters');
-
-        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        // Normalizar los datos al cargar
-        inventory = inventory.map(item => ({
-            ...item,
-            normalizedName: item.name.toLowerCase(),
-            normalizedCode: item.code.toLowerCase(),
-            normalizedCategory: item.category.toLowerCase()
-        }));
-
-        function highlightText(text, query) {
-            if (!query) return text;
-            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            return text.replace(regex, '<span class="highlighted-text">$1</span>');
-        }
+        // (Variables y normalización de datos como en la respuesta anterior)
+        // ...
 
         function loadInventory(filteredInventory) {
-            inventoryList.innerHTML = filteredInventory.map((item, index) => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return `
-                    <tr data-index="${index}">
-                        <td>${highlightText(item.name, searchInput.value)}</td>
-                        <td>${highlightText(item.code, searchInput.value)}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount ? item.discount : 0}%</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${highlightText(item.category, searchInput.value)}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
-                            <button class="delete" onclick="deleteItem(${index})">Eliminar</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            //(resto de la funcion loadInventory)
+            // (Función loadInventory con resaltado de texto como en la respuesta anterior)
             // ...
+
+            const total = filteredInventory.reduce((sum, item) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return sum + (priceWithDiscount * parseInt(item.quantity));
+            }, 0);
+            totalAmount.textContent = `$${total.toFixed(2)}`;
+
+            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+            if (totalQuantity === 0) {
+                noProductsMessage.style.display = 'block';
+            } else {
+                noProductsMessage.style.display = 'none';
+            }
+
+            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
         }
 
         function filterInventory(query, minPrice, maxPrice) {
-            const keywords = query.split(' ').filter(word => word.length > 0);
-            return inventory.filter(item => {
-                const matchesQuery = keywords.every(keyword =>
-                    item.normalizedName.includes(keyword) ||
-                    item.normalizedCode.includes(keyword) ||
-                    item.normalizedCategory.includes(keyword)
-                );
-                const matchesPrice = (minPrice ? item.price >= minPrice : true) &&
-                    (maxPrice ? item.price <= maxPrice : true);
-                return matchesQuery && matchesPrice;
-            });
+            // (Función filterInventory como en la respuesta anterior)
+            // ...
         }
-        //(resto de las funciones)
-        //...
-        resetFiltersButton.addEventListener('click', function(){
-            minPriceInput.value = '';
-            maxPriceInput.value = '';
-            searchInput.value = '';
-            sortBySelect.value = 'name';
-            updateFilters();
-        });
 
-        //(resto de los event listeners)
-        //...
+        function sortInventory(filteredInventory, sortBy) {
+            // (Función sortInventory como en la respuesta anterior)
+            // ...
+        }
+
+        window.markAsSold = function(index) {
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            const item = inventory[index];
+
+            const quantityToSell = prompt(`¿Cuántas unidades de "${item.name}" deseas vender? (Disponibles: ${item.quantity})`);
+            if (quantityToSell === null || quantityToSell.trim() === "") {
+                alert("Operación cancelada o cantidad no válida.");
+                return;
+            }
+
+            const quantity = parseInt(quantityToSell);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Por favor, ingresa un número válido mayor que 0.");
+                return;
+            }
+
+            if (quantity > item.quantity) {
+                alert("No hay suficiente stock para realizar la venta.");
+                return;
+            }
+
+            item.quantity -= quantity;
+            if (item.quantity <= 0) {
+                inventory.splice(index, 1);
+            }
+
+            const soldItem = { ...item, quantitySold: quantity };
+            soldItems.push(soldItem);
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+
+            loadInventory(filterInventory(searchInput.value.toLowerCase(), minPriceInput.value, maxPriceInput.value));
+        };
+
+        window.deleteItem = function(index) {
+            // (Función deleteItem como en la respuesta anterior)
+            // ...
+        };
+
+        window.deleteAll = function() {
+            // (Función deleteAll como en la respuesta anterior)
+            // ...
+        };
+
+        // (Event listeners como en la respuesta anterior)
+        // ...
+
+        // Cargar inventario al inicio
+        loadInventory(inventory);
     });
 </script>
 
