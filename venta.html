@@ -107,7 +107,7 @@
                     <th>Precio Con Descuento</th>
                     <th>Descripción</th>
                     <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
+                    <th>Cantidad Vendida</th>
                 </tr>
             </thead>
             <tbody id="soldList">
@@ -154,7 +154,7 @@
                     <td>${priceWithDiscount.toFixed(2)}</td>
                     <td>${item.description}</td>
                     <td>${item.category}</td>
-                    <td>${item.stock}</td>
+                    <td>${item.soldQuantity}</td> <!-- Cambiado a Cantidad Vendida -->
                 `;
                 soldList.appendChild(row);
             });
