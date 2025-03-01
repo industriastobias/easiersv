@@ -51,36 +51,6 @@
             background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
         }
 
-        .delete-all {
-            background-color: red;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .delete-all:hover {
-            background-color: darkred;
-        }
-
-        .clear-storage-button {
-            display: inline-block;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .clear-storage-button:hover {
-            background-color: #555;
-        }
-
-        .no-products-message {
-            color: red;
-            font-weight: bold;
-        }
-
         .delete-button {
             background-color: #ff3333;
             color: white;
@@ -91,6 +61,11 @@
 
         .delete-button:hover {
             background-color: #cc0000;
+        }
+
+        .no-products-message {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -126,11 +101,6 @@
                 <!-- Las filas de productos vendidos se llenarán dinámicamente -->
             </tbody>
         </table>
-        <button class="delete-all" onclick="clearSoldItems()">Eliminar Todos</button>
-    </div>
-
-    <div class="info-container">
-        <button class="clear-storage-button" onclick="clearStorage()">Limpiar Almacenamiento</button>
     </div>
 </div>
 
@@ -179,24 +149,6 @@
                 soldItems.splice(index, 1); // Eliminar el producto por su índice
                 localStorage.setItem('soldItems', JSON.stringify(soldItems));
                 loadSoldItems(); // Volver a cargar los productos actualizados
-            }
-        };
-
-        // Función para eliminar todos los productos vendidos
-        window.clearSoldItems = function() {
-            if (confirm("¿Estás seguro de que deseas eliminar todos los productos vendidos?")) {
-                localStorage.removeItem('soldItems');
-                soldItems = [];
-                loadSoldItems();
-            }
-        };
-
-        // Función para limpiar el almacenamiento
-        window.clearStorage = function() {
-            if (confirm("¿Estás seguro de que deseas limpiar todo el almacenamiento?")) {
-                localStorage.clear();
-                soldItems = [];
-                loadSoldItems();
             }
         };
 
