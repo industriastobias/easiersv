@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Productos</title>
+    <style>
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #8c8c8c; /* Gris suave */
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .search-container, .info-container, .total-container {
+            margin-bottom: 20px;
+        }
+
+        .inventory-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .inventory-table th, .inventory-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* Color de la barra de encabezado de la tabla */
+        .inventory-table th {
+            background-color: #dcdcdc; /* Gris claro */
+            color: #333;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
+        }
+
+        .inventory-table tr.highlight {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado cuando está seleccionado */
+        }
+
+        .delete-all {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-all:hover {
+            background-color: darkred;
+        }
+
+        .highlighted {
+            background-color: #e8f7e1; /* Color verde clarito para el resaltado */
+        }
+
+        .clear-search {
+            background-color: #ccc;
+            color: #333;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .clear-search:hover {
+            background-color: #bbb;
+        }
+
+        /* Modal de eliminación */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
+
+        .delete-modal-content {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            margin: auto;
+        }
+
+        .delete-modal button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .delete-modal button:hover {
+            background-color: #45a049;
+        }
+
+        .delete-modal .close {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-modal .close:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    Buscar Producto
+</div>
+
+<div class="container">
+    <!-- Filtros de búsqueda -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <button id="searchButton">Buscar</button>
+        <button class="clear-search" id="clearSearchButton">Limpiar</button>
+    </div>
+
+    <div class="info-container">
+        <p id="totalCount">Número de productos encontrados: 0</p>
+        <p id="noProductsMessage" style="display: none; color: red; font-weight: bold;">No se encontraron productos</p>
+    </div>
+    
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio con Descuento</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+                <!-- Las filas de inventario se llenarán dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para confirmar eliminación -->
+<div id="deleteModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <h2>¿Estás seguro de eliminar este producto?</h2>
+        <button id="confirmDeleteButton">Eliminar</button>
+        <button class="close" id="closeDeleteModalButton">Cancelar</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inventoryList = document.getElementById('inventoryList');
+        const totalCount = document.getElementById('totalCount');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const clearSearchButton = document.getElementById('clearSearchButton');
+        const noProductsMessage = document.getElementById('noProductsMessage');
+        const deleteModal = document.getElementById('deleteModal');
+        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+        const closeDeleteModalButton = document.getElementById('closeDeleteModalButton');
+
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let productToDelete = null;
+
+        // Cargar inventario desde localStorage
+        function loadInventory(filteredInventory) {
+            inventoryList.innerHTML = '';
+            filteredInventory.forEach((item, index) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                const row = document.createElement('tr');
+                row.dataset.index = index;
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>${item.price}</td>
+                    <td>${item.discount ? item.discount : 0}%</td>
+                    <td>${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantity}</td>
+                    <td>
+                        <button class="delete" onclick="openDeleteModal(${index})">Eliminar</button>
+                    </td>
+                `;
+                inventoryList.appendChild(row);
+            });
+
+            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+            if (totalQuantity === 0) {
+                noProductsMessage.style.display = 'block';
+            } else {
+                noProductsMessage.style.display = 'none';
+            }
+
+            totalCount.textContent = `Número de productos encontrados: ${totalQuantity}`;
+        }
+
+        // Filtrar inventario según la búsqueda
+        function filterInventory(query) {
+            const normalizedQuery = query.toLowerCase().trim();
+
+            return inventory.filter(item => {
+                return item.name.toLowerCase().includes(normalizedQuery) || 
+                       item.code.toLowerCase().includes(normalizedQuery) || 
+                       item.category.toLowerCase().includes(normalizedQuery) || 
+                       item.description.toLowerCase().includes(normalizedQuery);
+            });
+        }
+
+        // Abrir modal de eliminación
+        window.openDeleteModal = function(index) {
+            productToDelete = index;
+            deleteModal.style.display = 'block';
+        };
+
+        // Confirmar eliminación
+        confirmDeleteButton.addEventListener('click', function() {
+            if (productToDelete !== null) {
+                inventory.splice(productToDelete, 1);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory(filterInventory(searchInput.value));
+            }
+            deleteModal.style.display = 'none';
+        });
+
+        // Cerrar modal de eliminación
+        closeDeleteModalButton.addEventListener('click', function() {
+            deleteModal.style.display = 'none';
+        });
+
+        // Búsqueda por input
+        searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
+        // Limpiar búsqueda
+        clearSearchButton.addEventListener('click', function() {
+            searchInput.value = '';
+            loadInventory(inventory);
+        });
+
+        // Cargar inventario al cargar la página
+        loadInventory(inventory);
+    });
+</script>
+
+</body>
+</html>
