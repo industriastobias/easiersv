@@ -143,25 +143,12 @@
             });
         }
 
-        // Función para eliminar un producto vendido individualmente
+        // Función para eliminar un producto vendido individualmente sin confirmación
         window.deleteSoldItem = function(index) {
-            console.log("Intentando eliminar índice:", index);
-            console.log("Elementos antes de eliminar:", soldItems);
-
-            if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-                // Verifica que el índice sea válido
-                if (index >= 0 && index < soldItems.length) {
-                    soldItems.splice(index, 1); // Elimina el producto
-                    localStorage.setItem('soldItems', JSON.stringify(soldItems)); // Actualiza el localStorage
-                    loadSoldItems(); // Recarga los productos después de eliminar
-                    console.log("Elemento eliminado correctamente.");
-                } else {
-                    alert("Error: Índice no válido. Vuelva a intentar.");
-                    console.error("Índice fuera de rango:", index);
-                }
-            } else {
-                console.log("Eliminación cancelada.");
-            }
+            console.log("Eliminando el producto en el índice:", index);
+            soldItems.splice(index, 1); // Elimina el producto
+            localStorage.setItem('soldItems', JSON.stringify(soldItems)); // Actualiza el localStorage
+            loadSoldItems(); // Recarga los productos después de eliminar
         };
 
         // Inicializar la carga de productos vendidos
