@@ -53,9 +53,11 @@
             width: 300px;
             font-size: 16px;
         }
+        .btn-container {
+            text-align: center;
+            margin-top: 10px;
+        }
         .btn-pdf {
-            display: block;
-            margin: 20px auto;
             padding: 10px 20px;
             background-color: #007bff;
             color: white;
@@ -66,9 +68,22 @@
         .btn-pdf:hover {
             background-color: #0056b3;
         }
+        .btn-clear {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .btn-clear:hover {
+            background-color: #c82333;
+        }
     </style>
-    <!-- Agregar la librería jsPDF -->
+    <!-- Agregar la librería jsPDF y autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -103,8 +118,11 @@
         </table>
     </div>
 
-    <!-- Botón para generar PDF -->
-    <button class="btn-pdf" onclick="generatePDF()">Generar PDF</button>
+    <!-- Botones para generar PDF y limpiar búsqueda -->
+    <div class="btn-container">
+        <button class="btn-pdf" onclick="generatePDF()">Generar PDF</button>
+        <button class="btn-clear" onclick="clearSearch()">Limpiar Búsqueda</button>
+    </div>
 </div>
 
 <script>
@@ -166,11 +184,14 @@
             }).join('');
         }
 
-        loadInventory();
-        window.filterInventory = filterInventory;
+        // Función para limpiar la búsqueda
+        function clearSearch() {
+            document.getElementById('search').value = ''; // Limpiar el campo de búsqueda
+            renderInventory(inventory); // Mostrar todos los productos
+        }
 
         // Función para generar el PDF en formato tabla
-        window.generatePDF = function() {
+        function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             let y = 20; // Posición inicial para el contenido
@@ -180,7 +201,7 @@
             doc.text("Inventario de Productos", 105, y, null, null, "center");
             y += 10;
 
-            // Crear tabla en el PDF
+            // Crear tabla en el PDF con autoTable
             doc.autoTable({
                 head: [['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad en Stock']],
                 body: inventory.map(item => {
@@ -203,7 +224,12 @@
             });
 
             doc.save("inventario.pdf");
-        };
+        }
+
+        loadInventory();
+        window.filterInventory = filterInventory;
+        window.clearSearch = clearSearch;
+        window.generatePDF = generatePDF;
     });
 </script>
 
