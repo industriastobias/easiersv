@@ -3,49 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos Vendidos</title>
+    <title>Venta</title>
+    <style>
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #8c8c8c; /* Gris suave */
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .info-container {
+            margin-bottom: 20px;
+        }
+
+        .sold-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .sold-table th, .sold-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        /* Color de la barra de encabezado de la tabla */
+        .sold-table th {
+            background-color: #dcdcdc; /* Gris claro */
+            color: #333;
+        }
+
+        .sold-table tr:hover {
+            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
+        }
+
+        .delete-all {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-all:hover {
+            background-color: darkred;
+        }
+
+        .clear-storage-button {
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .clear-storage-button:hover {
+            background-color: #555;
+        }
+
+        /* Mensaje cuando no hay productos vendidos */
+        .no-products-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Productos Vendidos</h1>
-    <table id="soldItemsTable">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Código de Barras</th>
-                <th>Precio</th>
-                <th>Cantidad Vendida</th>
-            </tr>
-        </thead>
-        <tbody id="soldItemsList">
-            <!-- Aquí se agregarán los productos vendidos -->
-        </tbody>
-    </table>
+<div class="header">
+    Venta de Productos
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const soldItemsList = document.getElementById('soldItemsList');
-            const soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+<div class="container">
+    <div class="info-container">
+        <p id="soldCount">Número de productos vendidos: 0</p>
+        <p id="noSoldProductsMessage" class="no-products-message" style="display: none;">No se han realizado ventas.</p>
+    </div>
+    
+    <div class="sold-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Cantidad Vendida</th>
+                    <th>Total Venta</th>
+                </tr>
+            </thead>
+            <tbody id="soldList">
+                <!-- Las filas de productos vendidos se llenarán dinámicamente -->
+            </tbody>
+        </table>
+        <button class="delete-all" onclick="clearSoldItems()">Eliminar Todos</button>
+    </div>
 
-            function loadSoldItems() {
-                soldItemsList.innerHTML = '';
-                soldItems.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>1</td> <!-- Siempre 1, ya que el producto se marca como vendido de una unidad cada vez -->
-                    `;
-                    soldItemsList.appendChild(row);
-                });
+    <div class="info-container">
+        <button class="clear-storage-button" onclick="clearStorage()">Limpiar Almacenamiento</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const soldList = document.getElementById('soldList');
+        const soldCount = document.getElementById('soldCount');
+        const noSoldProductsMessage = document.getElementById('noSoldProductsMessage');
+
+        let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+
+        // Cargar productos vendidos
+        function loadSoldItems() {
+            if (soldItems.length === 0) {
+                noSoldProductsMessage.style.display = 'block';
+                soldCount.textContent = "Número de productos vendidos: 0";
+            } else {
+                noSoldProductsMessage.style.display = 'none';
+                soldCount.textContent = `Número de productos vendidos: ${soldItems.length}`;
             }
 
-            loadSoldItems(); // Cargar productos vendidos al iniciar
-        });
-    </script>
+            soldList.innerHTML = '';
+
+            soldItems.forEach(item => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                const totalSale = priceWithDiscount * item.soldQuantity;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>${item.price}</td>
+                    <td>${item.discount}</td>
+                    <td>${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.soldQuantity}</td>
+                    <td>${totalSale.toFixed(2)}</td>
+                `;
+                soldList.appendChild(row);
+            });
+        }
+
+        // Función para eliminar todos los productos vendidos
+        window.clearSoldItems = function() {
+            if (confirm("¿Estás seguro de que deseas eliminar todos los productos vendidos?")) {
+                localStorage.removeItem('soldItems');
+                soldItems = [];
+                loadSoldItems();
+            }
+        };
+
+        // Función para limpiar el almacenamiento
+        window.clearStorage = function() {
+            if (confirm("¿Estás seguro de que deseas limpiar todo el almacenamiento?")) {
+                localStorage.clear();
+                soldItems = [];
+                loadSoldItems();
+            }
+        };
+
+        // Inicializar la carga de productos vendidos
+        loadSoldItems();
+    });
+</script>
 
 </body>
 </html>
