@@ -41,6 +41,7 @@
             text-align: center;
         }
 
+        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
             background-color: #dcdcdc; /* Gris claro */
             color: #333;
@@ -83,24 +84,6 @@
             background-color: #e8f7e1; /* Color verde clarito para el resaltado */
         }
 
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            background-color: #333;
-            color: white;
-            padding: 5px 10px;
-            margin: 5px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .pagination button:hover {
-            background-color: #555;
-        }
-
         /* Pantalla de búsqueda */
         .searching-screen {
             display: none;
@@ -116,6 +99,7 @@
             font-size: 24px;
         }
 
+        /* Mensaje cuando no hay productos disponibles */
         .no-products-message {
             color: red;
             font-weight: bold;
@@ -248,12 +232,6 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <!-- Paginación -->
-    <div class="pagination">
-        <button id="prevPageButton">Anterior</button>
-        <button id="nextPageButton">Siguiente</button>
-    </div>
-
     <!-- Botón para redirigir a la página de almacenamiento -->
     <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
@@ -287,23 +265,17 @@
         const sellQuantityInput = document.getElementById('sellQuantityInput');
         const sellButton = document.getElementById('sellButton');
         const closeModalButton = document.getElementById('closeModalButton');
-        const prevPageButton = document.getElementById('prevPageButton');
-        const nextPageButton = document.getElementById('nextPageButton');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let currentPage = 0;
-        const itemsPerPage = 100;
+        let currentItemIndex = null;
+        let currentItemCode = null;  // Usaremos el código para identificar el producto
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchingScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
-            const start = currentPage * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageItems = filteredInventory.slice(start, end);
-
-            pageItems.forEach((item, index) => {
+            filteredInventory.forEach((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 const row = document.createElement('tr');
                 row.dataset.index = index;
@@ -382,48 +354,74 @@
             // Resta la cantidad del inventario
             item.quantity -= quantityToSell;
 
-            // Guarda el inventario actualizado
+            // Si la cantidad llega a 0, eliminamos el producto
+            if (item.quantity <= 0) {
+                inventory = inventory.filter(i => i.code !== currentItemCode); // Eliminar por código
+            } else {
+                inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
+            }
+
+            // Agregar a la venta
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            soldItems.push({ ...item, soldQuantity: quantityToSell });
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+
+            // Actualizar inventario en localStorage
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(filterInventory(searchInput.value));
+
+            // Recargar inventario y cerrar el modal
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
             sellModal.style.display = 'none';
         });
 
-        // Cerrar el modal
+        // Función para cerrar el modal
         closeModalButton.addEventListener('click', function() {
             sellModal.style.display = 'none';
         });
 
-        // Limpiar búsqueda
+        // Función para eliminar un producto
+        window.deleteItem = function(index) {
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+        };
+
+        // Función para eliminar todos los productos
+        window.deleteAll = function() {
+            inventory = [];
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory([]);
+        };
+
+        // Función para ordenar la tabla por columnas
+        function sortTable(n) {
+            const rows = Array.from(inventoryList.rows);
+            const sortedRows = rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[n].textContent.trim();
+                const cellB = rowB.cells[n].textContent.trim();
+
+                if (cellA > cellB) return 1;
+                if (cellA < cellB) return -1;
+                return 0;
+            });
+
+            sortedRows.forEach(row => inventoryList.appendChild(row));
+        }
+
+        // Búsqueda por input
+        searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
             loadInventory(inventory);
         });
 
-        // Realizar búsqueda
-        searchButton.addEventListener('click', function() {
-            const query = searchInput.value;
-            loadInventory(filterInventory(query));
-        });
-
-        // Paginación
-        prevPageButton.addEventListener('click', function() {
-            if (currentPage > 0) {
-                currentPage--;
-                loadInventory(filterInventory(searchInput.value));
-            }
-        });
-
-        nextPageButton.addEventListener('click', function() {
-            const filteredInventory = filterInventory(searchInput.value);
-            if ((currentPage + 1) * itemsPerPage < filteredInventory.length) {
-                currentPage++;
-                loadInventory(filteredInventory);
-            }
-        });
-
-        // Inicializar
+        // Cargar inventario al cargar la página
         loadInventory(inventory);
     });
 </script>
+
 </body>
 </html>
