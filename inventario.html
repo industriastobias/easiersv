@@ -317,6 +317,13 @@
             searchingScreen.style.display = 'none';
         }
 
+        // Función para eliminar todos los productos
+        function deleteAll() {
+            inventory = []; // Vaciamos el inventario
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Guardamos el inventario vacío en localStorage
+            loadInventory([]); // Recargamos la tabla con el inventario vacío
+        }
+
         // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
@@ -386,31 +393,23 @@
             loadInventory(filterInventory(searchInput.value.toLowerCase()));
         }
 
-        // Función para eliminar todos los productos
-        function deleteAll() {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory([]);
-        }
-
         // Función para ordenar la tabla por columnas
         function sortTable(n) {
             const rows = Array.from(inventoryList.rows);
             const sortedRows = rows.sort((rowA, rowB) => {
                 const cellA = rowA.cells[n].textContent.trim();
                 const cellB = rowB.cells[n].textContent.trim();
-
-                if (cellA > cellB) return 1;
-                if (cellA < cellB) return -1;
-                return 0;
+                return cellA > cellB ? 1 : -1;
             });
 
+            // Volver a insertar las filas ordenadas
             sortedRows.forEach(row => inventoryList.appendChild(row));
         }
 
-        // Búsqueda por input
+        // Buscador de inventario
         searchButton.addEventListener('click', function() {
-            loadInventory(filterInventory(searchInput.value));
+            const query = searchInput.value;
+            loadInventory(filterInventory(query));
         });
 
         clearSearchButton.addEventListener('click', function() {
@@ -418,7 +417,7 @@
             loadInventory(inventory);
         });
 
-        // Cargar inventario al cargar la página
+        // Inicializar la carga del inventario
         loadInventory(inventory);
     });
 </script>
