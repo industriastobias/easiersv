@@ -380,18 +380,18 @@
         });
 
         // Función para eliminar un producto
-        function deleteItem(index) {
+        window.deleteItem = function(index) {
             inventory.splice(index, 1);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadInventory(filterInventory(searchInput.value.toLowerCase()));
-        }
+        };
 
         // Función para eliminar todos los productos
-        function deleteAll() {
+        window.deleteAll = function() {
             inventory = [];
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadInventory([]);
-        }
+        };
 
         // Función para ordenar la tabla por columnas
         function sortTable(n) {
