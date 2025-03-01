@@ -1,427 +1,413 @@
--<!DOCTYPE html>
-HTM lang = " es ">
-* Cabeza *
-    meta carbonaje = " UTF-8 ">
-    meta nombre = " viewport " content = " width=device-width, initial-scale=1.0 ">
-    * Título *Inventario* / título>
-    <Estilo>
-        ** Estilos básicos */
-        cuerpo.
-            familia de fuentes: Arial, sans-serif;
-            margen: 0;
-            acolchado: 0;
-            fondo-color: .f4f4f4f4;
-        -
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+    <style>
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
-        .header
-            fondo-color: 8c8c8c; /* Gris suave */
-            color: blanco;
-            text-align: centro;
-            acolchado: 10px;
-            tamaño de fuente: 24px;
-        -
+        .header {
+            background-color: #8c8c8c; /* Gris suave */
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+        }
 
-        .. contenedoro.
-            relleno: 20px;
-        -
+        .container {
+            padding: 20px;
+        }
 
-        .search-container, .info-container, .total-container
-            margen-bajo: 20px;
-        -
+        .search-container, .info-container, .total-container {
+            margin-bottom: 20px;
+        }
 
-        . mesa de inventario-mesa
-            anchura: 100%;
-            borde-colapso: colapso;
-            margen-bajo: 20px;
-        -
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
 
-        .inventory-table-th, .inventory-table td
-            acolchado: 10px;
-            borde: 1px de sólido .ddd;
-            text-align: centro;
-        -
+        .inventory-table th, .inventory-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
 
         /* Color de la barra de encabezado de la tabla */
-        .inventory-table-table th th .
-            fondo-color: .dcdcdcc; /* Gris claro */
-            color: 333,
-        -
+        .inventory-table th {
+            background-color: #dcdcdc; /* Gris claro */
+            color: #333;
+        }
 
-        .inventory-table tr:hover
-            fondo-color: E8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
-        -
+        .inventory-table tr:hover {
+            background-color: #E8F7E1; /* Color verde clarito de resaltado al pasar el puntero */
+        }
 
-        .inventory-table tr.highlight
-            fondo-color: E8f7e1; /* Color verde clarito de resaltado cuando se trata */
-        -
+        .inventory-table tr.highlight {
+            background-color: #E8F7E1; /* Color verde clarito de resaltado cuando se trata */
+        }
 
-        .delete-todo
-            de fondo-color: rojo;
-            color: blanco;
-            acolchado: 10px;
-            frontera: ninguna;
-            cursor: puntero;
-        -
+        .delete-item {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
 
-        .delete-all:hover
-            de fondo-color: oscuro;
-        -
+        .delete-item:hover {
+            background-color: darkred;
+        }
 
-        . Carbotón de almacenamiento.
-            visual: bloque en línea;
-            de fondo-color: 333,
-            color: blanco;
-            relleno: 10px 20px;
-            texto-decoración: ninguno;
-            text-align: centro;
-        -
+        .storage-button {
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-align: center;
+        }
 
-        .storage-button:hover
-            fondo-color: 555;
-        -
+        .storage-button:hover {
+            background-color: #555;
+        }
 
-        .lighted .
-            fondo-color: E8f7e1; /* Color verde clarito para el resaltado */
-        -
+        .highlighted {
+            background-color: #E8F7E1; /* Color verde clarito para el resaltado */
+        }
 
         /* Pantalla de búsqueda */
-        .-screen de búsqueda.
-            visual: ninguno;
-            posición: fija;
-            arriba: 0;
-            a la izquierda: 0;
-            anchura: 100%;
-            altura: 100%;
-            fondo-color: rgba(0, 0, 0, 0,5);
-            color: blanco;
-            text-align: centro;
-            encolado: 20%;
-            tamaño de fuente: 24px;
-        -
+        .search-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 24px;
+        }
 
-        * Mensaje cuando no hay productos disponibles */
-        .no-productos-mensaje
-            color: rojo;
-            peso de la letra: audaz;
-        -
+        /* Mensaje cuando no hay productos disponibles */
+        .no-products-message {
+            color: red;
+            font-weight: bold;
+        }
 
-        Modal de cantidad para vender */
-        .modal
-            visual: ninguno;
-            posición: fija;
-            arriba: 0;
-            a la izquierda: 0;
-            anchura: 100%;
-            altura: 100%;
-            fondo-color: rgba(0, 0, 0, 0,5);
-            color: blanco;
-            text-align: centro;
-            encolado: 20%;
-        -
+        /* Modal de cantidad para vender */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
 
-        . modal-contenido
-            de fondo-color: 333,
-            relleno: 20px;
-            radio de frontera: 8px;
-            anchura: 300px;
-            margen: automático;
-        -
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            margin: auto;
+        }
 
-        . Introducción modal
-            anchura: 100%;
-            acolchado: 10px;
-            margen-bajo: 10px;
-            borde: 1px de sólido Cc;
-            radio de frontera: 4px;
-        -
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-        botón . . .
-            acolchado: 10px;
-            de fondo-color: 4CAF50;
-            color: blanco;
-            frontera: ninguna;
-            cursor: puntero;
-            anchura: 100%;
-        -
+        .modal button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
 
-        . modal botón:hover
-            de fondo-color: 45a049;
-        -
+        .modal button:hover {
+            background-color: #45a049;
+        }
 
-        .modal .close de secreto
-            de fondo-color: rojo;
-            color: blanco;
-            acolchado: 5px 10px;
-            frontera: ninguna;
-            cursor: puntero;
-        -
+        .modal .close {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
 
-        .modal .close:hover
-            de fondo-color: oscuro;
-        -
+        .modal .close:hover {
+            background-color: darkred;
+        }
 
         /* Nuevos estilos para mejoras */
-        .. registro claro.
-            fondo-color:
-            color: 333,
-            acolchado: 10px;
-            frontera: ninguna;
-            cursor: puntero;
-            margen-izquierda: 10px;
-        -
+        .clear-search {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
 
-        .clear-search:hover
-            de fondo-color: .b;
-        -
+        .clear-search:hover {
+            background-color: #555;
+        }
 
-        . . . .
-            cursor: puntero;
-        -
+        .sortable:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
 
-        .sortable:hover
-            fondo-color:
-        -
-    * * * estilo *>
-* * * * cabeza *>
-* Cuerpo *>
-
-* Div class = " cabecera " *>
+<div class="header">
     Inventario
-* * *>
+</div>
 
-<Div class = " contenedor ">
-    Filtros Avanzados...
-    <Div class = " search-container ">
-        Tipo de entrada type= " texto " id = " búsquedaInput " placeholderer = " Buscar por nombre, código o categoría ">
-        botón id = " searchButton ">Buscar* / botón *
-        Clase de botón class= " clear-search " id = " clearSearchButton ">Limpiar* / botón *
-        <Br><Br>
-    * * *>
-    
-    <Div class = " info-container ">
-        P id = " totalCount ">Número de productos disponibles: 0* * *>
-        - p id = " noProductsMessage " class = " no-products-mensage style" style= " display: none; ">No senan productos* * *>
-    * * *>
-    
-    <Div class = " inventario-table ">
-        * mesa *>
-            *>
-                *>
-                    - T. clase = " ordenado " onclick = ""ordenTable(0) ">Nombre* * *>
-                    - " class="typeable " onclick = " ordenarTabla (11) ">Código* * *>
-                    - clase classT" clase   ordenado  onclick = ""ordenTable(2) ">Código de Barras* * *>
-                    - clase classTérmino = " ordenado " onclick = " ordenarTabla (3) "Precio* * *>
-                    - " class="sorteo " onclick = " ordenarTabla"">Descuento (%)* * *>
-                    - " class="sorteo " onclick = " ordenarTabla (5) ">Precio Con Descuento* * *>
-                    - " class="sortable " onclick = " ordenarTabla (6) ">Descripción* * *>
-                    - class""cruzada " onclick = " ordenarTablas (7) "Categoría* * *>
-                    - th class = " sort " onclick = " ordenarTabla"">En acciones* * *>
-                    *>Vender* * *>
-                    *>Eliminar* * *>
-                */ tr *>
-            * * *>
-            <Tbody id = " inventarioList ">
-                Las filas de inventario se llenará dinámicamente -
-            * * * *>
-        */ cuadro *>
-        Clase de botón class= " delete-all " onclick = " deleteAll"">Todo,* / botón *
-    * * *>
+<div class="container">
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <button id="searchButton">Buscar</button>
+        <button class="clear-search" id="clearSearchButton">Limpiar</button>
+        <br><br>
+    </div>
 
-    <Div class = ""total-container ">
-        H2>Total en Dólares Americanos:*/ h2 *>
-        P id = " totalAmount ">0,00 dólares* * *>
-    * * *>
+    <div class="info-container">
+        <p id="totalCount">Número de productos disponibles: 0</p>
+        <p id="noProductsMessage" class="no-products-message" style="display: none;">No se han encontrado productos</p>
+    </div>
 
-    Botón para redirigir a la página de almacenamiento...
-    A <ahref = ""local.html " clase = " almacenamiento-botón ">Ir a Almacenamiento* A *>
-* * *>
+    <div class="inventory-table">
+        <table>
+            <thead>
+                <tr>
+                    <th class="sortable" onclick="orderTable(0)">Nombre</th>
+                    <th class="sortable" onclick="orderTable(1)">Código</th>
+                    <th class="sortable" onclick="orderTable(2)">Código de Barras</th>
+                    <th class="sortable" onclick="orderTable(3)">Precio</th>
+                    <th class="sortable" onclick="orderTable(4)">Descuento (%)</th>
+                    <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
+                    <th class="sortable" onclick="orderTable(6)">Descripción</th>
+                    <th class="sortable" onclick="orderTable(7)">Categoría</th>
+                    <th>En acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+                <!-- Las filas de inventario se llenarán dinámicamente -->
+            </tbody>
+        </table>
+        <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
+    </div>
 
-Pantalla de búsqueda...
-<Div id = " búsquedaScreen " clase = " busca-pantalla ">
+    <div class="total-container">
+        <h2>Total en Dólares Americanos:</h2>
+        <p id="totalAmount">0,00 dólares</p>
+    </div>
+
+    <a href="storage.html" class="storage-button">Ir a Almacenamiento</a>
+</div>
+
+<div id="searchScreen" class="search-screen">
     Buscando producto...
-* * *>
+</div>
 
-Modal para la entrada a vender...
-<Div id = " venderModal " clase = " modal ">
-    <Div class = " modal-contenido ">
-        H2>Cuántas unidades deseas vender?*/ h2 *>
-        Tipo de entrada type= " número " id = " venderCantidadInput " placeholder = " Cantidad a vender " min = " 1 " .
-        * Botón id = " venderButton ">Vender* / botón *
-        Clase de botón class= " cerrar " id = " closeModalButton ">Cerrar* / botón *
-    * * *>
-* * *>
+<div id="sellModal" class="modal">
+    <div class="modal-content">
+        <h2>¿Cuántas unidades deseas vender?</h2>
+        <input type="number" id="sellQuantityInput" placeholder="Cantidad a vender" min="1">
+        <button id="sellButton">Vender</button>
+        <button class="close" id="closeModalButton">Cerrar</button>
+    </div>
+</div>
 
-El guión>
-    documento.addEventListener ('DOMContentLoaded', function()
-        const inventarioList = document.getElementById('inventoryList');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inventoryList = document.getElementById('inventoryList');
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
-        const clearBuscarButton = document.getElementById('clearSearchButton');
-        const totalCount = document.getElementById('total Count');
+        const clearSearchButton = document.getElementById('clearSearchButton');
+        const totalCount = document.getElementById('totalCount');
         const noProductsMessage = document.getElementById('noProductsMessage');
-        const segun la búsquedaScreen = document.getElementById('searchingScreen');
-        const sellModal = document.getElementById('ellModal');
+        const searchScreen = document.getElementById('searchScreen');
+        const sellModal = document.getElementById('sellModal');
         const sellQuantityInput = document.getElementById('sellQuantityInput');
         const sellButton = document.getElementById('sellButton');
         const closeModalButton = document.getElementById('closeModalButton');
 
-        dejar inventario = JSON.parse(localStorage.getItem('inventory')
-        dejar currentItemIndex = null;
-        de mayo actualItemCode = null; // Usaremos el código para identificar el producto
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let currentItemIndex = null;
+        let currentItemCode = null;
 
         // Cargar inventario desde localStorage
-        carga de funciónInventario (filtradoInventario)
-            searchingScreen.style.display = 'bloque';
-            ofList.innerHTML = '';
+        function loadInventory(filteredInventory) {
+            searchScreen.style.display = 'block';
+            inventoryList.innerHTML = '';
 
-            filtradoInventory.forEach((partida, index) =-
-                conteprecio precioCondescuento = ítem.price - (partida. precio * (partida.descuento / 100));
-                const row = documento.createElement ('tr'tr');
-                row.dataset.index = índice;
+            filteredInventory.forEach((item, index) => {
+                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                const row = document.createElement('tr');
+                row.dataset.index = index;
                 row.innerHTML =
-                    * Td *>$-item.name.* * *>
-                    * Td *>$-item.code.* * *>
-                    * Td *>$-item.barcode.* * *>
-                    * Td *>$-item.price.* * *>
-                    * Td *>$-item.discount ? artículo.descuento: 0%* * *>
-                    * Td *>$.priceWithDiscount.toFixed(2)* * *>
-                    * Td *>$-item.description.* * *>
-                    * Td *>$-item.category.* * *>
-                    * Td *>$.item.quantity.* * *>
-                    * Td *>
-                        * botón onclick = " openSellModal($.index, '$-item.code') ">Marcar como Vendido* / botón *
-                    * * *>
-                    * Td *>
-                        Clase de botón class= " delete " onclick = " deleteItem($.index) ">Eliminar* / botón *
-                    * * *>
-                -
-                ofList.appendChild (row);
-            -);
+                    `<td>${item.name}</td>
+                     <td>${item.code}</td>
+                     <td>${item.barcode}</td>
+                     <td>${item.price}</td>
+                     <td>${item.discount ? item.discount : 0}%</td>
+                     <td>$${priceWithDiscount.toFixed(2)}</td>
+                     <td>${item.description}</td>
+                     <td>${item.category}</td>
+                     <td>${item.quantity}</td>
+                     <td>
+                        <button onclick="openSellModal(${index}, '${item.code}')">Marcar como Vendido</button>
+                     </td>
+                     <td>
+                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
+                     </td>`;
+                inventoryList.appendChild(row);
+            });
 
-            const total = filtradoInventory.reducir((sum, item) =
-                conteprecio precioCondescuento = ítem.price - (partida. precio * (partida.descuento / 100));
-                la suma de la rentabilidad (priceWithDiscount * parseInt(item.queantity));
-            -, 0);
-            TotalAmount.textContent = "$$$"total.toFixed(2);
+            const total = filteredInventory.reduce((sum, item) => {
+                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return sum + (priceWithDiscount * parseInt(item.quantity));
+            }, 0);
+            totalAmount.textContent = `$${total.toFixed(2)}`;
 
-            const totalQuantity = filtradoInventory.reducir(sumar, item) =- sum . parseInt(item.queantity, 0);
-            si (Cantidad total === 0)
-                noProductsMessage.style.display = 'bloque';
-            Si no,
+            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+            if (totalQuantity === 0) {
+                noProductsMessage.style.display = 'block';
+            } else {
                 noProductsMessage.style.display = 'none';
-            -
+            }
 
-            totalCount.textContenido = .Número de productos disponibles: $.totalQuantity.;
-
-            seglaScreen.style.display = 'none';
-        -
+            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
+            searchScreen.style.display = 'none';
+        }
 
         // Filtrar inventario según la búsqueda
-        filtro de funciónInventory(query)
-            const normalizadora de canería = consulta.toLowerCase().trim ();
-
-            devolver inventario.filter(item = .
-                de vuelta item.name.toLowerCase().includes(normalizedQuery) 
-                       item.code.toLowerCase().includes (pregunta (pregunta normalizada) 
-                       ítem.toLowerCase().includes (preguntas (pregunta normalizada) 
-                       item.description.toLowerCase().includes (consulta normalizada);
-            -);
-        -
+        function filterInventory(query) {
+            const normalizedQuery = query.toLowerCase().trim();
+            return inventory.filter(item => 
+                item.name.toLowerCase().includes(normalizedQuery) ||
+                item.code.toLowerCase().includes(normalizedQuery) ||
+                item.barcode.toLowerCase().includes(normalizedQuery) ||
+                item.description.toLowerCase().includes(normalizedQuery)
+            );
+        }
 
         // Función para abrir la modal cantidad de a vender
-        ventana.openSellModal = función(index, código)
-            actualItemIndex = índice;
-            corrienteItemCode = código;
-            sellModal.style.display = 'bloque';
-        -
+        function openSellModal(index, code) {
+            currentItemIndex = index;
+            currentItemCode = code;
+            sellModal.style.display = 'block';
+        }
 
         // Función para vender productos
-        sellButton.addEventEventListener ('click', function()
-            conte cantidadToSell = parseInt(sellQuantityInput.value);
-            artículo de const = inventario.find(i =- i.code === currentItemCode); // Filtrar por código
+        sellButton.addEventListener('click', function() {
+            const quantityToSell = parseInt(sellQuantityInput.value);
+            const item = inventory.find(i => i.code === currentItemCode);
 
-            i (isNNN(calantidadToSell) - cantidadToSell .= 0)
-                alertar: "Por favor, ingresa una carta de seguridad".) ;
-                retorno;
-            -
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
+                alert('Por favor, ingresa una cantidad válida.');
+                return;
+            }
 
-            si (cuantidadToSell - artículo. cantidad)
-                alertar "sin heno suficiente para realizar la venta".) ;
-                retorno;
-            -
+            if (quantityToSell > item.quantity) {
+                alert('No hay suficiente stock para realizar la venta.');
+                return;
+            }
 
             // Resta la cantidad del inventario
-            elemento.cuantidad -= cantidadToSell;
+            item.quantity -= quantityToSell;
 
-            // Si la cantidad de la cantidad a 0, eliminamos el producto
-            si (item.queantidad .= 0)
-                inventario = inventario.filter(i =- i.code == actualItemCode); // Eliminar por código
-            Si no,
-                inventario = inventario.map(i =- i.code === actualItemCode ? El artículo: i); // Actualizar por código
-            -
+            if (item.quantity === 0) {
+                inventory = inventory.filter(i => i.code !== currentItemCode); // Eliminar por código
+            } else {
+                inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
+            }
 
             // Agregar a la venta
-            deje venderItems = JSON.parse(localStorage.getItem('soldItems')
-            vendidaItems.push(...parto, vendidoCantidad: cantidadToSell .);
-            localStorage.setItem('soldItems', JSON.stringify (esems vendidos);
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            soldItems.push({...item, soldQuantity: quantityToSell});
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
             // Actualizar inventario en localStorage
-            localStorage.setItem ('inventario', JSON.stringify (inventario);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
 
             // Recargar inventario y cerrar el modal
-            cargaInventory(filterInventory(searchInput.value.toLowerCase() ]);
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
             sellModal.style.display = 'none';
-        -);
+        });
 
         // Función para cerrar el modal
-        closeModalButton.addEventListener('click', function()
+        closeModalButton.addEventListener('click', function() {
             sellModal.style.display = 'none';
-        -);
+        });
 
         // Función para eliminar un producto
-        window.deleteItem = función(index)
-            inventario.splice (índice, 1);
-            localStorage.setItem ('inventario', JSON.stringify (inventario);
-            cargaInventory(filterInventory(searchInput.value.toLowerCase() ]);
-        -
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+        }
 
         // Función para eliminar todos los productos
-        ventana.deleteTodos = función ()
-            inventario = [];
-            localStorage.setItem ('inventario', JSON.stringify (inventario);
-            cargaInventario[[]);
-        -
+        function deleteAll() {
+            inventory = [];
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory([]);
+        }
 
         // Función para ordenar la tabla por columnas
-        función ordenarTabla (n)
-            con filas = Array.from(inventoryList.rows);
-            const ordenadoRows = rows.sort((rowA, rowB) =
-                conste cellA = rowA.cells[n].textContent.trim();
+        function orderTable(n) {
+            const rows = Array.from(inventoryList.rows);
+            const sortedRows = rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[n].textContent.trim();
                 const cellB = rowB.cells[n].textContent.trim();
 
-                si (cellA celularB) devuelve 1;
-                si (cellA celularB) devuelve -1;
-                de vuelta 0;
-            -);
+                if (cellA > cellB) return 1;
+                if (cellA < cellB) return -1;
+                return 0;
+            });
 
-            ordenadoRows.forCada cada(row =- inventarioList.appendChild(row));
-        -
+            sortedRows.forEach(row => inventoryList.appendChild(row));
+        }
 
         // Búsqueda por entrada
-        searchButton.addEventListener('click', function()
-            cargaInventario(filterInventory(searchInput.value));
-        -);
+        searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
 
-        clearSearchButton.addEventListener('click', function()
+        clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
-            cargaInventario (inventario);
-        -);
+            loadInventory(inventory);
+        });
 
         // Cargar inventario al cargar la página
-        cargaInventario (inventario);
-    -);
-* / script *>
+        loadInventory(inventory);
+    });
+</script>
 
-*/ cuerpo *
-*/ html>
+</body>
+</html>
