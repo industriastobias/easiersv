@@ -20,10 +20,10 @@
             color: #555;
         }
         .container {
-            max-width: 1200px; /* Haciendo el contenedor más largo */
+            max-width: 1200px;
             margin: auto;
             background: #fff;
-            padding: 25px; /* Aumentando el padding para más espacio */
+            padding: 25px;
             border-radius: 6px;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
         }
@@ -79,7 +79,7 @@
 <div class="container">
     <!-- Filtro de búsqueda -->
     <div class="search-bar">
-        <input type="text" id="search" placeholder="Buscar por nombre..." oninput="filterInventory()">
+        <input type="text" id="search" placeholder="Buscar por cualquier campo..." oninput="filterInventory()">
     </div>
 
     <div class="inventory-table">
@@ -133,7 +133,17 @@
 
         function filterInventory() {
             const searchTerm = document.getElementById('search').value.toLowerCase();
-            const filteredInventory = inventory.filter(item => item.name.toLowerCase().includes(searchTerm));
+            const filteredInventory = inventory.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.barcode.toLowerCase().includes(searchTerm) ||
+                item.price.toString().includes(searchTerm) ||
+                item.discount.toString().includes(searchTerm) ||
+                (item.price - (item.price * (item.discount / 100))).toFixed(2).includes(searchTerm) ||
+                item.description.toLowerCase().includes(searchTerm) ||
+                item.category.toLowerCase().includes(searchTerm) ||
+                item.quantity.toString().includes(searchTerm)
+            );
             renderInventory(filteredInventory);
         }
 
@@ -159,7 +169,7 @@
         loadInventory();
         window.filterInventory = filterInventory;
 
-        // Función para generar el PDF
+        // Función para generar el PDF en formato tabla
         window.generatePDF = function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -170,11 +180,26 @@
             doc.text("Inventario de Productos", 105, y, null, null, "center");
             y += 10;
 
-            // Crear tabla para el PDF
-            inventory.forEach(item => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                doc.text(`Nombre: ${item.name} - Precio: $${item.price} - Precio con descuento: $${priceWithDiscount.toFixed(2)}`, 10, y);
-                y += 10;
+            // Crear tabla en el PDF
+            doc.autoTable({
+                head: [['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad en Stock']],
+                body: inventory.map(item => {
+                    const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                    return [
+                        item.name,
+                        item.code,
+                        item.barcode,
+                        item.price,
+                        item.discount ? item.discount : 0,
+                        priceWithDiscount.toFixed(2),
+                        item.description,
+                        item.category,
+                        item.quantity
+                    ];
+                }),
+                startY: y,
+                margin: { top: 30 },
+                theme: 'grid',
             });
 
             doc.save("inventario.pdf");
