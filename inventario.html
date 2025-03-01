@@ -41,7 +41,6 @@
             text-align: center;
         }
 
-        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
             background-color: #dcdcdc; /* Gris claro */
             color: #333;
@@ -84,6 +83,24 @@
             background-color: #e8f7e1; /* Color verde clarito para el resaltado */
         }
 
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background-color: #555;
+        }
+
         /* Pantalla de búsqueda */
         .searching-screen {
             display: none;
@@ -99,7 +116,6 @@
             font-size: 24px;
         }
 
-        /* Mensaje cuando no hay productos disponibles */
         .no-products-message {
             color: red;
             font-weight: bold;
@@ -232,6 +248,12 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
+    <!-- Paginación -->
+    <div class="pagination">
+        <button id="prevPageButton">Anterior</button>
+        <button id="nextPageButton">Siguiente</button>
+    </div>
+
     <!-- Botón para redirigir a la página de almacenamiento -->
     <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
@@ -265,17 +287,23 @@
         const sellQuantityInput = document.getElementById('sellQuantityInput');
         const sellButton = document.getElementById('sellButton');
         const closeModalButton = document.getElementById('closeModalButton');
+        const prevPageButton = document.getElementById('prevPageButton');
+        const nextPageButton = document.getElementById('nextPageButton');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let currentItemIndex = null;
-        let currentItemCode = null;  // Usaremos el código para identificar el producto
+        let currentPage = 0;
+        const itemsPerPage = 100;
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchingScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
-            filteredInventory.forEach((item, index) => {
+            const start = currentPage * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = filteredInventory.slice(start, end);
+
+            pageItems.forEach((item, index) => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 const row = document.createElement('tr');
                 row.dataset.index = index;
@@ -408,20 +436,36 @@
             sortedRows.forEach(row => inventoryList.appendChild(row));
         }
 
+        // Paginación
+        prevPageButton.addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                loadInventory(filterInventory(searchInput.value));
+            }
+        });
+
+        nextPageButton.addEventListener('click', function() {
+            const filteredInventory = filterInventory(searchInput.value);
+            if ((currentPage + 1) * itemsPerPage < filteredInventory.length) {
+                currentPage++;
+                loadInventory(filteredInventory);
+            }
+        });
+
         // Búsqueda por input
         searchButton.addEventListener('click', function() {
             loadInventory(filterInventory(searchInput.value));
         });
 
+        // Limpiar búsqueda
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
             loadInventory(inventory);
         });
 
-        // Cargar inventario al cargar la página
+        // Inicializar
         loadInventory(inventory);
     });
 </script>
-
 </body>
 </html>
