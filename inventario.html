@@ -382,59 +382,28 @@
             // Resta la cantidad del inventario
             item.quantity -= quantityToSell;
 
-            // Si la cantidad llega a 0, eliminamos el producto
-            if (item.quantity <= 0) {
-                inventory = inventory.filter(i => i.code !== currentItemCode); // Eliminar por código
-            } else {
-                inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
-            }
-
-            // Agregar a la venta
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            soldItems.push({ ...item, soldQuantity: quantityToSell });
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            // Actualizar inventario en localStorage
+            // Guarda el inventario actualizado
             localStorage.setItem('inventory', JSON.stringify(inventory));
-
-            // Recargar inventario y cerrar el modal
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            loadInventory(filterInventory(searchInput.value));
             sellModal.style.display = 'none';
         });
 
-        // Función para cerrar el modal
+        // Cerrar el modal
         closeModalButton.addEventListener('click', function() {
             sellModal.style.display = 'none';
         });
 
-        // Función para eliminar un producto
-        window.deleteItem = function(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
-        };
+        // Limpiar búsqueda
+        clearSearchButton.addEventListener('click', function() {
+            searchInput.value = '';
+            loadInventory(inventory);
+        });
 
-        // Función para eliminar todos los productos
-        window.deleteAll = function() {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory([]);
-        };
-
-        // Función para ordenar la tabla por columnas
-        function sortTable(n) {
-            const rows = Array.from(inventoryList.rows);
-            const sortedRows = rows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[n].textContent.trim();
-                const cellB = rowB.cells[n].textContent.trim();
-
-                if (cellA > cellB) return 1;
-                if (cellA < cellB) return -1;
-                return 0;
-            });
-
-            sortedRows.forEach(row => inventoryList.appendChild(row));
-        }
+        // Realizar búsqueda
+        searchButton.addEventListener('click', function() {
+            const query = searchInput.value;
+            loadInventory(filterInventory(query));
+        });
 
         // Paginación
         prevPageButton.addEventListener('click', function() {
@@ -450,17 +419,6 @@
                 currentPage++;
                 loadInventory(filteredInventory);
             }
-        });
-
-        // Búsqueda por input
-        searchButton.addEventListener('click', function() {
-            loadInventory(filterInventory(searchInput.value));
-        });
-
-        // Limpiar búsqueda
-        clearSearchButton.addEventListener('click', function() {
-            searchInput.value = '';
-            loadInventory(inventory);
         });
 
         // Inicializar
