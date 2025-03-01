@@ -219,8 +219,26 @@
                     ];
                 }),
                 startY: y,
-                margin: { top: 30 },
-                theme: 'grid',
+                margin: { top: 30, left: 10, right: 10, bottom: 10 },
+                theme: 'striped',
+                styles: {
+                    cellPadding: 2,
+                    fontSize: 8,
+                    minCellHeight: 8,
+                    halign: 'center',
+                    valign: 'middle',
+                },
+                headStyles: {
+                    fillColor: [0, 112, 255], // Color de fondo para los encabezados
+                    textColor: [255, 255, 255], // Color del texto de los encabezados
+                    fontStyle: 'bold'
+                },
+                bodyStyles: {
+                    lineWidth: 0.5,
+                    lineColor: [0, 0, 0],
+                    halign: 'center',
+                    valign: 'middle',
+                },
             });
 
             doc.save("inventario.pdf");
