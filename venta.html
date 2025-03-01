@@ -145,10 +145,19 @@
 
         // Función para eliminar un producto vendido individualmente
         window.deleteSoldItem = function(index) {
+            console.log("Intentando eliminar índice:", index);
+            console.log("Elementos antes de eliminar:", soldItems);
+
             if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-                soldItems.splice(index, 1); // Eliminar el producto por su índice
-                localStorage.setItem('soldItems', JSON.stringify(soldItems));
-                loadSoldItems(); // Volver a cargar los productos actualizados
+                if (index >= 0 && index < soldItems.length) { // Verifica que el índice sea válido
+                    soldItems.splice(index, 1); // Elimina el producto
+                    localStorage.setItem('soldItems', JSON.stringify(soldItems));
+                    loadSoldItems(); // Vuelve a cargar la lista actualizada
+                    console.log("Elemento eliminado correctamente.");
+                } else {
+                    alert("Error: Índice no válido. Vuelva a intentar.");
+                    console.error("Índice fuera de rango:", index);
+                }
             }
         };
 
