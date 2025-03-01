@@ -270,7 +270,7 @@
         let currentItemIndex = null;
         let currentItemCode = null;  // Usaremos el código para identificar el producto
 
-        // Función para cargar el inventario de manera confiable
+        // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchingScreen.style.display = 'block';
             inventoryList.innerHTML = '';
@@ -317,12 +317,10 @@
             searchingScreen.style.display = 'none';
         }
 
-        // Asegura que siempre se carguen los productos disponibles
-        loadInventory(inventory);
-
         // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
+
             return inventory.filter(item => {
                 return item.name.toLowerCase().includes(normalizedQuery) || 
                        item.code.toLowerCase().includes(normalizedQuery) || 
@@ -331,6 +329,86 @@
             });
         }
 
+        // Función para abrir el modal de cantidad a vender
+        window.openSellModal = function(index, code) {
+            currentItemIndex = index;
+            currentItemCode = code;
+            sellModal.style.display = 'block';
+        };
+
+        // Función para vender productos
+        sellButton.addEventListener('click', function() {
+            const quantityToSell = parseInt(sellQuantityInput.value);
+            const item = inventory.find(i => i.code === currentItemCode);  // Filtrar por código
+
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
+                alert("Por favor, ingresa una cantidad válida.");
+                return;
+            }
+
+            if (quantityToSell > item.quantity) {
+                alert("No hay suficiente stock para realizar la venta.");
+                return;
+            }
+
+            // Resta la cantidad del inventario
+            item.quantity -= quantityToSell;
+
+            // Si la cantidad llega a 0, eliminamos el producto
+            if (item.quantity <= 0) {
+                inventory = inventory.filter(i => i.code !== currentItemCode); // Eliminar por código
+            } else {
+                inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
+            }
+
+            // Agregar a la venta
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            soldItems.push({ ...item, soldQuantity: quantityToSell });
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+
+            // Actualizar inventario en localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            // Recargar inventario y cerrar el modal
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            sellModal.style.display = 'none';
+        });
+
+        // Función para cerrar el modal
+        closeModalButton.addEventListener('click', function() {
+            sellModal.style.display = 'none';
+        });
+
+        // Función para eliminar un producto
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+        }
+
+        // Función para eliminar todos los productos
+        function deleteAll() {
+            inventory = [];
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory([]);
+        }
+
+        // Función para ordenar la tabla por columnas
+        function sortTable(n) {
+            const rows = Array.from(inventoryList.rows);
+            const sortedRows = rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[n].textContent.trim();
+                const cellB = rowB.cells[n].textContent.trim();
+
+                if (cellA > cellB) return 1;
+                if (cellA < cellB) return -1;
+                return 0;
+            });
+
+            sortedRows.forEach(row => inventoryList.appendChild(row));
+        }
+
+        // Búsqueda por input
         searchButton.addEventListener('click', function() {
             loadInventory(filterInventory(searchInput.value));
         });
@@ -340,59 +418,8 @@
             loadInventory(inventory);
         });
 
-        function openSellModal(index, code) {
-            currentItemIndex = index;
-            currentItemCode = code;
-            sellModal.style.display = 'block';
-        }
-
-        closeModalButton.addEventListener('click', function() {
-            sellModal.style.display = 'none';
-        });
-
-        sellButton.addEventListener('click', function() {
-            const quantityToSell = parseInt(sellQuantityInput.value);
-            if (quantityToSell > 0) {
-                const item = inventory[currentItemIndex];
-                if (item.quantity >= quantityToSell) {
-                    item.quantity -= quantityToSell;
-                    localStorage.setItem('inventory', JSON.stringify(inventory));
-                    loadInventory(inventory);
-                    sellModal.style.display = 'none';
-                } else {
-                    alert('No hay suficientes productos en stock.');
-                }
-            } else {
-                alert('Por favor, ingresa una cantidad válida.');
-            }
-        });
-
-        function deleteItem(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(inventory);
-        }
-
-        function deleteAll() {
-            if (confirm('¿Estás seguro de que deseas eliminar todos los productos?')) {
-                inventory = [];
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory(inventory);
-            }
-        }
-
-        function sortTable(columnIndex) {
-            inventory.sort((a, b) => {
-                if (a[columnIndex] < b[columnIndex]) {
-                    return -1;
-                }
-                if (a[columnIndex] > b[columnIndex]) {
-                    return 1;
-                }
-                return 0;
-            });
-            loadInventory(inventory);
-        }
+        // Cargar inventario al cargar la página
+        loadInventory(inventory);
     });
 </script>
 
