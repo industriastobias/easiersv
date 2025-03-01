@@ -105,8 +105,9 @@
                     <th>Precio</th>
                     <th>Descuento (%)</th>
                     <th>Precio Con Descuento</th>
-                    <th>Cantidad Vendida</th>
-                    <th>Total Venta</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
                 </tr>
             </thead>
             <tbody id="soldList">
@@ -143,7 +144,6 @@
 
             soldItems.forEach(item => {
                 const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                const totalSale = priceWithDiscount * item.soldQuantity;
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.name}</td>
@@ -152,8 +152,9 @@
                     <td>${item.price}</td>
                     <td>${item.discount}</td>
                     <td>${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.soldQuantity}</td>
-                    <td>${totalSale.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.stock}</td>
                 `;
                 soldList.appendChild(row);
             });
