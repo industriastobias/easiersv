@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario Detallado</title>
     <style>
-        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -102,61 +101,6 @@
             background-color: #555;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-        }
-
-        .modal-content {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            margin: auto;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .modal button {
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .modal button:hover {
-            background-color: #45a049;
-        }
-
-        .modal .close {
-            background-color: red;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .modal .close:hover {
-            background-color: darkred;
-        }
-
-        /* Pantalla de búsqueda */
         .search-screen {
             display: none;
             position: fixed;
@@ -260,19 +204,28 @@
             loadInventory(inventory); // Recargar inventario completo
         });
 
-        // Función de búsqueda
+        // Función de búsqueda eficiente
         searchButton.addEventListener('click', function () {
-            const query = searchInput.value.toLowerCase();
-            const filteredInventory = inventory.filter(item => 
-                item.name.toLowerCase().includes(query) || 
-                item.code.toLowerCase().includes(query) ||
-                item.category.toLowerCase().includes(query)
-            );
-            loadInventory(filteredInventory);
+            const query = searchInput.value.toLowerCase().trim();
+            if (query === "") {
+                loadInventory(inventory); // Recargar inventario completo si no hay búsqueda
+                return;
+            }
+
+            searchScreen.style.display = 'block';
+
+            // Filtrar productos
+            const filteredInventory = inventory.filter(item => {
+                return item.name.toLowerCase().includes(query) ||
+                       item.code.toLowerCase().includes(query) ||
+                       item.category.toLowerCase().includes(query);
+            });
+
+            loadInventory(filteredInventory); // Mostrar los productos filtrados
         });
 
         // Cargar inventario al iniciar
-        loadInventory(inventory); 
+        loadInventory(inventory);
     });
 </script>
 
