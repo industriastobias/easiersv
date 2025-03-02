@@ -77,18 +77,6 @@
             background-color: #e0f7fa;
         }
 
-        .delete-item {
-            background-color: red;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .delete-item:hover {
-            background-color: darkred;
-        }
-
         .clear-search {
             background-color: #333;
             color: white;
@@ -209,7 +197,6 @@
                 <th>Descripción</th>
                 <th>Categoría</th>
                 <th>Cantidad en Stock</th>
-                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -218,8 +205,8 @@
     </table>
 
     <div class="total-container">
-        <h2>Total en Dólares Americanos:</h2>
-        <p id="totalAmount">0,00 dólares</p>
+        <h2>Total de Productos Disponibles:</h2>
+        <p id="totalProducts">0</p>
     </div>
 
     <a href="storage.html" class="storage-button">Ir a Almacenamiento</a>
@@ -232,7 +219,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const inventoryList = document.getElementById('inventoryList').getElementsByTagName('tbody')[0];
-        const totalAmount = document.getElementById('totalAmount');
+        const totalProducts = document.getElementById('totalProducts');
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
         const clearSearchButton = document.getElementById('clearSearchButton');
@@ -244,10 +231,9 @@
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
-            filteredInventory.forEach((item, index) => {
+            filteredInventory.forEach((item) => {
                 let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 const row = document.createElement('tr');
-                row.dataset.index = index;
                 row.innerHTML =
                     `<td>${item.name}</td>
                      <td>${item.code}</td>
@@ -257,27 +243,15 @@
                      <td>$${priceWithDiscount.toFixed(2)}</td>
                      <td>${item.description}</td>
                      <td>${item.category}</td>
-                     <td>${item.quantity}</td>
-                     <td>
-                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
-                     </td>`;
+                     <td>${item.quantity}</td>`;
                 inventoryList.appendChild(row);
             });
 
-            const total = filteredInventory.reduce((sum, item) => {
-                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return sum + (priceWithDiscount * item.quantity);
-            }, 0);
+            // Total de productos disponibles
+            const total = filteredInventory.reduce((sum, item) => sum + item.quantity, 0);
+            totalProducts.textContent = total;
 
-            totalAmount.textContent = `$${total.toFixed(2)}`;
             searchScreen.style.display = 'none';
-        }
-
-        // Función para eliminar un producto
-        function deleteItem(index) {
-            inventory.splice(index, 1); // Eliminar producto
-            localStorage.setItem('inventory', JSON.stringify(inventory)); // Guardar cambios
-            loadInventory(inventory); // Recargar inventario
         }
 
         // Función para limpiar búsqueda
