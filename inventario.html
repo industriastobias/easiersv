@@ -55,18 +55,6 @@
             background-color: #E8F7E1; /* Color verde clarito de resaltado cuando se trata */
         }
 
-        .delete-item {
-            background-color: red;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .delete-item:hover {
-            background-color: darkred;
-        }
-
         .storage-button {
             display: inline-block;
             background-color: #333;
@@ -210,14 +198,13 @@
                     <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
                     <th class="sortable" onclick="orderTable(6)">Descripción</th>
                     <th class="sortable" onclick="orderTable(7)">Categoría</th>
-                    <th>En acciones</th>
+                    <th>En Stock</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
                 <!-- Las filas de inventario se llenarán dinámicamente -->
             </tbody>
         </table>
-        <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
 
     <div class="total-container">
@@ -276,10 +263,7 @@
                      <td>$${priceWithDiscount.toFixed(2)}</td>
                      <td>${item.description}</td>
                      <td>${item.category}</td>
-                     <td>${item.quantity}</td>
-                     <td>
-                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
-                     </td>`;
+                     <td>${item.quantity}</td>`;
                 inventoryList.appendChild(row);
             });
 
@@ -309,35 +293,6 @@
                 item.barcode.toLowerCase().includes(normalizedQuery) ||
                 item.description.toLowerCase().includes(normalizedQuery)
             );
-        }
-
-        // Función para eliminar un producto
-        function deleteItem(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
-        }
-
-        // Función para eliminar todos los productos
-        function deleteAll() {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory([]);
-        }
-
-        // Función para ordenar la tabla por columnas
-        function orderTable(n) {
-            const rows = Array.from(inventoryList.rows);
-            const sortedRows = rows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[n].textContent.trim();
-                const cellB = rowB.cells[n].textContent.trim();
-
-                if (cellA > cellB) return 1;
-                if (cellA < cellB) return -1;
-                return 0;
-            });
-
-            sortedRows.forEach(row => inventoryList.appendChild(row));
         }
 
         // Búsqueda por entrada
