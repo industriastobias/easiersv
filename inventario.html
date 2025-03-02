@@ -8,9 +8,9 @@
         /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
         }
 
         .header {
@@ -27,12 +27,35 @@
 
         .search-container {
             margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-container input,
+        .search-container button {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .search-container input {
+            width: 60%;
+            margin-right: 10px;
+        }
+
+        .search-container button {
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: none;
+        }
+
+        .search-container button:hover {
+            background-color: #555;
         }
 
         .inventory-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
 
         .inventory-table th, .inventory-table td {
@@ -41,10 +64,13 @@
             text-align: center;
         }
 
-        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
-            background-color: #8c8c8c;
-            color: #fff;
+            background-color: #333;
+            color: white;
+        }
+
+        .inventory-table tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
         .inventory-table tr:hover {
@@ -63,6 +89,18 @@
             background-color: darkred;
         }
 
+        .clear-search {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .clear-search:hover {
+            background-color: #555;
+        }
+
         .storage-button {
             display: inline-block;
             background-color: #333;
@@ -74,10 +112,6 @@
 
         .storage-button:hover {
             background-color: #555;
-        }
-
-        .highlighted {
-            background-color: #f1f1f1;
         }
 
         .modal {
@@ -148,31 +182,6 @@
             padding-top: 20%;
             font-size: 24px;
         }
-
-        /* Mensaje cuando no hay productos disponibles */
-        .no-products-message {
-            color: red;
-            font-weight: bold;
-        }
-
-        .clear-search {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .clear-search:hover {
-            background-color: #555;
-        }
-
-        /* Contenido de la tabla de inventario */
-        .inventory-table td,
-        .inventory-table th {
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -188,27 +197,25 @@
         <button class="clear-search" id="clearSearchButton">Limpiar</button>
     </div>
 
-    <div class="inventory-table">
-        <table>
-            <thead>
-                <tr>
-                    <th class="sortable" onclick="orderTable(0)">Nombre</th>
-                    <th class="sortable" onclick="orderTable(1)">Código</th>
-                    <th class="sortable" onclick="orderTable(2)">Código de Barras</th>
-                    <th class="sortable" onclick="orderTable(3)">Precio</th>
-                    <th class="sortable" onclick="orderTable(4)">Descuento (%)</th>
-                    <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
-                    <th class="sortable" onclick="orderTable(6)">Descripción</th>
-                    <th class="sortable" onclick="orderTable(7)">Categoría</th>
-                    <th class="sortable" onclick="orderTable(8)">Cantidad en Stock</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryList">
-                <!-- Las filas de inventario se llenarán dinámicamente -->
-            </tbody>
-        </table>
-    </div>
+    <table class="inventory-table" id="inventoryList">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Código de Barras</th>
+                <th>Precio</th>
+                <th>Descuento (%)</th>
+                <th>Precio Con Descuento</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Cantidad en Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas de inventario se llenarán dinámicamente -->
+        </tbody>
+    </table>
 
     <div class="total-container">
         <h2>Total en Dólares Americanos:</h2>
@@ -224,7 +231,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const inventoryList = document.getElementById('inventoryList');
+        const inventoryList = document.getElementById('inventoryList').getElementsByTagName('tbody')[0];
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
@@ -289,18 +296,6 @@
             );
             loadInventory(filteredInventory);
         });
-
-        // Función para ordenar la tabla
-        function orderTable(columnIndex) {
-            const rows = Array.from(inventoryList.getElementsByTagName('tr'));
-            const sortedRows = rows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[columnIndex].textContent.trim();
-                const cellB = rowB.cells[columnIndex].textContent.trim();
-                return cellA > cellB ? 1 : -1;
-            });
-
-            sortedRows.forEach(row => inventoryList.appendChild(row));
-        }
 
         loadInventory(inventory); // Cargar inventario al iniciar
     });
