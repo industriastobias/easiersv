@@ -338,7 +338,6 @@
                 return;
             }
 
-            // Resta la cantidad del inventario
             item.quantity -= quantityToSell;
 
             if (item.quantity === 0) {
@@ -347,64 +346,46 @@
                 inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
             }
 
-            // Agregar a la venta
             let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
             soldItems.push({...item, soldQuantity: quantityToSell});
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            // Actualizar inventario en localStorage
+            // Actualizar inventario
             localStorage.setItem('inventory', JSON.stringify(inventory));
-
-            // Recargar inventario y cerrar el modal
             loadInventory(filterInventory(searchInput.value.toLowerCase()));
             sellModal.style.display = 'none';
         });
 
-        // Función para cerrar el modal
         closeModalButton.addEventListener('click', function() {
             sellModal.style.display = 'none';
         });
 
         // Función para eliminar un producto
         function deleteItem(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            inventory.splice(index, 1); // Eliminar el producto del inventario
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Guardar inventario actualizado
+            loadInventory(filterInventory(searchInput.value.toLowerCase())); // Recargar inventario
         }
 
-        // Función para eliminar todos los productos
+        // Función para eliminar todo el inventario
         function deleteAll() {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory([]);
+            inventory = []; // Limpiar el inventario
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Guardar inventario vacío
+            loadInventory(filterInventory(searchInput.value.toLowerCase())); // Recargar inventario vacío
         }
 
-        // Función para ordenar la tabla por columnas
-        function orderTable(n) {
-            const rows = Array.from(inventoryList.rows);
-            const sortedRows = rows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[n].textContent.trim();
-                const cellB = rowB.cells[n].textContent.trim();
-
-                if (cellA > cellB) return 1;
-                if (cellA < cellB) return -1;
-                return 0;
-            });
-
-            sortedRows.forEach(row => inventoryList.appendChild(row));
-        }
-
-        // Búsqueda por entrada
+        // Búsqueda de productos
         searchButton.addEventListener('click', function() {
             loadInventory(filterInventory(searchInput.value));
         });
 
+        // Limpiar búsqueda
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
             loadInventory(inventory);
         });
 
-        // Cargar inventario al cargar la página
+        // Inicializar el inventario
         loadInventory(inventory);
     });
 </script>
