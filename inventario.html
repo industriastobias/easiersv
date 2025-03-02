@@ -383,14 +383,20 @@
             }
 
             item.quantity -= quantityToSell;
-            if (item.quantity === 0) {
-                inventory.splice(currentItemIndex, 1);
-            } else {
-                inventory[currentItemIndex] = item;
-            }
 
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(inventory);
+            // Redirigir a venta.html con la información del producto
+            localStorage.setItem('currentSaleProduct', JSON.stringify({
+                name: item.name,
+                code: item.code,
+                quantity: quantityToSell,
+                price: item.price
+            }));
+
+            // Redirigir a la página de ventas
+            window.location.href = 'venta.html';
+
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Actualizar inventario
+            loadInventory(inventory); // Recargar inventario
             sellModal.style.display = 'none';
         });
 
@@ -401,32 +407,44 @@
         // Función para eliminar un producto
         function deleteItem(index) {
             inventory.splice(index, 1); // Eliminar producto
-            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Guardar cambios
             loadInventory(inventory); // Recargar inventario
         }
+
+        // Función para limpiar búsqueda
+        clearSearchButton.addEventListener('click', function () {
+            searchInput.value = '';
+            loadInventory(inventory); // Recargar inventario completo
+        });
 
         // Función de búsqueda
         searchButton.addEventListener('click', function () {
             const query = searchInput.value.toLowerCase();
             const filteredInventory = inventory.filter(item => 
-                item.name.toLowerCase().includes(query) ||
+                item.name.toLowerCase().includes(query) || 
                 item.code.toLowerCase().includes(query) ||
                 item.category.toLowerCase().includes(query)
             );
             loadInventory(filteredInventory);
         });
 
-        clearSearchButton.addEventListener('click', function () {
-            searchInput.value = '';
-            loadInventory(inventory); // Recargar inventario sin filtrar
-        });
+        // Función para ordenar la tabla
+        function orderTable(columnIndex) {
+            const rows = Array.from(inventoryList.getElementsByTagName('tr'));
+            const sortedRows = rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex].textContent.trim();
+                const cellB = rowB.cells[columnIndex].textContent.trim();
+                return cellA > cellB ? 1 : -1;
+            });
+
+            sortedRows.forEach(row => inventoryList.appendChild(row));
+        }
 
         closeDetailsButton.addEventListener('click', function () {
             detailsScreen.style.display = 'none';
         });
 
-        // Inicializar el inventario
-        loadInventory(inventory);
+        loadInventory(inventory); // Cargar inventario al iniciar
     });
 </script>
 
