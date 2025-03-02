@@ -210,7 +210,7 @@
                     <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
                     <th class="sortable" onclick="orderTable(6)">Descripción</th>
                     <th class="sortable" onclick="orderTable(7)">Categoría</th>
-                    <th>En acciones</th>
+                    <th>Cantidad en stock</th> <!-- Cambiado de "En acciones" a "Cantidad en stock" -->
                 </tr>
             </thead>
             <tbody id="inventoryList">
@@ -278,13 +278,7 @@
                      <td>$${priceWithDiscount.toFixed(2)}</td>
                      <td>${item.description}</td>
                      <td>${item.category}</td>
-                     <td>${item.quantity}</td>
-                     <td>
-                        <button onclick="openSellModal(${index}, '${item.code}')">Marcar como Vendido</button>
-                     </td>
-                     <td>
-                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
-                     </td>`;
+                     <td>${item.quantity}</td>`; <!-- Mostrar la cantidad en stock -->
                 inventoryList.appendChild(row);
             });
 
