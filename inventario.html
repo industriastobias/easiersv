@@ -195,6 +195,7 @@
             const total = filteredInventory.reduce((sum, item) => sum + item.quantity, 0);
             totalProducts.textContent = total;
 
+            // Desaparece la pantalla de "Buscando producto"
             searchScreen.style.display = 'none';
         }
 
