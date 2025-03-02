@@ -284,14 +284,15 @@
             searchScreen.style.display = 'none';
         }
 
-        // Filtrar inventario según la búsqueda
+        // Filtrar inventario según la búsqueda (para que busque por cualquier parte de las palabras)
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
             return inventory.filter(item => 
                 item.name.toLowerCase().includes(normalizedQuery) ||
                 item.code.toLowerCase().includes(normalizedQuery) ||
                 item.barcode.toLowerCase().includes(normalizedQuery) ||
-                item.description.toLowerCase().includes(normalizedQuery)
+                item.description.toLowerCase().includes(normalizedQuery) ||
+                item.category.toLowerCase().includes(normalizedQuery)
             );
         }
 
