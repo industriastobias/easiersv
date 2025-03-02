@@ -200,7 +200,8 @@
                     <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
                     <th class="sortable" onclick="orderTable(6)">Descripción</th>
                     <th class="sortable" onclick="orderTable(7)">Categoría</th>
-                    <th>Cantidad</th>
+                    <th class="sortable" onclick="orderTable(8)">Cantidad en Stock</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
@@ -236,9 +237,10 @@
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
-            filteredInventory.forEach((item) => {
+            filteredInventory.forEach((item, index) => {
                 let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                 const row = document.createElement('tr');
+                row.dataset.index = index;
                 row.innerHTML =
                     `<td>${item.name}</td>
                      <td>${item.code}</td>
@@ -248,7 +250,10 @@
                      <td>$${priceWithDiscount.toFixed(2)}</td>
                      <td>${item.description}</td>
                      <td>${item.category}</td>
-                     <td>${item.quantity}</td>`;
+                     <td>${item.quantity}</td>
+                     <td>
+                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
+                     </td>`;
                 inventoryList.appendChild(row);
             });
 
@@ -259,6 +264,13 @@
 
             totalAmount.textContent = `$${total.toFixed(2)}`;
             searchScreen.style.display = 'none';
+        }
+
+        // Función para eliminar un producto
+        function deleteItem(index) {
+            inventory.splice(index, 1); // Eliminar producto
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Guardar cambios
+            loadInventory(inventory); // Recargar inventario
         }
 
         // Función para limpiar búsqueda
