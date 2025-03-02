@@ -55,6 +55,18 @@
             background-color: #E8F7E1; /* Color verde clarito de resaltado cuando se trata */
         }
 
+        .delete-item {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-item:hover {
+            background-color: darkred;
+        }
+
         .storage-button {
             display: inline-block;
             background-color: #333;
@@ -198,13 +210,14 @@
                     <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
                     <th class="sortable" onclick="orderTable(6)">Descripción</th>
                     <th class="sortable" onclick="orderTable(7)">Categoría</th>
-                    <th>En Stock</th>
+                    <th>En acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
                 <!-- Las filas de inventario se llenarán dinámicamente -->
             </tbody>
         </table>
+        <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
 
     <div class="total-container">
@@ -212,7 +225,7 @@
         <p id="totalAmount">0,00 dólares</p>
     </div>
 
-    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
+    <a href="storage.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
 <div id="searchScreen" class="search-screen">
@@ -244,6 +257,8 @@
         const closeModalButton = document.getElementById('closeModalButton');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let currentItemIndex = null;
+        let currentItemCode = null;
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
@@ -263,7 +278,13 @@
                      <td>$${priceWithDiscount.toFixed(2)}</td>
                      <td>${item.description}</td>
                      <td>${item.category}</td>
-                     <td>${item.quantity}</td>`;
+                     <td>${item.quantity}</td>
+                     <td>
+                        <button onclick="openSellModal(${index}, '${item.code}')">Marcar como Vendido</button>
+                     </td>
+                     <td>
+                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
+                     </td>`;
                 inventoryList.appendChild(row);
             });
 
@@ -284,16 +305,93 @@
             searchScreen.style.display = 'none';
         }
 
-        // Filtrar inventario según la búsqueda (para que busque por cualquier parte de las palabras)
+        // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
             return inventory.filter(item => 
                 item.name.toLowerCase().includes(normalizedQuery) ||
                 item.code.toLowerCase().includes(normalizedQuery) ||
                 item.barcode.toLowerCase().includes(normalizedQuery) ||
-                item.description.toLowerCase().includes(normalizedQuery) ||
-                item.category.toLowerCase().includes(normalizedQuery)
+                item.description.toLowerCase().includes(normalizedQuery)
             );
+        }
+
+        // Función para abrir la modal cantidad de a vender
+        function openSellModal(index, code) {
+            currentItemIndex = index;
+            currentItemCode = code;
+            sellModal.style.display = 'block';
+        }
+
+        // Función para vender productos
+        sellButton.addEventListener('click', function() {
+            const quantityToSell = parseInt(sellQuantityInput.value);
+            const item = inventory.find(i => i.code === currentItemCode);
+
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
+                alert('Por favor, ingresa una cantidad válida.');
+                return;
+            }
+
+            if (quantityToSell > item.quantity) {
+                alert('No hay suficiente stock para realizar la venta.');
+                return;
+            }
+
+            // Resta la cantidad del inventario
+            item.quantity -= quantityToSell;
+
+            if (item.quantity === 0) {
+                inventory = inventory.filter(i => i.code !== currentItemCode); // Eliminar por código
+            } else {
+                inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
+            }
+
+            // Agregar a la venta
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+            soldItems.push({...item, soldQuantity: quantityToSell});
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+
+            // Actualizar inventario en localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            // Recargar inventario y cerrar el modal
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+            sellModal.style.display = 'none';
+        });
+
+        // Función para cerrar el modal
+        closeModalButton.addEventListener('click', function() {
+            sellModal.style.display = 'none';
+        });
+
+        // Función para eliminar un producto
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory(filterInventory(searchInput.value.toLowerCase()));
+        }
+
+        // Función para eliminar todos los productos
+        function deleteAll() {
+            inventory = [];
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory([]);
+        }
+
+        // Función para ordenar la tabla por columnas
+        function orderTable(n) {
+            const rows = Array.from(inventoryList.rows);
+            const sortedRows = rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[n].textContent.trim();
+                const cellB = rowB.cells[n].textContent.trim();
+
+                if (cellA > cellB) return 1;
+                if (cellA < cellB) return -1;
+                return 0;
+            });
+
+            sortedRows.forEach(row => inventoryList.appendChild(row));
         }
 
         // Búsqueda por entrada
