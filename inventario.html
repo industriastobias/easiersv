@@ -280,16 +280,20 @@
 
         // Eliminar un producto
         function deleteItem(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory();
+            if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                inventory.splice(index, 1);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory();
+            }
         }
 
         // Eliminar todos los productos
         function deleteAll() {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory();
+            if (confirm('¿Estás seguro de que deseas eliminar todos los productos?')) {
+                inventory = [];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventory();
+            }
         }
 
         // Abrir modal para vender
@@ -308,7 +312,7 @@
             const quantityToSell = parseInt(sellQuantityInput.value);
             const item = inventory[currentItemIndex];
 
-            if (isNaN(quantityToSell) {
+            if (isNaN(quantityToSell) || quantityToSell <= 0) {
                 alert('Ingresa una cantidad válida.');
                 return;
             }
