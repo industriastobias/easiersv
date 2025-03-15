@@ -257,8 +257,6 @@
         const closeModalButton = document.getElementById('closeModalButton');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let currentItemIndex = null;
-        let currentItemCode = null;
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
