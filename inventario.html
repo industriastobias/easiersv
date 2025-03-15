@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
+        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -220,10 +221,15 @@
         const sellButton = document.getElementById('sellButton');
         const closeModalButton = document.getElementById('closeModalButton');
 
+        // Cargar inventario desde localStorage o inicializar vacío
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let currentItemIndex = null;
 
-        // Cargar inventario desde localStorage
+        // Función para guardar el inventario en localStorage
+        function saveInventory() {
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+        }
+
+        // Cargar inventario en la tabla
         function loadInventory(filteredInventory = inventory) {
             inventoryList.innerHTML = '';
 
@@ -282,8 +288,8 @@
         function deleteItem(index) {
             if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
                 inventory.splice(index, 1);
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory();
+                saveInventory(); // Guardar cambios en localStorage
+                loadInventory(); // Recargar la tabla
             }
         }
 
@@ -291,8 +297,8 @@
         function deleteAll() {
             if (confirm('¿Estás seguro de que deseas eliminar todos los productos?')) {
                 inventory = [];
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory();
+                saveInventory(); // Guardar cambios en localStorage
+                loadInventory(); // Recargar la tabla
             }
         }
 
@@ -327,8 +333,8 @@
                 inventory.splice(currentItemIndex, 1);
             }
 
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory();
+            saveInventory(); // Guardar cambios en localStorage
+            loadInventory(); // Recargar la tabla
             sellModal.style.display = 'none';
         });
 
