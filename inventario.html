@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventario</title>
     <style>
-        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -14,7 +13,7 @@
         }
 
         .header {
-            background-color: #8c8c8c; /* Gris suave */
+            background-color: #8c8c8c;
             color: white;
             text-align: center;
             padding: 10px;
@@ -41,18 +40,13 @@
             text-align: center;
         }
 
-        /* Color de la barra de encabezado de la tabla */
         .inventory-table th {
-            background-color: #dcdcdc; /* Gris claro */
+            background-color: #dcdcdc;
             color: #333;
         }
 
         .inventory-table tr:hover {
-            background-color: #E8F7E1; /* Color verde clarito de resaltado al pasar el puntero */
-        }
-
-        .inventory-table tr.highlight {
-            background-color: #E8F7E1; /* Color verde clarito de resaltado cuando se trata */
+            background-color: #E8F7E1;
         }
 
         .delete-item {
@@ -80,32 +74,11 @@
             background-color: #555;
         }
 
-        .highlighted {
-            background-color: #E8F7E1; /* Color verde clarito para el resaltado */
-        }
-
-        /* Pantalla de búsqueda */
-        .search-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-            font-size: 24px;
-        }
-
-        /* Mensaje cuando no hay productos disponibles */
         .no-products-message {
             color: red;
             font-weight: bold;
         }
 
-        /* Modal de cantidad para vender */
         .modal {
             display: none;
             position: fixed;
@@ -160,7 +133,6 @@
             background-color: darkred;
         }
 
-        /* Nuevos estilos para mejoras */
         .clear-search {
             background-color: #333;
             color: white;
@@ -172,10 +144,6 @@
 
         .clear-search:hover {
             background-color: #555;
-        }
-
-        .sortable:hover {
-            background-color: #f1f1f1;
         }
     </style>
 </head>
@@ -202,15 +170,16 @@
         <table>
             <thead>
                 <tr>
-                    <th class="sortable" onclick="orderTable(0)">Nombre</th>
-                    <th class="sortable" onclick="orderTable(1)">Código</th>
-                    <th class="sortable" onclick="orderTable(2)">Código de Barras</th>
-                    <th class="sortable" onclick="orderTable(3)">Precio</th>
-                    <th class="sortable" onclick="orderTable(4)">Descuento (%)</th>
-                    <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
-                    <th class="sortable" onclick="orderTable(6)">Descripción</th>
-                    <th class="sortable" onclick="orderTable(7)">Categoría</th>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
                     <th>Cantidad en stock</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
@@ -228,10 +197,6 @@
     <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
-<div id="searchScreen" class="search-screen">
-    Buscando producto...
-</div>
-
 <div id="sellModal" class="modal">
     <div class="modal-content">
         <h2>¿Cuántas unidades deseas vender?</h2>
@@ -242,7 +207,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const inventoryList = document.getElementById('inventoryList');
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
@@ -250,83 +215,134 @@
         const clearSearchButton = document.getElementById('clearSearchButton');
         const totalCount = document.getElementById('totalCount');
         const noProductsMessage = document.getElementById('noProductsMessage');
-        const searchScreen = document.getElementById('searchScreen');
         const sellModal = document.getElementById('sellModal');
         const sellQuantityInput = document.getElementById('sellQuantityInput');
         const sellButton = document.getElementById('sellButton');
         const closeModalButton = document.getElementById('closeModalButton');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let currentItemIndex = null;
 
         // Cargar inventario desde localStorage
-        function loadInventory(filteredInventory) {
-            searchScreen.style.display = 'block';
+        function loadInventory(filteredInventory = inventory) {
             inventoryList.innerHTML = '';
 
-            filteredInventory.forEach((item, index) => {
-                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                const row = document.createElement('tr');
-                row.dataset.index = index;
-                row.innerHTML =
-                    `<td>${item.name}</td>
-                     <td>${item.code}</td>
-                     <td>${item.barcode}</td>
-                     <td>${item.price}</td>
-                     <td>${item.discount ? item.discount : 0}%</td>
-                     <td>$${priceWithDiscount.toFixed(2)}</td>
-                     <td>${item.description}</td>
-                     <td>${item.category}</td>
-                     <td>${item.quantity}</td>`;
-                inventoryList.appendChild(row);
-            });
-
-            const total = filteredInventory.reduce((sum, item) => {
-                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return sum + (priceWithDiscount * parseInt(item.quantity));
-            }, 0);
-            totalAmount.textContent = `$${total.toFixed(2)}`;
-
-            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
-            if (totalQuantity === 0) {
+            if (filteredInventory.length === 0) {
                 noProductsMessage.style.display = 'block';
             } else {
                 noProductsMessage.style.display = 'none';
             }
 
-            totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
-            searchScreen.style.display = 'none';
+            filteredInventory.forEach((item, index) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>${item.discount || 0}%</td>
+                    <td>$${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantity}</td>
+                    <td>
+                        <button class="delete-item" onclick="deleteItem(${index})">Eliminar</button>
+                        <button class="sell-item" onclick="openSellModal(${index})">Vender</button>
+                    </td>
+                `;
+                inventoryList.appendChild(row);
+            });
+
+            updateTotal();
+        }
+
+        // Actualizar el total en dólares
+        function updateTotal() {
+            const total = inventory.reduce((sum, item) => {
+                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                return sum + (priceWithDiscount * item.quantity);
+            }, 0);
+            totalAmount.textContent = `$${total.toFixed(2)}`;
+            totalCount.textContent = `Número de productos disponibles: ${inventory.length}`;
         }
 
         // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
-            return inventory.filter(item => 
+            return inventory.filter(item =>
                 item.name.toLowerCase().includes(normalizedQuery) ||
                 item.code.toLowerCase().includes(normalizedQuery) ||
                 item.barcode.toLowerCase().includes(normalizedQuery) ||
-                item.description.toLowerCase().includes(normalizedQuery)
+                item.category.toLowerCase().includes(normalizedQuery)
             );
         }
 
-        // Función para eliminar todos los productos
-        function deleteAll() {
-            inventory = []; // Vacía el arreglo de inventario
-            localStorage.setItem('inventory', JSON.stringify(inventory)); // Actualiza el localStorage
-            loadInventory([]); // Recarga la tabla con un inventario vacío
+        // Eliminar un producto
+        function deleteItem(index) {
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory();
         }
 
-        // Búsqueda por entrada
-        searchButton.addEventListener('click', function() {
-            loadInventory(filterInventory(searchInput.value));
+        // Eliminar todos los productos
+        function deleteAll() {
+            inventory = [];
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory();
+        }
+
+        // Abrir modal para vender
+        function openSellModal(index) {
+            currentItemIndex = index;
+            sellModal.style.display = 'block';
+        }
+
+        // Cerrar modal
+        closeModalButton.addEventListener('click', function () {
+            sellModal.style.display = 'none';
         });
 
-        clearSearchButton.addEventListener('click', function() {
+        // Vender productos
+        sellButton.addEventListener('click', function () {
+            const quantityToSell = parseInt(sellQuantityInput.value);
+            const item = inventory[currentItemIndex];
+
+            if (isNaN(quantityToSell) {
+                alert('Ingresa una cantidad válida.');
+                return;
+            }
+
+            if (quantityToSell > item.quantity) {
+                alert('No hay suficiente stock.');
+                return;
+            }
+
+            item.quantity -= quantityToSell;
+            if (item.quantity === 0) {
+                inventory.splice(currentItemIndex, 1);
+            }
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            loadInventory();
+            sellModal.style.display = 'none';
+        });
+
+        // Búsqueda
+        searchButton.addEventListener('click', function () {
+            const query = searchInput.value;
+            const filteredInventory = filterInventory(query);
+            loadInventory(filteredInventory);
+        });
+
+        // Limpiar búsqueda
+        clearSearchButton.addEventListener('click', function () {
             searchInput.value = '';
-            loadInventory(inventory);
+            loadInventory();
         });
 
-        // Cargar inventario al cargar la página
-        loadInventory(inventory);
+        // Cargar inventario al inicio
+        loadInventory();
     });
 </script>
 
