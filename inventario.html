@@ -210,7 +210,7 @@
                     <th class="sortable" onclick="orderTable(5)">Precio Con Descuento</th>
                     <th class="sortable" onclick="orderTable(6)">Descripción</th>
                     <th class="sortable" onclick="orderTable(7)">Categoría</th>
-                    <th>Cantidad en stock</th> <!-- Cambiado de "En acciones" a "Cantidad en stock" -->
+                    <th>Cantidad en stock</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
@@ -278,7 +278,7 @@
                      <td>$${priceWithDiscount.toFixed(2)}</td>
                      <td>${item.description}</td>
                      <td>${item.category}</td>
-                     <td>${item.quantity}</td>`; <!-- Mostrar la cantidad en stock -->
+                     <td>${item.quantity}</td>`;
                 inventoryList.appendChild(row);
             });
 
@@ -310,82 +310,11 @@
             );
         }
 
-        // Función para abrir la modal cantidad de a vender
-        function openSellModal(index, code) {
-            currentItemIndex = index;
-            currentItemCode = code;
-            sellModal.style.display = 'block';
-        }
-
-        // Función para vender productos
-        sellButton.addEventListener('click', function() {
-            const quantityToSell = parseInt(sellQuantityInput.value);
-            const item = inventory.find(i => i.code === currentItemCode);
-
-            if (isNaN(quantityToSell) || quantityToSell <= 0) {
-                alert('Por favor, ingresa una cantidad válida.');
-                return;
-            }
-
-            if (quantityToSell > item.quantity) {
-                alert('No hay suficiente stock para realizar la venta.');
-                return;
-            }
-
-            // Resta la cantidad del inventario
-            item.quantity -= quantityToSell;
-
-            if (item.quantity === 0) {
-                inventory = inventory.filter(i => i.code !== currentItemCode); // Eliminar por código
-            } else {
-                inventory = inventory.map(i => i.code === currentItemCode ? item : i); // Actualizar por código
-            }
-
-            // Agregar a la venta
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-            soldItems.push({...item, soldQuantity: quantityToSell});
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            // Actualizar inventario en localStorage
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-
-            // Recargar inventario y cerrar el modal
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
-            sellModal.style.display = 'none';
-        });
-
-        // Función para cerrar el modal
-        closeModalButton.addEventListener('click', function() {
-            sellModal.style.display = 'none';
-        });
-
-        // Función para eliminar un producto
-        function deleteItem(index) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory(filterInventory(searchInput.value.toLowerCase()));
-        }
-
         // Función para eliminar todos los productos
         function deleteAll() {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory([]);
-        }
-
-        // Función para ordenar la tabla por columnas
-        function orderTable(n) {
-            const rows = Array.from(inventoryList.rows);
-            const sortedRows = rows.sort((rowA, rowB) => {
-                const cellA = rowA.cells[n].textContent.trim();
-                const cellB = rowB.cells[n].textContent.trim();
-
-                if (cellA > cellB) return 1;
-                if (cellA < cellB) return -1;
-                return 0;
-            });
-
-            sortedRows.forEach(row => inventoryList.appendChild(row));
+            inventory = []; // Vacía el arreglo de inventario
+            localStorage.setItem('inventory', JSON.stringify(inventory)); // Actualiza el localStorage
+            loadInventory([]); // Recarga la tabla con un inventario vacío
         }
 
         // Búsqueda por entrada
