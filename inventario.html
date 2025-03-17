@@ -21,7 +21,7 @@
         .container {
             padding: 20px;
         }
-        .search-container, .info-container, .total-container, .export-container {
+        .search-container, .info-container, .total-container {
             margin-bottom: 20px;
         }
         .inventory-table {
@@ -41,42 +41,67 @@
         .inventory-table tr:hover {
             background-color: #E8F7E1;
         }
-        .low-stock {
-            background-color: #ffcccc;
-        }
-        .pagination {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .pagination button {
-            padding: 10px;
-            margin: 5px;
-            cursor: pointer;
-        }
-        .export-container button {
-            padding: 10px;
-            background-color: #007bff;
+        .delete-item {
+            background-color: red;
             color: white;
+            padding: 10px;
             border: none;
             cursor: pointer;
+        }
+        .delete-item:hover {
+            background-color: darkred;
+        }
+        .storage-button {
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .storage-button:hover {
+            background-color: #555;
+        }
+        .no-products-message {
+            color: red;
+            font-weight: bold;
+        }
+        .search-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
 
-<div class="header">Inventario</div>
+<div class="header">
+    Inventario
+</div>
 
 <div class="container">
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
         <button id="searchButton">Buscar</button>
-        <button id="clearSearchButton">Limpiar</button>
+        <button class="clear-search" id="clearSearchButton">Limpiar</button>
+        <br><br>
     </div>
+
     <div class="info-container">
         <p id="totalCount">Número de productos disponibles: 0</p>
         <p id="totalStock">Cantidad total en stock: 0</p>
-        <p id="noProductsMessage" style="display: none; color: red; font-weight: bold;">0 RESULTADOS</p>
+        <p id="noProductsMessage" class="no-products-message" style="display: none;">0 RESULTADOS</p>
     </div>
+
     <div class="inventory-table">
         <table>
             <thead>
@@ -94,40 +119,60 @@
                     <th>Visualizar</th>
                 </tr>
             </thead>
-            <tbody id="inventoryList"></tbody>
+            <tbody id="inventoryList">
+                <!-- Las filas se llenarán dinámicamente -->
+            </tbody>
         </table>
+        <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
-    <div class="pagination" id="pagination"></div>
-    <div class="export-container">
-        <button onclick="exportToCSV()">Exportar a CSV</button>
-        <button onclick="exportToExcel()">Exportar a Excel</button>
+
+    <div class="total-container">
+        <h2>Total en Dólares Americanos:</h2>
+        <p id="totalAmount">0,00 dólares</p>
     </div>
+
+    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
+</div>
+
+<div id="searchScreen" class="search-screen">
+    Buscando producto...
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         const inventoryList = document.getElementById('inventoryList');
+        const totalAmount = document.getElementById('totalAmount');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const clearSearchButton = document.getElementById('clearSearchButton');
         const totalCount = document.getElementById('totalCount');
         const totalStock = document.getElementById('totalStock');
         const noProductsMessage = document.getElementById('noProductsMessage');
+        const searchScreen = document.getElementById('searchScreen');
 
-        function loadInventory() {
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+        // Cargar inventario desde localStorage
+        function loadInventory(filteredInventory) {
+            searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
-            let totalQuantity = 0;
-            if (inventory.length === 0) {
+
+            if (filteredInventory.length === 0) {
                 noProductsMessage.style.display = 'block';
                 totalCount.textContent = "Número de productos disponibles: 0";
                 totalStock.textContent = "Cantidad total en stock: 0";
+                totalAmount.textContent = "0,00 dólares";
             } else {
                 noProductsMessage.style.display = 'none';
-                inventory.forEach((item, index) => {
-                    totalQuantity += parseInt(item.quantity);
+
+                let totalQuantity = 0;
+                filteredInventory.forEach((item, index) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                    totalQuantity += parseInt(item.quantity);
+                    
                     const row = document.createElement('tr');
-                    row.className = item.quantity < 5 ? 'low-stock' : '';
                     row.innerHTML = `
-                        <td>${index + 1}</td>
+                        <td>${index + 1}</td> 
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -141,37 +186,51 @@
                     `;
                     inventoryList.appendChild(row);
                 });
-                totalCount.textContent = `Número de productos disponibles: ${inventory.length}`;
+
+                const total = filteredInventory.reduce((sum, item) => {
+                    let priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                    return sum + (priceWithDiscount * parseInt(item.quantity));
+                }, 0);
+
+                totalAmount.textContent = `$${total.toFixed(2)}`;
+                totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
                 totalStock.textContent = `Cantidad total en stock: ${totalQuantity}`;
             }
-        }
-        
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Nombre,Código,Código de Barras,Precio,Descuento,Precio con Descuento,Descripción,Categoría,Cantidad\n";
-            inventory.forEach(item => {
-                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                csvContent += `${item.name},${item.code},${item.barcode},${item.price},${item.discount},${priceWithDiscount.toFixed(2)},${item.description},${item.category},${item.quantity}\n`;
-            });
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "inventario.csv");
-            document.body.appendChild(link);
-            link.click();
+
+            searchScreen.style.display = 'none';
         }
 
-        function exportToExcel() {
-            let table = document.querySelector(".inventory-table table");
-            let html = table.outerHTML.replace(/ /g, '%20');
-            let link = document.createElement("a");
-            link.href = 'data:application/vnd.ms-excel,' + html;
-            link.download = 'inventario.xls';
-            document.body.appendChild(link);
-            link.click();
+        function viewProduct(productCode) {
+            window.location.href = `almacenamiento.html?code=${productCode}`;
         }
-        
-        loadInventory();
+
+        function filterInventory(query) {
+            const normalizedQuery = query.toLowerCase().trim();
+            return inventory.filter(item => 
+                item.name.toLowerCase().includes(normalizedQuery) ||
+                item.code.toLowerCase().includes(normalizedQuery) ||
+                item.barcode.toLowerCase().includes(normalizedQuery) ||
+                item.description.toLowerCase().includes(normalizedQuery) ||
+                item.category.toLowerCase().includes(normalizedQuery)
+            );
+        }
+
+        searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
+        searchInput.addEventListener('input', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
+        clearSearchButton.addEventListener('click', function() {
+            searchInput.value = '';
+            loadInventory(inventory);
+        });
+
+        loadInventory(inventory);
     });
 </script>
+
 </body>
 </html>
