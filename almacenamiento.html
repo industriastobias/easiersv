@@ -197,8 +197,8 @@
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            // Actualizar tabla
-            loadInventory();
+            // Actualizar tabla con filtros aplicados
+            filterInventory();
             closeSoldModal();
         } else {
             alert('Cantidad inválida.');
