@@ -58,6 +58,7 @@
             padding: 10px 20px;
             text-decoration: none;
             text-align: center;
+            border-radius: 5px;
         }
         .storage-button:hover {
             background-color: #555;
@@ -65,6 +66,7 @@
         .no-products-message {
             color: red;
             font-weight: bold;
+            text-align: center;
         }
         .search-screen {
             display: none;
@@ -78,19 +80,6 @@
             text-align: center;
             padding-top: 20%;
             font-size: 24px;
-        }
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 3px solid #ccc;
-            border-top-color: #333;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -110,7 +99,7 @@
 
     <div class="info-container">
         <p id="totalCount">Número de productos disponibles: 0</p>
-        <p id="noProductsMessage" class="no-products-message" style="display: none;">No se han encontrado productos</p>
+        <p id="noProductsMessage" class="no-products-message" style="display: none;">0 RESULTADOS</p>
     </div>
 
     <div class="inventory-table">
@@ -145,7 +134,7 @@
 </div>
 
 <div id="searchScreen" class="search-screen">
-    Buscando producto... <div class="spinner"></div>
+    Buscando producto...
 </div>
 
 <script>
@@ -160,21 +149,19 @@
         const searchScreen = document.getElementById('searchScreen');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let searchTimeout;
 
-        // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
-            const totalQuantity = filteredInventory.reduce((sum, item) => sum + parseInt(item.quantity), 0);
-
             if (filteredInventory.length === 0) {
+                noProductsMessage.textContent = "0 RESULTADOS";
                 noProductsMessage.style.display = 'block';
                 totalCount.textContent = "Número de productos disponibles: 0";
                 totalAmount.textContent = "0,00 dólares";
             } else {
                 noProductsMessage.style.display = 'none';
+
                 filteredInventory.forEach((item) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                     const row = document.createElement('tr');
@@ -198,18 +185,16 @@
                     return sum + (priceWithDiscount * parseInt(item.quantity));
                 }, 0);
                 totalAmount.textContent = `$${total.toFixed(2)}`;
-                totalCount.textContent = `Número de productos disponibles: ${totalQuantity}`;
+                totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
             }
 
             searchScreen.style.display = 'none';
         }
 
-        // Función para redirigir a la página de almacenamiento
         function viewProduct(productCode) {
             window.location.href = `almacenamiento.html?code=${productCode}`;
         }
 
-        // Filtrar inventario según la búsqueda
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
             return inventory.filter(item => 
@@ -221,21 +206,19 @@
             );
         }
 
-        // Búsqueda con retraso
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                loadInventory(filterInventory(searchInput.value));
-            }, 500); // Retraso de 500 ms
+        searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
         });
 
-        // Limpiar búsqueda
+        searchInput.addEventListener('input', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
             loadInventory(inventory);
         });
 
-        // Cargar inventario al cargar la página
         loadInventory(inventory);
     });
 </script>
