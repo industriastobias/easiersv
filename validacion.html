@@ -74,8 +74,10 @@
     if (userID && userClave) {
         validateCredentials(userID, userClave);
     } else {
-        alert('No se recibieron datos de usuario. Redirigiendo...');
-        window.location.href = 'login.html'; // Si no hay parámetros, redirigir a login.html
+        // Si no se reciben los datos de usuario, redirigir a login.html
+        setTimeout(function() {
+            window.location.href = 'login.html'; // Redirigir a login.html si no hay parámetros
+        }, 1000);
     }
 </script>
 
