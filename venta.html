@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,11 +50,11 @@
             cursor: pointer;
             text-decoration: underline;
         }
-        .generate-pdf-container {
+        .generate-docx-container {
             text-align: center;
             margin-top: 20px;
         }
-        .generate-pdf {
+        .generate-docx {
             background-color: #28a745;
             color: white;
             padding: 10px 20px;
@@ -63,7 +63,8 @@
             cursor: pointer;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.0.0/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.10.1/docxtemplater.js"></script>
 </head>
 <body>
 
@@ -89,9 +90,9 @@
     </table>
 </div>
 
-<!-- Contenedor del botón "Generar en PDF" -->
-<div class="generate-pdf-container">
-    <button class="generate-pdf" onclick="generatePDF()">Generar en PDF</button>
+<!-- Contenedor del botón "Generar en Docx" -->
+<div class="generate-docx-container">
+    <button class="generate-docx" onclick="generateDocx()">Generar en Docx</button>
 </div>
 
 <script>
@@ -131,43 +132,70 @@
         loadSoldInventory();
     });
 
-    // Función para generar el PDF con las ventas realizadas
-    function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
+    // Función para generar el archivo DOCX
+    function generateDocx() {
+        const soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
         const date = new Date();
         const dateTime = date.toLocaleString(); // Fecha y hora actual
-        const soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
 
-        // Título
-        doc.setFontSize(18);
-        doc.text("Ventas Realizadas", 20, 20);
-        doc.setFontSize(12);
-        doc.text("Fecha y Hora: " + dateTime, 20, 30);
-        
-        // Encabezados de la tabla
-        let y = 40;
-        doc.setFontSize(10);
-        doc.text("Nombre", 20, y);
-        doc.text("Código", 60, y);
-        doc.text("Precio", 100, y);
-        doc.text("Cantidad", 140, y);
-        doc.text("Total", 180, y);
-        y += 10;
+        // Crear un documento en blanco usando PizZip y Docxtemplater
+        const zip = new PizZip();
+        const doc = new window.docxtemplater(zip);
 
-        // Añadir los productos vendidos a la tabla
+        // Template HTML que contiene las etiquetas que queremos reemplazar
+        let content = `
+        <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+            <w:body>
+                <w:p>
+                    <w:r>
+                        <w:t>Ventas Realizadas - ${dateTime}</w:t>
+                    </w:r>
+                </w:p>
+                <w:p>
+                    <w:r>
+                        <w:t>Nombre</w:t>
+                    </w:r>
+                    <w:r>
+                        <w:t>Código</w:t>
+                    </w:r>
+                    <w:r>
+                        <w:t>Precio</w:t>
+                    </w:r>
+                    <w:r>
+                        <w:t>Cantidad</w:t>
+                    </w:r>
+                    <w:r>
+                        <w:t>Total</w:t>
+                    </w:r>
+                </w:p>`;
+
+        // Añadir los productos a la tabla
         soldInventory.forEach(item => {
-            doc.text(item.name, 20, y);
-            doc.text(item.code, 60, y);
-            doc.text(item.price.toFixed(2), 100, y);
-            doc.text(item.quantity.toString(), 140, y);
-            doc.text(item.total.toFixed(2), 180, y);
-            y += 10;
+            content += `
+            <w:p>
+                <w:r><w:t>${item.name}</w:t></w:r>
+                <w:r><w:t>${item.code}</w:t></w:r>
+                <w:r><w:t>${item.price}</w:t></w:r>
+                <w:r><w:t>${item.quantity}</w:t></w:r>
+                <w:r><w:t>${item.total.toFixed(2)}</w:t></w:r>
+            </w:p>`;
         });
 
-        // Guardar el documento PDF con el nombre de 'ventas.pdf'
-        doc.save('ventas.pdf');
+        // Finalizar el contenido del documento
+        content += `</w:body></w:document>`;
+
+        // Cargar el contenido a docxtemplater
+        zip.file("word/document.xml", content);
+        
+        // Generar el archivo DOCX
+        const docFile = doc.getZip().generate({ type: "blob" });
+        const fileName = "ventas.docx";
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(docFile);
+        link.download = fileName;
+        link.click();
     }
 </script>
 
