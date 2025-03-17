@@ -251,6 +251,9 @@
     </div>
 </div>
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
@@ -346,9 +349,6 @@
             if (soldQuantity > 0 && soldQuantity <= item.quantity) {
                 item.quantity -= soldQuantity;
                 localStorage.setItem('inventory', JSON.stringify(inventory));
-
-                // Aquí puedes agregar el código para redirigir a la página de ventas
-                window.location.href = 'venta.html'; // Cambia 'venta.html' por la URL correcta
 
                 loadInventory();
                 closeSoldModal();
