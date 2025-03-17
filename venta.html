@@ -50,7 +50,17 @@
             cursor: pointer;
             text-decoration: underline;
         }
+        .generate-invoice {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -74,6 +84,8 @@
             <!-- Los productos vendidos se llenarán dinámicamente -->
         </tbody>
     </table>
+
+    <button class="generate-invoice" onclick="generateInvoice()">Generar Factura</button>
 </div>
 
 <script>
@@ -112,6 +124,54 @@
         // Cargar los productos vendidos cuando la página se cargue
         loadSoldInventory();
     });
+
+    // Función para generar la factura
+    function generateInvoice() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const companyName = "Mi Empresa";  // Nombre de la empresa
+        const date = new Date();
+        const dateTime = date.toLocaleString(); // Fecha y hora actual
+        const soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
+
+        // Agregar título
+        doc.setFontSize(20);
+        doc.text(companyName, 20, 20);
+        doc.setFontSize(12);
+        doc.text("Factura Generada: " + dateTime, 20, 30);
+        
+        // Agregar la tabla de productos vendidos
+        let y = 40;
+        doc.text("Productos Vendidos:", 20, y);
+        y += 10;
+        
+        // Crear encabezados de la tabla
+        doc.text("Nombre", 20, y);
+        doc.text("Código", 60, y);
+        doc.text("Precio", 100, y);
+        doc.text("Cantidad", 140, y);
+        doc.text("Total", 180, y);
+        y += 10;
+
+        // Añadir los productos vendidos
+        soldInventory.forEach(item => {
+            doc.text(item.name, 20, y);
+            doc.text(item.code, 60, y);
+            doc.text(item.price.toFixed(2), 100, y);
+            doc.text(item.quantity.toString(), 140, y);
+            doc.text(item.total.toFixed(2), 180, y);
+            y += 10;
+        });
+
+        // Calcular el total general
+        const totalGeneral = soldInventory.reduce((sum, item) => sum + item.total, 0);
+        y += 10;
+        doc.text("Total General: " + totalGeneral.toFixed(2), 20, y);
+
+        // Guardar el documento PDF
+        doc.save('factura.pdf');
+    }
 </script>
 
 </body>
