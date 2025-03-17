@@ -79,6 +79,19 @@
             padding-top: 20%;
             font-size: 24px;
         }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid #ccc;
+            border-top-color: #333;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -132,7 +145,7 @@
 </div>
 
 <div id="searchScreen" class="search-screen">
-    Buscando producto...
+    Buscando producto... <div class="spinner"></div>
 </div>
 
 <script>
@@ -147,6 +160,7 @@
         const searchScreen = document.getElementById('searchScreen');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let searchTimeout;
 
         // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
@@ -207,14 +221,12 @@
             );
         }
 
-        // Búsqueda por entrada
-        searchButton.addEventListener('click', function() {
-            loadInventory(filterInventory(searchInput.value));
-        });
-
-        // Búsqueda en tiempo real
+        // Búsqueda con retraso
         searchInput.addEventListener('input', function() {
-            loadInventory(filterInventory(searchInput.value));
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadInventory(filterInventory(searchInput.value));
+            }, 500); // Retraso de 500 ms
         });
 
         // Limpiar búsqueda
