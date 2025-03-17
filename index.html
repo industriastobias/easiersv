@@ -17,7 +17,7 @@
             overflow: hidden;
         }
         .container {
-            display: block;
+            display: none; /* Ocultar el contenedor al inicio */
             background: rgba(255, 255, 255, 0.9); /* Fondo blanco con transparencia */
             padding: 2em 1em; /* Reducir el padding */
             border-radius: 20px;
@@ -96,33 +96,69 @@
     <h3>A FAMILY COMPANY</h3> <!-- Subtítulo -->
 </div>
 
-<img src="logo.png" alt="Logo de Industrias Tobias" class="logo"> <!-- Logo fuera del contenedor -->
+<img src="logo.jpg" alt="Logo de Industrias Tobias" class="logo"> <!-- Logo fuera del contenedor -->
 
 <div class="container">
     <h2>Welcome</h2> <!-- Mensaje de bienvenida -->
     <input type="text" id="userID" placeholder="ID de Usuario" required autofocus>
     <input type="password" id="userClave" placeholder="Contraseña" required>
-    <button class="button" onclick="login()">Login</button>
+    <button class="button" onclick="login()">login</button>
 </div>
 
 <script>
+    // Establecer un retraso de 4 segundos al cargar la página
+    window.onload = function() {
+        setTimeout(function() {
+            document.querySelector('.container').style.display = 'block';
+        }, 4000); // 4000 milisegundos = 4 segundos
+
+        // Ocultar el contenedor de inicio de sesión inicialmente
+        document.querySelector('.container').style.display = 'none';
+    };
+
+    const users = [
+        { id: '2005', clave: 'admin2024' },
+        { id: '1001', clave: 'viewer2024' },
+        { id: '1002', clave: 'claveViewer2' },
+        { id: '1003', clave: 'claveViewer3' },
+        { id: '1004', clave: 'claveViewer4' },
+        { id: '1005', clave: 'claveViewer5' }
+    ];
+
     function login() {
         const userID = document.getElementById('userID').value;
         const userClave = document.getElementById('userClave').value;
 
-        // Validar si los campos no están vacíos
-        if (userID && userClave) {
-            // Redirigir a validacion.html con los datos como parámetros
-            window.location.href = `validacion.html?userID=${userID}&userClave=${userClave}`;
+        const user = users.find(u => u.id === userID && u.clave === userClave);
+
+        if (user) {
+            const timestamp = new Date().toLocaleString();
+            const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
+            sessions.push({ id: user.id, time: timestamp });
+            localStorage.setItem('sessions', JSON.stringify(sessions));
+
+            sessionStorage.setItem('loggedIn', 'true');
+            sessionStorage.setItem('userID', user.id);
+            sessionStorage.setItem('userClave', userClave); // Guardar la clave del usuario
+
+            // Agregar un retraso de 3 segundos antes de redirigir
+            setTimeout(function() {
+                window.location.href = 'menu.html'; // Redirigir al menú principal después del retraso
+            }, 3000); // 3000 ms = 3 segundos
         } else {
-            alert('Por favor, ingrese ambos campos: ID de Usuario y Contraseña');
+            alert('ID o contraseña incorrectos.');
         }
     }
 
     // Permitir iniciar sesión al presionar "Enter"
     document.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
-            login(); // Intenta iniciar sesión
+            const activeElement = document.activeElement;
+            if (activeElement.id === 'userID') {
+                document.getElementById('userClave').focus(); // Cambia al campo de clave
+            } else if (activeElement.id === 'userClave') {
+                login(); // Intenta iniciar sesión
+            }
         }
     });
 </script>
