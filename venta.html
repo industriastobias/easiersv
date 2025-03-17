@@ -3,156 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venta</title>
+    <title>Ventas</title>
     <style>
-        /* Estilos básicos */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .header {
-            background-color: #8c8c8c; /* Gris suave */
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-size: 24px;
-        }
-
-        .container {
             padding: 20px;
-        }
-
-        .info-container {
-            margin-bottom: 20px;
-        }
-
-        .sold-table table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .sold-table th, .sold-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        /* Color de la barra de encabezado de la tabla */
-        .sold-table th {
-            background-color: #dcdcdc; /* Gris claro */
             color: #333;
         }
-
-        .sold-table tr:hover {
-            background-color: #e8f7e1; /* Color verde clarito de resaltado al pasar el puntero */
-        }
-
-        .delete-button {
-            background-color: #ff3333;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .delete-button:hover {
-            background-color: #cc0000;
-        }
-
-        .no-products-message {
-            color: red;
+        .header {
+            text-align: center;
+            font-size: 24px;
             font-weight: bold;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .product-details {
+            margin-bottom: 20px;
+        }
+        .product-details p {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    Venta de Productos
+    Detalles de Venta
 </div>
 
 <div class="container">
-    <div class="info-container">
-        <p id="soldCount">Número de productos vendidos: 0</p>
-        <p id="noSoldProductsMessage" class="no-products-message" style="display: none;">No se han realizado ventas.</p>
-    </div>
-    
-    <div class="sold-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad Vendida</th>
-                    <th>Acción</th> <!-- Columna para la acción de eliminar -->
-                </tr>
-            </thead>
-            <tbody id="soldList">
-                <!-- Las filas de productos vendidos se llenarán dinámicamente -->
-            </tbody>
-        </table>
+    <div id="soldProductDetails" class="product-details">
+        <!-- Los detalles del producto vendido se mostrarán aquí -->
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const soldList = document.getElementById('soldList');
-        const soldCount = document.getElementById('soldCount');
-        const noSoldProductsMessage = document.getElementById('noSoldProductsMessage');
+        const soldProductDetails = document.getElementById('soldProductDetails');
+        const soldProduct = JSON.parse(localStorage.getItem('soldProduct'));
 
-        let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-
-        // Cargar productos vendidos
-        function loadSoldItems() {
-            if (soldItems.length === 0) {
-                noSoldProductsMessage.style.display = 'block';
-                soldCount.textContent = "Número de productos vendidos: 0";
-            } else {
-                noSoldProductsMessage.style.display = 'none';
-                soldCount.textContent = `Número de productos vendidos: ${soldItems.length}`;
-            }
-
-            soldList.innerHTML = '';
-
-            soldItems.forEach((item, index) => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>${item.price}</td>
-                    <td>${item.discount}</td>
-                    <td>${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.soldQuantity}</td> <!-- Cantidad Vendida -->
-                    <td><button class="delete-button" onclick="deleteSoldItem(${index})">Eliminar</button></td> <!-- Botón Eliminar -->
-                `;
-                soldList.appendChild(row);
-            });
+        if (soldProduct) {
+            soldProductDetails.innerHTML = `
+                <h3>Producto Vendido</h3>
+                <p><strong>Nombre:</strong> ${soldProduct.name}</p>
+                <p><strong>Código:</strong> ${soldProduct.code}</p>
+                <p><strong>Precio:</strong> ${soldProduct.price}</p>
+                <p><strong>Cantidad Vendida:</strong> 1</p>
+                <p><strong>Cantidad Restante:</strong> ${soldProduct.quantity}</p>
+            `;
+        } else {
+            soldProductDetails.innerHTML = `<p>No se ha marcado ningún producto como vendido aún.</p>`;
         }
-
-        // Función para eliminar un producto vendido individualmente sin confirmación
-        window.deleteSoldItem = function(index) {
-            console.log("Eliminando el producto en el índice:", index);
-            soldItems.splice(index, 1); // Elimina el producto
-            localStorage.setItem('soldItems', JSON.stringify(soldItems)); // Actualiza el localStorage
-            loadSoldItems(); // Recarga los productos después de eliminar
-        };
-
-        // Inicializar la carga de productos vendidos
-        loadSoldItems();
     });
 </script>
 
