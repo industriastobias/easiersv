@@ -77,6 +77,15 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .search-container input {
+            padding: 10px;
+            width: 20%;
+        }
     </style>
 </head>
 <body>
@@ -86,14 +95,29 @@
 </div>
 
 <div class="container">
+    <!-- Filtro de Búsqueda Avanzada -->
+    <div class="search-container">
+        <input type="text" id="searchName" placeholder="Buscar por nombre..." oninput="filterInventory()">
+        <input type="text" id="searchCode" placeholder="Buscar por código..." oninput="filterInventory()">
+        <input type="text" id="searchBarcode" placeholder="Buscar por código de barras..." oninput="filterInventory()">
+        <input type="number" id="searchPrice" placeholder="Buscar por precio..." oninput="filterInventory()">
+        <input type="number" id="searchDiscount" placeholder="Buscar por descuento..." oninput="filterInventory()">
+        <input type="number" id="searchQuantity" placeholder="Buscar por cantidad..." oninput="filterInventory()">
+    </div>
+    
     <button onclick="openSoldModal()">Registrar Venta</button>
     <table>
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Código</th>
+                <th>Código de Barras</th>
                 <th>Precio</th>
-                <th>Cantidad</th>
+                <th>Descuento (%)</th>
+                <th>Precio Con Descuento</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Cantidad en stock</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -120,11 +144,17 @@
     function loadInventory() {
         const inventoryList = document.getElementById('inventoryList');
         inventoryList.innerHTML = inventory.map((item, index) => {
+            const priceWithDiscount = item.price * (1 - item.discount / 100);
             return `
                 <tr>
                     <td>${item.name}</td>
                     <td>${item.code}</td>
+                    <td>${item.barcode}</td>
                     <td>${item.price}</td>
+                    <td>${item.discount}</td>
+                    <td>${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
                     <td>${item.quantity}</td>
                     <td><button onclick="markAsSold(${index})">Vender</button></td>
                 </tr>
@@ -173,6 +203,45 @@
         } else {
             alert('Cantidad inválida.');
         }
+    }
+
+    function filterInventory() {
+        const name = document.getElementById('searchName').value.toLowerCase();
+        const code = document.getElementById('searchCode').value.toLowerCase();
+        const barcode = document.getElementById('searchBarcode').value.toLowerCase();
+        const price = document.getElementById('searchPrice').value;
+        const discount = document.getElementById('searchDiscount').value;
+        const quantity = document.getElementById('searchQuantity').value;
+
+        const filteredInventory = inventory.filter(item => {
+            return (
+                (name === '' || item.name.toLowerCase().includes(name)) &&
+                (code === '' || item.code.toLowerCase().includes(code)) &&
+                (barcode === '' || item.barcode.toLowerCase().includes(barcode)) &&
+                (price === '' || item.price.toString().includes(price)) &&
+                (discount === '' || item.discount.toString().includes(discount)) &&
+                (quantity === '' || item.quantity.toString().includes(quantity))
+            );
+        });
+
+        const inventoryList = document.getElementById('inventoryList');
+        inventoryList.innerHTML = filteredInventory.map((item, index) => {
+            const priceWithDiscount = item.price * (1 - item.discount / 100);
+            return `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>${item.price}</td>
+                    <td>${item.discount}</td>
+                    <td>${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantity}</td>
+                    <td><button onclick="markAsSold(${index})">Vender</button></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     loadInventory();
