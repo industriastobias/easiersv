@@ -170,6 +170,10 @@
         y += 10;
         doc.text("Total General: " + totalGeneral.toFixed(2), 20, y);
 
+        // Añadir una línea para separar el total general
+        y += 10;
+        doc.line(20, y, 190, y);
+
         // Guardar el documento PDF con el nombre de 'ventas.pdf'
         doc.save('ventas.pdf');
     }
