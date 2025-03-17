@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almacenamiento</title>
+    <title>Venta</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,47 +20,18 @@
             color: #555;
         }
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: auto;
             background: #fff;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border-bottom: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        .search-bar {
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .search-bar input {
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-        }
         .btn-container {
             text-align: center;
             margin-top: 20px;
         }
-        .btn-pdf, .btn-clear {
+        .btn {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
@@ -68,365 +39,103 @@
             cursor: pointer;
             margin: 5px;
         }
-        .btn-pdf {
+        .btn-back {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+        .btn-sell {
             background-color: #28a745;
             color: white;
         }
-        .btn-pdf:hover {
+        .btn-sell:hover {
             background-color: #218838;
         }
-        .btn-clear {
-            background-color: #dc3545;
-            color: white;
+        .order-summary {
+            margin-top: 30px;
         }
-        .btn-clear:hover {
-            background-color: #c82333;
-        }
-        .btn-action {
-            padding: 5px 10px;
-            margin: 2px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .btn-edit {
-            background-color: #ffc107;
-            color: #000;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .btn-sold {
-            background-color: #28a745;
-            color: #fff;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .modal-content h2 {
-            margin-top: 0;
-        }
-        .modal-content label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .modal-content input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .modal-content button {
-            padding: 8px 12px;
-            margin-right: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .modal-content button.save {
-            background-color: #28a745;
-            color: #fff;
-        }
-        .modal-content button.cancel {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .sold-modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .sold-modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .sold-modal-content h2 {
-            margin-top: 0;
+        .order-summary p {
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    Almacenamiento de Productos
+    Venta de Productos
 </div>
 
 <div class="container">
-    <div class="search-bar">
-        <input type="text" id="search" placeholder="Buscar por cualquier campo..." oninput="filterInventory()">
+    <h3>Resumen de la venta</h3>
+    <div class="order-summary">
+        <p><strong>Producto: </strong><span id="product-name"></span></p>
+        <p><strong>Código: </strong><span id="product-code"></span></p>
+        <p><strong>Código de Barras: </strong><span id="product-barcode"></span></p>
+        <p><strong>Precio: </strong><span id="product-price"></span>€</p>
+        <p><strong>Descuento (%): </strong><span id="product-discount"></span>%</p>
+        <p><strong>Precio con Descuento: </strong><span id="product-price-discounted"></span>€</p>
+        <p><strong>Cantidad en Stock: </strong><span id="product-quantity"></span></p>
     </div>
 
-    <div class="inventory-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryList">
-                <!-- Las filas de inventario se llenarán dinámicamente -->
-            </tbody>
-        </table>
+    <div class="form-group">
+        <label for="quantityToSell">Cantidad a vender:</label>
+        <input type="number" id="quantityToSell" min="1" required>
     </div>
 
     <div class="btn-container">
-        <button class="btn-pdf" onclick="generatePDF()">Generar PDF</button>
-        <button class="btn-clear" onclick="clearSearch()">Limpiar Búsqueda</button>
-    </div>
-</div>
-
-<!-- Modal para editar -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <h2>Editar Producto</h2>
-        <form id="editForm">
-            <label for="editName">Nombre:</label>
-            <input type="text" id="editName" required>
-            <label for="editCode">Código:</label>
-            <input type="text" id="editCode" required>
-            <label for="editBarcode">Código de Barras:</label>
-            <input type="text" id="editBarcode" required>
-            <label for="editPrice">Precio:</label>
-            <input type="number" id="editPrice" required>
-            <label for="editDiscount">Descuento (%):</label>
-            <input type="number" id="editDiscount" required>
-            <label for="editDescription">Descripción:</label>
-            <input type="text" id="editDescription" required>
-            <label for="editCategory">Categoría:</label>
-            <input type="text" id="editCategory" required>
-            <label for="editQuantity">Cantidad en Stock:</label>
-            <input type="number" id="editQuantity" required>
-            <button type="button" class="save" onclick="saveEdit()">Guardar</button>
-            <button type="button" class="cancel" onclick="closeModal()">Cancelar</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal para marcar como vendido -->
-<div id="soldModal" class="sold-modal">
-    <div class="sold-modal-content">
-        <h2>Vender Producto</h2>
-        <label for="soldQuantity">Cantidad a vender:</label>
-        <input type="number" id="soldQuantity" required>
-        <button type="button" class="save" onclick="processSale()">Vender</button>
-        <button type="button" class="cancel" onclick="closeSoldModal()">Cancelar</button>
+        <button class="btn btn-sell" onclick="processSale()">Vender</button>
+        <button class="btn btn-back" onclick="goBack()">Volver al Inventario</button>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const inventoryList = document.getElementById('inventoryList');
-        const editModal = document.getElementById('editModal');
-        const soldModal = document.getElementById('soldModal');
-        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let currentEditIndex = null;
-        let currentSoldIndex = null;
+        // Recuperar el índice del producto vendido desde el almacenamiento local
+        const urlParams = new URLSearchParams(window.location.search);
+        const productIndex = parseInt(urlParams.get('index'));
 
-        function loadInventory() {
-            inventoryList.innerHTML = inventory.map((item, index) => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount ? item.discount : 0}%</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="openEditModal(${index})">Editar</button>
-                            <button class="btn-action btn-delete" onclick="deleteItem(${index})">Eliminar</button>
-                            <button class="btn-action btn-sold" onclick="markAsSold(${index})">Marcar como vendido</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+        if (isNaN(productIndex)) {
+            alert('Producto no válido.');
+            window.location.href = 'index.html'; // Redirigir al inventario si no hay índice válido
         }
 
-        function openEditModal(index) {
-            currentEditIndex = index;
-            const item = inventory[index];
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editCode').value = item.code;
-            document.getElementById('editBarcode').value = item.barcode;
-            document.getElementById('editPrice').value = item.price;
-            document.getElementById('editDiscount').value = item.discount;
-            document.getElementById('editDescription').value = item.description;
-            document.getElementById('editCategory').value = item.category;
-            document.getElementById('editQuantity').value = item.quantity;
-            editModal.style.display = 'flex';
-        }
+        const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        const product = inventory[productIndex];
 
-        function closeModal() {
-            editModal.style.display = 'none';
-        }
+        // Mostrar información del producto
+        document.getElementById('product-name').textContent = product.name;
+        document.getElementById('product-code').textContent = product.code;
+        document.getElementById('product-barcode').textContent = product.barcode;
+        document.getElementById('product-price').textContent = product.price.toFixed(2);
+        document.getElementById('product-discount').textContent = product.discount || 0;
+        const discountedPrice = product.price - (product.price * (product.discount / 100));
+        document.getElementById('product-price-discounted').textContent = discountedPrice.toFixed(2);
+        document.getElementById('product-quantity').textContent = product.quantity;
 
-        function saveEdit() {
-            const item = inventory[currentEditIndex];
-            item.name = document.getElementById('editName').value;
-            item.code = document.getElementById('editCode').value;
-            item.barcode = document.getElementById('editBarcode').value;
-            item.price = parseFloat(document.getElementById('editPrice').value);
-            item.discount = parseFloat(document.getElementById('editDiscount').value);
-            item.description = document.getElementById('editDescription').value;
-            item.category = document.getElementById('editCategory').value;
-            item.quantity = parseInt(document.getElementById('editQuantity').value);
+        // Función para procesar la venta
+        window.processSale = function() {
+            const quantityToSell = parseInt(document.getElementById('quantityToSell').value);
+
+            if (quantityToSell <= 0 || quantityToSell > product.quantity) {
+                alert('Cantidad inválida o insuficiente en stock.');
+                return;
+            }
+
+            // Actualizar el inventario
+            product.quantity -= quantityToSell;
+            inventory[productIndex] = product;
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadInventory();
-            closeModal();
+
+            alert(`Venta realizada con éxito. Se han vendido ${quantityToSell} unidades.`);
+            window.location.href = 'index.html'; // Volver al inventario
         }
 
-        function deleteItem(index) {
-            if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-                inventory.splice(index, 1);
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                loadInventory();
-            }
+        // Volver al inventario
+        window.goBack = function() {
+            window.location.href = 'index.html';
         }
-
-        function markAsSold(index) {
-            currentSoldIndex = index;
-            const item = inventory[index];
-            if (item.quantity > 0) {
-                soldModal.style.display = 'flex';
-            } else {
-                alert('No hay stock disponible para este producto.');
-            }
-        }
-
-        function closeSoldModal() {
-            soldModal.style.display = 'none';
-        }
-
-        function processSale() {
-            const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
-            const item = inventory[currentSoldIndex];
-
-            if (soldQuantity > 0 && soldQuantity <= item.quantity) {
-                item.quantity -= soldQuantity;
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-
-                // Actualiza la tabla después de la venta
-                loadInventory();
-
-                // Cierra el modal de venta
-                closeSoldModal();
-
-                // Muestra un mensaje de éxito
-                alert('El producto ha sido marcado como vendido.');
-            } else {
-                alert('La cantidad a vender es inválida.');
-            }
-        }
-
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.text("Inventario de Productos", 10, 10);
-            doc.autoTable({
-                head: [['Nombre', 'Código', 'Código de Barras', 'Precio', 'Descuento (%)', 'Precio Con Descuento', 'Descripción', 'Categoría', 'Cantidad en Stock']],
-                body: inventory.map(item => {
-                    const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                    return [
-                        item.name,
-                        item.code,
-                        item.barcode,
-                        item.price,
-                        item.discount ? item.discount : 0,
-                        priceWithDiscount.toFixed(2),
-                        item.description,
-                        item.category,
-                        item.quantity
-                    ];
-                }),
-                startY: 20,
-                theme: 'striped',
-            });
-            doc.save("inventario.pdf");
-        }
-
-        function filterInventory() {
-            const query = document.getElementById('search').value.toLowerCase();
-            const filteredInventory = inventory.filter(item =>
-                item.name.toLowerCase().includes(query) ||
-                item.code.toLowerCase().includes(query) ||
-                item.barcode.toLowerCase().includes(query) ||
-                item.price.toString().includes(query) ||
-                item.discount.toString().includes(query) ||
-                item.description.toLowerCase().includes(query) ||
-                item.category.toLowerCase().includes(query) ||
-                item.quantity.toString().includes(query)
-            );
-            inventoryList.innerHTML = filteredInventory.map((item, index) => {
-                const priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount ? item.discount : 0}%</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="openEditModal(${index})">Editar</button>
-                            <button class="btn-action btn-delete" onclick="deleteItem(${index})">Eliminar</button>
-                            <button class="btn-action btn-sold" onclick="markAsSold(${index})">Marcar como vendido</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function clearSearch() {
-            document.getElementById('search').value = '';
-            loadInventory();
-        }
-
-        loadInventory();
     });
 </script>
 
