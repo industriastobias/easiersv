@@ -66,7 +66,6 @@
         .no-products-message {
             color: red;
             font-weight: bold;
-            text-align: center;
         }
         .search-screen {
             display: none;
@@ -99,6 +98,7 @@
 
     <div class="info-container">
         <p id="totalCount">Número de productos disponibles: 0</p>
+        <p id="totalStock">Cantidad total en stock: 0</p>
         <p id="noProductsMessage" class="no-products-message" style="display: none;">0 RESULTADOS</p>
     </div>
 
@@ -106,6 +106,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Nombre</th>
                     <th>Código</th>
                     <th>Código de Barras</th>
@@ -145,27 +146,33 @@
         const searchButton = document.getElementById('searchButton');
         const clearSearchButton = document.getElementById('clearSearchButton');
         const totalCount = document.getElementById('totalCount');
+        const totalStock = document.getElementById('totalStock');
         const noProductsMessage = document.getElementById('noProductsMessage');
         const searchScreen = document.getElementById('searchScreen');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
+        // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
             if (filteredInventory.length === 0) {
-                noProductsMessage.textContent = "0 RESULTADOS";
                 noProductsMessage.style.display = 'block';
                 totalCount.textContent = "Número de productos disponibles: 0";
+                totalStock.textContent = "Cantidad total en stock: 0";
                 totalAmount.textContent = "0,00 dólares";
             } else {
                 noProductsMessage.style.display = 'none';
 
-                filteredInventory.forEach((item) => {
+                let totalQuantity = 0;
+                filteredInventory.forEach((item, index) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
+                    totalQuantity += parseInt(item.quantity);
+                    
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${index + 1}</td> 
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -184,8 +191,10 @@
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                     return sum + (priceWithDiscount * parseInt(item.quantity));
                 }, 0);
+
                 totalAmount.textContent = `$${total.toFixed(2)}`;
                 totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
+                totalStock.textContent = `Cantidad total en stock: ${totalQuantity}`;
             }
 
             searchScreen.style.display = 'none';
