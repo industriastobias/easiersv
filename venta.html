@@ -50,6 +50,10 @@
             cursor: pointer;
             text-decoration: underline;
         }
+        .generate-pdf-container {
+            text-align: center;
+            margin-top: 20px;
+        }
         .generate-pdf {
             background-color: #28a745;
             color: white;
@@ -57,7 +61,6 @@
             font-size: 16px;
             border: none;
             cursor: pointer;
-            margin-top: 20px;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -84,7 +87,10 @@
             <!-- Los productos vendidos se llenarán dinámicamente -->
         </tbody>
     </table>
+</div>
 
+<!-- Contenedor del botón "Generar en PDF" -->
+<div class="generate-pdf-container">
     <button class="generate-pdf" onclick="generatePDF()">Generar en PDF</button>
 </div>
 
