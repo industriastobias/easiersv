@@ -306,7 +306,8 @@
                 item.name.toLowerCase().includes(normalizedQuery) ||
                 item.code.toLowerCase().includes(normalizedQuery) ||
                 item.barcode.toLowerCase().includes(normalizedQuery) ||
-                item.description.toLowerCase().includes(normalizedQuery)
+                item.description.toLowerCase().includes(normalizedQuery) ||
+                item.category.toLowerCase().includes(normalizedQuery)
             );
         }
 
@@ -390,6 +391,11 @@
 
         // Búsqueda por entrada
         searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
+        // Búsqueda en tiempo real
+        searchInput.addEventListener('input', function() {
             loadInventory(filterInventory(searchInput.value));
         });
 
