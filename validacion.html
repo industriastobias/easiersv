@@ -60,11 +60,10 @@
                 window.location.href = 'menu.html'; // Redirigir a menú después de 3 segundos
             }, 3000);
         } else {
-            // Si los datos son incorrectos, redirigir de nuevo a login.html
+            // Si los datos son incorrectos, redirigir a login.html
             setTimeout(function() {
-                alert('ID o contraseña incorrectos. Redirigiendo...');
                 window.location.href = 'login.html'; // Redirigir a login.html
-            }, 2000); // Esperar 2 segundos para mostrar el mensaje antes de redirigir
+            }, 1000); // Esperar 1 segundo antes de redirigir
         }
     }
 
