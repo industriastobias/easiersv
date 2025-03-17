@@ -1,78 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
+    <!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation</title>
+    <title>Validación</title>
     <style>
-        /* Estilos para el mensaje de CARGANDO */
-        #loadingMessage {
-            font-size: 1.5em;
+        /* Estilo de la página de validación */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .loading {
+            font-size: 2em;
             color: #4a6a41;
             text-align: center;
-            margin-top: 20%;
         }
     </style>
 </head>
 <body>
 
-<!-- Mensaje de carga -->
-<div id="loadingMessage">CARGANDO...</div>
+<div class="loading" id="loading">
+    CARGANDO...
+</div>
 
 <script>
-    // Obtener los parámetros de la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const userID = urlParams.get('userID');
-    const userClave = urlParams.get('userClave');
-
-    // Definir los usuarios para la validación
-    const users = [
-        { id: '2005', clave: 'admin2024' },
-        { id: '1001', clave: 'viewer2024' },
-        { id: '1002', clave: 'claveViewer2' },
-        { id: '1003', clave: 'claveViewer3' },
-        { id: '1004', clave: 'claveViewer4' },
-        { id: '1005', clave: 'claveViewer5' }
-    ];
-
-    // Función para validar las credenciales
-    function validateLogin() {
-        const user = users.find(u => u.id === userID && u.clave === userClave);
-
-        // Esperar 2 segundos antes de mostrar el resultado
-        setTimeout(function() {
-            // Ocultar el mensaje de carga
-            document.getElementById('loadingMessage').style.display = 'none';
-
-            if (user) {
-                const timestamp = new Date().toLocaleString();
-                const sessions = JSON.parse(localStorage.getItem('sessions')) || [];
-                sessions.push({ id: user.id, time: timestamp });
-                localStorage.setItem('sessions', JSON.stringify(sessions));
-
-                sessionStorage.setItem('loggedIn', 'true');
-                sessionStorage.setItem('userID', user.id);
-                sessionStorage.setItem('userClave', userClave);
-
-                // Redirigir después de un retraso de 3 segundos
-                setTimeout(function() {
-                    window.location.href = 'menu.html'; // Redirigir al menú principal
-                }, 3000); // Retraso de 3 segundos
-            } else {
-                alert('ID o contraseña incorrectos.');
-
-                // Recargar la página para volver a intentar el inicio de sesión
-                setTimeout(function() {
-                    window.location.href = 'login.html'; // Asegúrate de que 'login.html' esté en la misma carpeta
-                }, 2000); // Retraso de 2 segundos antes de redirigir
-            }
-        }, 2000); // Simula el retraso de validación
+    // Función para obtener los parámetros de la URL
+    function getQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const userID = urlParams.get('userID');
+        const userClave = urlParams.get('userClave');
+        return { userID, userClave };
     }
 
-    // Llamar a la función de validación al cargar la página
-    window.onload = function() {
-        validateLogin();
-    };
+    // Función para validar los datos
+    function validateCredentials(userID, userClave) {
+        const users = [
+            { id: '2005', clave: 'admin2024' },
+            { id: '1001', clave: 'viewer2024' },
+            { id: '1002', clave: 'claveViewer2' },
+            { id: '1003', clave: 'claveViewer3' },
+            { id: '1004', clave: 'claveViewer4' },
+            { id: '1005', clave: 'claveViewer5' }
+        ];
+
+        const user = users.find(u => u.id === userID && u.clave === userClave);
+
+        if (user) {
+            // Si los datos son correctos, redirigir a la página principal (por ejemplo, menu.html)
+            sessionStorage.setItem('loggedIn', 'true');
+            sessionStorage.setItem('userID', user.id);
+            sessionStorage.setItem('userClave', userClave);
+            setTimeout(function() {
+                window.location.href = 'menu.html'; // Redirigir a menú después de 3 segundos
+            }, 3000);
+        } else {
+            // Si los datos son incorrectos, redirigir de nuevo a login.html
+            setTimeout(function() {
+                alert('ID o contraseña incorrectos. Redirigiendo...');
+                window.location.href = 'login.html'; // Redirigir a login.html
+            }, 2000); // Esperar 2 segundos para mostrar el mensaje antes de redirigir
+        }
+    }
+
+    // Obtener los parámetros de la URL
+    const { userID, userClave } = getQueryParams();
+
+    // Validar los datos después de cargar la página
+    if (userID && userClave) {
+        validateCredentials(userID, userClave);
+    } else {
+        alert('No se recibieron datos de usuario. Redirigiendo...');
+        window.location.href = 'login.html'; // Si no hay parámetros, redirigir a login.html
+    }
 </script>
 
 </body>
