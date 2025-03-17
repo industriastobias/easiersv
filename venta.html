@@ -50,7 +50,7 @@
             cursor: pointer;
             text-decoration: underline;
         }
-        .generate-invoice {
+        .generate-pdf {
             background-color: #28a745;
             color: white;
             padding: 10px 20px;
@@ -85,7 +85,7 @@
         </tbody>
     </table>
 
-    <button class="generate-invoice" onclick="generateInvoice()">Generar Factura</button>
+    <button class="generate-pdf" onclick="generatePDF()">Generar en PDF</button>
 </div>
 
 <script>
@@ -125,8 +125,8 @@
         loadSoldInventory();
     });
 
-    // Función para generar la factura
-    function generateInvoice() {
+    // Función para generar el PDF con las ventas realizadas
+    function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
@@ -141,12 +141,13 @@
         doc.setFontSize(12);
         doc.text("Fecha y Hora: " + dateTime, 20, 30);
         
-        // Agregar la tabla de productos vendidos
+        // Crear la tabla de productos vendidos
         let y = 40;
         doc.text("Ventas Realizadas:", 20, y);
         y += 10;
         
         // Crear encabezados de la tabla
+        doc.setFontSize(10);
         doc.text("Nombre", 20, y);
         doc.text("Código", 60, y);
         doc.text("Precio", 100, y);
@@ -169,8 +170,8 @@
         y += 10;
         doc.text("Total General: " + totalGeneral.toFixed(2), 20, y);
 
-        // Guardar el documento PDF
-        doc.save('factura_ventas.pdf');
+        // Guardar el documento PDF con el nombre de 'ventas.pdf'
+        doc.save('ventas.pdf');
     }
 </script>
 
