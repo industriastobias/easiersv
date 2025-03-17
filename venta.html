@@ -135,19 +135,18 @@
         const dateTime = date.toLocaleString(); // Fecha y hora actual
         const soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
 
-        // Agregar título
-        doc.setFontSize(20);
+        // Título
+        doc.setFontSize(18);
         doc.text(companyName, 20, 20);
         doc.setFontSize(12);
         doc.text("Fecha y Hora: " + dateTime, 20, 30);
         
-        // Crear la tabla de productos vendidos
+        // Encabezados de la tabla
         let y = 40;
+        doc.setFontSize(10);
         doc.text("Ventas Realizadas:", 20, y);
         y += 10;
-        
-        // Crear encabezados de la tabla
-        doc.setFontSize(10);
+
         doc.text("Nombre", 20, y);
         doc.text("Código", 60, y);
         doc.text("Precio", 100, y);
@@ -155,7 +154,7 @@
         doc.text("Total", 180, y);
         y += 10;
 
-        // Añadir los productos vendidos
+        // Añadir los productos vendidos a la tabla
         soldInventory.forEach(item => {
             doc.text(item.name, 20, y);
             doc.text(item.code, 60, y);
