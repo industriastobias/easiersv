@@ -45,6 +45,11 @@
         tr:hover {
             background-color: #f1f1f1;
         }
+        .delete-button {
+            color: red;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -62,6 +67,7 @@
                 <th>Precio</th>
                 <th>Cantidad Vendida</th>
                 <th>Total</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody id="soldInventoryList">
@@ -75,8 +81,9 @@
         const soldInventoryList = document.getElementById('soldInventoryList');
         let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
 
+        // Función para cargar la lista de productos vendidos
         function loadSoldInventory() {
-            soldInventoryList.innerHTML = soldInventory.map(item => {
+            soldInventoryList.innerHTML = soldInventory.map((item, index) => {
                 return `
                     <tr>
                         <td>${item.name}</td>
@@ -84,11 +91,25 @@
                         <td>${item.price}</td>
                         <td>${item.quantity}</td>
                         <td>${item.total.toFixed(2)}</td>
+                        <td><span class="delete-button" onclick="deleteSoldItem(${index})">Eliminar</span></td>
                     </tr>
                 `;
             }).join('');
         }
 
+        // Función para eliminar un producto de la lista de vendidos
+        function deleteSoldItem(index) {
+            // Eliminar el producto del array
+            soldInventory.splice(index, 1);
+
+            // Actualizar el almacenamiento local
+            localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+
+            // Recargar la lista de productos vendidos
+            loadSoldInventory();
+        }
+
+        // Cargar los productos vendidos cuando la página se cargue
         loadSoldInventory();
     });
 </script>
