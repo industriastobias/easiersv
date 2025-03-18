@@ -159,7 +159,7 @@
         <p id="totalAmount">0,00 dólares</p>
     </div>
 
-    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
+    <a href="compra.html" class="storage-button">Ir a Compra</a>
 </div>
 
 <div id="searchScreen" class="search-screen">
@@ -194,7 +194,7 @@
         }
 
         // Cargar inventario desde localStorage
-        function loadInventory(filteredInventory, page = 1) {
+        function loadInventory(filteredInventory = inventory, page = 1) {
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
             pagination.innerHTML = '';
@@ -243,14 +243,4 @@
                 totalStock.textContent = `Cantidad total en stock: ${totalQuantity}`;
 
                 // Agregar paginación
-                const totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageButton = document.createElement('button');
-                    pageButton.textContent = i;
-                    pageButton.onclick = () => loadInventory(filteredInventory, i);
-                    if (i === page) pageButton.classList.add('active');
-                    pagination.appendChild(pageButton);
-                }
-            }
-
-            searchScreen.style
+               
