@@ -97,12 +97,12 @@
 <div class="container">
     <!-- Filtro de Búsqueda Avanzada -->
     <div class="search-container">
-        <input type="text" id="searchName" placeholder="Buscar por nombre..." oninput="filterInventory()">
-        <input type="text" id="searchCode" placeholder="Buscar por código..." oninput="filterInventory()">
-        <input type="text" id="searchBarcode" placeholder="Buscar por código de barras..." oninput="filterInventory()">
-        <input type="number" id="searchPrice" placeholder="Buscar por precio..." oninput="filterInventory()">
-        <input type="number" id="searchDiscount" placeholder="Buscar por descuento..." oninput="filterInventory()">
-        <input type="number" id="searchQuantity" placeholder="Buscar por cantidad..." oninput="filterInventory()">
+        <input type="text" id="searchName" placeholder="Buscar por nombre...">
+        <input type="text" id="searchCode" placeholder="Buscar por código...">
+        <input type="text" id="searchBarcode" placeholder="Buscar por código de barras...">
+        <input type="number" id="searchPrice" placeholder="Buscar por precio...">
+        <input type="number" id="searchDiscount" placeholder="Buscar por descuento...">
+        <input type="number" id="searchQuantity" placeholder="Buscar por cantidad...">
     </div>
     
     <button onclick="openSoldModal()">Registrar Venta</button>
@@ -140,6 +140,7 @@
 
 <script>
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    let debounceTimer;
 
     function loadInventory() {
         const inventoryList = document.getElementById('inventoryList');
@@ -180,11 +181,9 @@
         const item = inventory[currentSoldIndex];
 
         if (soldQuantity > 0 && soldQuantity <= item.quantity) {
-            // Actualizar inventario
             item.quantity -= soldQuantity;
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
-            // Registrar venta
             const soldItem = {
                 name: item.name,
                 code: item.code,
@@ -197,7 +196,6 @@
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            // Actualizar tabla con filtros aplicados
             filterInventory();
             closeSoldModal();
         } else {
@@ -214,10 +212,13 @@
         const quantity = document.getElementById('searchQuantity').value;
 
         const filteredInventory = inventory.filter(item => {
+            const itemName = item.name.toLowerCase();
+            const itemCode = item.code.toLowerCase();
+            const itemBarcode = item.barcode.toLowerCase();
             return (
-                (name === '' || item.name.toLowerCase().includes(name)) &&
-                (code === '' || item.code.toLowerCase().includes(code)) &&
-                (barcode === '' || item.barcode.toLowerCase().includes(barcode)) &&
+                (name === '' || itemName.includes(name)) &&
+                (code === '' || itemCode.includes(code)) &&
+                (barcode === '' || itemBarcode.includes(barcode)) &&
                 (price === '' || item.price.toString().includes(price)) &&
                 (discount === '' || item.discount.toString().includes(discount)) &&
                 (quantity === '' || item.quantity.toString().includes(quantity))
@@ -243,6 +244,22 @@
             `;
         }).join('');
     }
+
+    function debounce(func, delay) {
+        return function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                func.apply(this, arguments);
+            }, delay);
+        };
+    }
+
+    document.getElementById('searchName').addEventListener('input', debounce(filterInventory, 300));
+    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
+    document.getElementById('searchBarcode').addEventListener    ('input', debounce(filterInventory, 300));
+    document.getElementById('searchPrice').addEventListener('input', debounce(filterInventory, 300));
+    document.getElementById('searchDiscount').addEventListener('input', debounce(filterInventory, 300));
+    document.getElementById('searchQuantity').addEventListener('input', debounce(filterInventory, 300));
 
     loadInventory();
 </script>
