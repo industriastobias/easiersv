@@ -240,18 +240,13 @@
                         item.description.toLowerCase().includes(normalizedQuery) ||
                         item.category.toLowerCase().includes(normalizedQuery)
                     );
-                } else {
-                    matchesQuery = item[field].toLowerCase
-                                    .toLowerCase().includes(normalizedQuery);
+                } else {                    matchesQuery = item[field].toString().toLowerCase().includes(normalizedQuery);
                 }
 
-                return (
-                    matchesQuery &&
-                    item.price >= minPrice &&
-                    item.price <= maxPrice &&
-                    item.quantity >= minStock &&
-                    item.quantity <= maxStock
-                );
+                const priceInRange = item.price >= minPrice && item.price <= maxPrice;
+                const stockInRange = item.quantity >= minStock && item.quantity <= maxStock;
+
+                return matchesQuery && priceInRange && stockInRange;
             });
         }
 
