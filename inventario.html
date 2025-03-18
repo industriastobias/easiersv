@@ -84,14 +84,21 @@
             display: flex;
             justify-content: center;
             gap: 10px;
+            margin-top: 20px;
         }
         .pagination button {
             padding: 5px 10px;
             cursor: pointer;
+            background-color: #ccc;
+            border: none;
+            border-radius: 5px;
         }
-        .pagination button.disabled {
-            cursor: not-allowed;
-            opacity: 0.5;
+        .pagination button:hover {
+            background-color: #bbb;
+        }
+        .pagination button.active {
+            background-color: #333;
+            color: white;
         }
     </style>
 </head>
@@ -245,3 +252,5 @@
                     pagination.appendChild(pageButton);
                 }
             }
+
+            searchScreen.style
