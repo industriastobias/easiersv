@@ -80,26 +80,6 @@
             padding-top: 20%;
             font-size: 24px;
         }
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .pagination button {
-            padding: 5px 10px;
-            cursor: pointer;
-            background-color: #ccc;
-            border: none;
-            border-radius: 5px;
-        }
-        .pagination button:hover {
-            background-color: #bbb;
-        }
-        .pagination button.active {
-            background-color: #333;
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -110,14 +90,7 @@
 
 <div class="container">
     <div class="search-container">
-        <select id="searchField">
-            <option value="">Buscar en todos los campos</option>
-            <option value="name">Nombre</option>
-            <option value="code">Código</option>
-            <option value="barcode">Código de Barras</option>
-            <option value="category">Categoría</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="Buscar producto">
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
         <button id="searchButton">Buscar</button>
         <button class="clear-search" id="clearSearchButton">Limpiar</button>
         <br><br>
@@ -150,7 +123,6 @@
                 <!-- Las filas se llenarán dinámicamente -->
             </tbody>
         </table>
-        <div class="pagination" id="pagination"></div>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
 
@@ -159,7 +131,7 @@
         <p id="totalAmount">0,00 dólares</p>
     </div>
 
-    <a href="compra.html" class="storage-button">Ir a Compra</a>
+    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
 </div>
 
 <div id="searchScreen" class="search-screen">
@@ -171,33 +143,19 @@
         const inventoryList = document.getElementById('inventoryList');
         const totalAmount = document.getElementById('totalAmount');
         const searchInput = document.getElementById('searchInput');
-        const searchField = document.getElementById('searchField');
         const searchButton = document.getElementById('searchButton');
         const clearSearchButton = document.getElementById('clearSearchButton');
         const totalCount = document.getElementById('totalCount');
         const totalStock = document.getElementById('totalStock');
         const noProductsMessage = document.getElementById('noProductsMessage');
         const searchScreen = document.getElementById('searchScreen');
-        const pagination = document.getElementById('pagination');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let currentPage = 1;
-        const itemsPerPage = 10;
-
-        // Función debounce para evitar muchas búsquedas innecesarias
-        function debounce(func, delay) {
-            let debounceTimer;
-            return function (...args) {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => func.apply(this, args), delay);
-            };
-        }
 
         // Cargar inventario desde localStorage
-        function loadInventory(filteredInventory = inventory, page = 1) {
+        function loadInventory(filteredInventory) {
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
-            pagination.innerHTML = '';
 
             if (filteredInventory.length === 0) {
                 noProductsMessage.style.display = 'block';
@@ -208,17 +166,13 @@
                 noProductsMessage.style.display = 'none';
 
                 let totalQuantity = 0;
-                const start = (page - 1) * itemsPerPage;
-                const end = start + itemsPerPage;
-                const paginatedItems = filteredInventory.slice(start, end);
-
-                paginatedItems.forEach((item, index) => {
+                filteredInventory.forEach((item, index) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                     totalQuantity += parseInt(item.quantity);
-
+                    
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${start + index + 1}</td> 
+                        <td>${index + 1}</td> 
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -241,6 +195,42 @@
                 totalAmount.textContent = `$${total.toFixed(2)}`;
                 totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
                 totalStock.textContent = `Cantidad total en stock: ${totalQuantity}`;
+            }
 
-                // Agregar paginación
-               
+            searchScreen.style.display = 'none';
+        }
+
+        function viewProduct(productCode) {
+            window.location.href = `almacenamiento.html?code=${productCode}`;
+        }
+
+        function filterInventory(query) {
+            const normalizedQuery = query.toLowerCase().trim();
+            return inventory.filter(item => 
+                item.name.toLowerCase().includes(normalizedQuery) ||
+                item.code.toLowerCase().includes(normalizedQuery) ||
+                item.barcode.toLowerCase().includes(normalizedQuery) ||
+                item.description.toLowerCase().includes(normalizedQuery) ||
+                item.category.toLowerCase().includes(normalizedQuery)
+            );
+        }
+
+        searchButton.addEventListener('click', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
+        searchInput.addEventListener('input', function() {
+            loadInventory(filterInventory(searchInput.value));
+        });
+
+        clearSearchButton.addEventListener('click', function() {
+            searchInput.value = '';
+            loadInventory(inventory);
+        });
+
+        loadInventory(inventory);
+    });
+</script>
+
+</body>
+</html>
