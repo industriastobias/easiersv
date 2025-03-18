@@ -216,12 +216,16 @@
         }
 
         searchButton.addEventListener('click', function() {
+            if (searchInput.value.trim() === '') {
+                alert('Por favor, ingrese un término de búsqueda.');
+                return;
+            }
             loadInventory(filterInventory(searchInput.value));
         });
 
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', debounce(function() {
             loadInventory(filterInventory(searchInput.value));
-        });
+        }, 300));
 
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
@@ -230,6 +234,15 @@
 
         loadInventory(inventory);
     });
+
+    // Función debounce para evitar múltiples búsquedas innecesarias
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
 </script>
 
 </body>
