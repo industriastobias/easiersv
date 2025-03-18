@@ -94,6 +94,23 @@
         <button id="searchButton">Buscar</button>
         <button class="clear-search" id="clearSearchButton">Limpiar</button>
         <br><br>
+        <label for="filterField">Filtrar por campo:</label>
+        <select id="filterField">
+            <option value="all">Todos los campos</option>
+            <option value="name">Nombre</option>
+            <option value="code">Código</option>
+            <option value="barcode">Código de Barras</option>
+            <option value="category">Categoría</option>
+        </select>
+        <br><br>
+        <label for="priceRange">Rango de precios:</label>
+        <input type="number" id="priceMin" placeholder="Mínimo">
+        <input type="number" id="priceMax" placeholder="Máximo">
+        <br><br>
+        <label for="stockRange">Rango de stock:</label>
+        <input type="number" id="stockMin" placeholder="Mínimo">
+        <input type="number" id="stockMax" placeholder="Máximo">
+        <br><br>
     </div>
 
     <div class="info-container">
@@ -150,9 +167,14 @@
         const noProductsMessage = document.getElementById('noProductsMessage');
         const searchScreen = document.getElementById('searchScreen');
 
+        const filterField = document.getElementById('filterField');
+        const priceMin = document.getElementById('priceMin');
+        const priceMax = document.getElementById('priceMax');
+        const stockMin = document.getElementById('stockMin');
+        const stockMax = document.getElementById('stockMax');
+
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-        // Cargar inventario desde localStorage
         function loadInventory(filteredInventory) {
             searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
@@ -169,7 +191,7 @@
                 filteredInventory.forEach((item, index) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                     totalQuantity += parseInt(item.quantity);
-                    
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${index + 1}</td> 
@@ -200,19 +222,37 @@
             searchScreen.style.display = 'none';
         }
 
-        function viewProduct(productCode) {
-            window.location.href = `almacenamiento.html?code=${productCode}`;
-        }
-
         function filterInventory(query) {
             const normalizedQuery = query.toLowerCase().trim();
-            return inventory.filter(item => 
-                item.name.toLowerCase().includes(normalizedQuery) ||
-                item.code.toLowerCase().includes(normalizedQuery) ||
-                item.barcode.toLowerCase().includes(normalizedQuery) ||
-                item.description.toLowerCase().includes(normalizedQuery) ||
-                item.category.toLowerCase().includes(normalizedQuery)
-            );
+            const field = filterField.value;
+            const minPrice = parseFloat(priceMin.value) || 0;
+            const maxPrice = parseFloat(priceMax.value) || Infinity;
+            const minStock = parseFloat(stockMin.value) || 0;
+            const maxStock = parseFloat(stockMax.value) || Infinity;
+
+            return inventory.filter(item => {
+                let matchesQuery = false;
+                if (field === 'all') {
+                    matchesQuery = (
+                        item.name.toLowerCase().includes(normalizedQuery) ||
+                        item.code.toLowerCase().includes(normalizedQuery) ||
+                        item.barcode.toLowerCase().includes(normalizedQuery) ||
+                        item.description.toLowerCase().includes(normalizedQuery) ||
+                        item.category.toLowerCase().includes(normalizedQuery)
+                    );
+                } else {
+                    matchesQuery = item[field].toLowerCase
+                                    .toLowerCase().includes(normalizedQuery);
+                }
+
+                return (
+                    matchesQuery &&
+                    item.price >= minPrice &&
+                    item.price <= maxPrice &&
+                    item.quantity >= minStock &&
+                    item.quantity <= maxStock
+                );
+            });
         }
 
         searchButton.addEventListener('click', function() {
@@ -229,6 +269,11 @@
 
         clearSearchButton.addEventListener('click', function() {
             searchInput.value = '';
+            priceMin.value = '';
+            priceMax.value = '';
+            stockMin.value = '';
+            stockMax.value = '';
+            filterField.value = 'all';
             loadInventory(inventory);
         });
 
@@ -242,6 +287,20 @@
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
+    }
+
+    // Función para visualizar producto (puede implementarse según sea necesario)
+    function viewProduct(productCode) {
+        alert(`Visualizando producto con código: ${productCode}`);
+        // Aquí puedes redirigir a otra página o mostrar detalles del producto
+    }
+
+    // Función para eliminar todos los productos (implementación básica)
+    function deleteAll() {
+        if (confirm("¿Está seguro de que desea eliminar todos los productos?")) {
+            localStorage.removeItem('inventory');
+            location.reload(); // Recargar la página para actualizar el inventario
+        }
     }
 </script>
 
