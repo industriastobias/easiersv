@@ -1,3 +1,5 @@
+alma
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -77,21 +79,6 @@
             text-decoration: none;
             cursor: pointer;
         }
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .search-container input {
-            padding: 10px;
-            width: 20%;
-        }
-        .no-results {
-            text-align: center;
-            color: red;
-            font-weight: bold;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
@@ -101,29 +88,14 @@
 </div>
 
 <div class="container">
-    <!-- Filtro de Búsqueda Avanzada -->
-    <div class="search-container">
-        <input type="text" id="searchName" placeholder="Buscar por nombre...">
-        <input type="text" id="searchCode" placeholder="Buscar por código...">
-        <input type="text" id="searchBarcode" placeholder="Buscar por código de barras...">
-        <input type="number" id="searchPrice" placeholder="Buscar por precio...">
-        <input type="number" id="searchDiscount" placeholder="Buscar por descuento...">
-        <input type="number" id="searchQuantity" placeholder="Buscar por cantidad...">
-    </div>
-    
     <button onclick="openSoldModal()">Registrar Venta</button>
     <table>
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Código</th>
-                <th>Código de Barras</th>
                 <th>Precio</th>
-                <th>Descuento (%)</th>
-                <th>Precio Con Descuento</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Cantidad en stock</th>
+                <th>Cantidad</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -131,9 +103,6 @@
             <!-- Los productos se llenarán dinámicamente -->
         </tbody>
     </table>
-    <div id="noResultsMessage" class="no-results" style="display: none;">
-        No se encontraron productos que coincidan con los criterios de búsqueda.
-    </div>
 </div>
 
 <!-- Modal para registrar venta -->
@@ -149,35 +118,20 @@
 
 <script>
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    let debounceTimer;
 
-    function loadInventory(filteredInventory = inventory) {
+    function loadInventory() {
         const inventoryList = document.getElementById('inventoryList');
-        const noResultsMessage = document.getElementById('noResultsMessage');
-
-        if (filteredInventory.length === 0) {
-            inventoryList.innerHTML = '';
-            noResultsMessage.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
-            inventoryList.innerHTML = filteredInventory.map((item, index) => {
-                const priceWithDiscount = item.price * (1 - item.discount / 100);
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount}</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td><button onclick="markAsSold(${index})">Vender</button></td>
-                    </tr>
-                `;
-            }).join('');
-        }
+        inventoryList.innerHTML = inventory.map((item, index) => {
+            return `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.price}</td>
+                    <td>${item.quantity}</td>
+                    <td><button onclick="markAsSold(${index})">Vender</button></td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function markAsSold(index) {
@@ -198,9 +152,11 @@
         const item = inventory[currentSoldIndex];
 
         if (soldQuantity > 0 && soldQuantity <= item.quantity) {
+            // Actualizar inventario
             item.quantity -= soldQuantity;
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
+            // Registrar venta
             const soldItem = {
                 name: item.name,
                 code: item.code,
@@ -213,55 +169,15 @@
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            filterInventory();
+            // Actualizar tabla
+            loadInventory();
             closeSoldModal();
         } else {
             alert('Cantidad inválida.');
         }
     }
 
-    function filterInventory() {
-        const name = document.getElementById('searchName').value.toLowerCase();
-        const code = document.getElementById('searchCode').value.toLowerCase();
-        const barcode = document.getElementById('searchBarcode').value.toLowerCase();
-        const price = document.getElementById('searchPrice').value;
-        const discount = document.getElementById('searchDiscount').value;
-        const quantity = document.getElementById('searchQuantity').value;
-
-        const filteredInventory = inventory.filter(item => {
-            const itemName = item.name.toLowerCase();
-            const itemCode = item.code.toLowerCase();
-            const itemBarcode = item.barcode.toLowerCase();
-            return (
-                (name === '' || itemName.includes(name)) &&
-                (code === '' || itemCode.includes(code)) &&
-                (barcode === '' || itemBarcode.includes(barcode)) &&
-                (price === '' || item.price.toString().includes(price)) &&
-                (discount === '' || item.discount.toString().includes(discount)) &&
-                (quantity === '' || item.quantity.toString().includes(quantity))
-            );
-        });
-
-        loadInventory(filteredInventory);
-    }
-
-    function debounce(func, delay) {
-        return function() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                func.apply(this, arguments);
-            }, delay);
-        };
-    }
-
-    document.getElementById('searchName').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchBarcode').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchPrice').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchDiscount').addEventListener('input', debounce(filterInventory, 300));
-   document.getElementById('searchQuantity').addEventListener('input', debounce(filterInventory, 300));
-
-loadInventory();
+    loadInventory();
 </script>
 
 </body>
