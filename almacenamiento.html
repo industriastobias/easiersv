@@ -1,282 +1,296 @@
--<!DOCTYPE html>
-HTM lang = " es ">
-* Cabeza *
-    meta carbonaje = " UTF-8 ">
-    meta nombre = " viewport " content = " width=device-width, initial-scale=1.0 ">
-    Título >Gestión de Inventario/ título>
-    <Estilismo>
-        cuerpo.
-            familia de fuentes: Arial, sans-serif;
-            fondo-color: .f8f9fa;
-            margen: 0;
-            relleno: 20px;
-            color: 333,
-        -
-        .header
-            text-align: centro;
-            tamaño de fuente: 24px;
-            peso de la letra: audaz;
-            margen-bajo: 20px;
-            color: 555;
-        -
-        .. contenedoro.
-            max-panth: 1200px;
-            margen: automático;
-            fondo:
-            relleno: 25px;
-            radio de frontera: 12px;
-            caja-dobla: 0px 4px 10px rgba(0, 0, 0, 0,1);
-        -
-        mesa.
-            anchura: 100%;
-            borde-colapso: colapso;
-            margen-top: 10px;
-        -
-        T, td.
-            borde-bajo: 1px sólido .ddd;
-            acolchado: 12px;
-            text-align: a la izquierda;
-        -
-        Tú.
-            de fondo-color: .007bff;
-            color: blanco;
-            peso de la letra: audaz;
-        -
-        tr:hover
-            fondo-color: .f1f1f1f189;
-        -
-        .modal
-            visual: ninguno;
-            posición: fija;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: rgba(241, 241, 241, 0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
             z-index: 1;
-            a la izquierda: 0;
-            arriba: 0;
-            anchura: 100%;
-            altura: 100%;
-            desbordamiento: automático;
-            fondo-color: rgba(0, 0, 0, 0,4);
-            encolado: 60px;
-        -
-        . modal-contenido
-            fondo-color: "fefefefe";
-            margen: 5% de auto;
-            relleno: 20px;
-            borde: 1px sólido 888;
-            anchura: 80%;
-            max-ancho: 600px;
-        -
-        .close.
-            color: Aaaaa;
-            flotar: a la derecha;
-            tamaño de fuente: 28px;
-            peso de la letra: audaz;
-        -
-        .close:hover,
-        .close:focus
-            color: negro;
-            texto-decoración: ninguno;
-            cursor: puntero;
-        -
-        .search-container
-            margen-bajo: 20px;
-        -
-        .search-container seleccione,
-        .search-container input
-            acolchado: 10px;
-            anchura: 20%;
-            margen-derecha: 10px;
-        -
-        .no-resultados
-            text-align: centro;
-            color: rojo;
-            peso de la letra: audaz;
-            margen-top: 20px;
-            visual: ninguno;
-        -
-        . mensaje de confirmación
-            text-align: centro;
-            color: verde;
-            peso de la letra: audaz;
-            margen-top: 20px;
-            visual: ninguno;
-        -
-    * * * estilo *>
-* * * * cabeza *>
-* Cuerpo *>
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
 
-* Div class = " cabecera " *>
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container select,
+        .search-container input {
+            padding: 10px;
+            width: 20%;
+            margin-right: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .confirmation-message {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
     Gestión de Inventario
-* * *>
+</div>
 
-<Div class = " contenedor ">
-    Filtro de Búsqueda por Categoría y Código...
-    <Div class = " search-container ">
-        etiqueta para = " searchCategory " >Filtrar por categoría: ./ etiqueta>
-        <selectSeleccione id = " searchCategory "
-            - valor de    las categorías/ opción>
-            - valor de   Cadenas/ opción>
-            - valor de   Aritos/ opción>
-            - valor de   Pulseras -/ opción>
-            Valor de   Carteras - Carteras/ </opción>
-        */ Seleccione>
+<div class="container">
+    <div class="search-container">
+        <label for="searchCategory">Filtrar por categoría:</label>
+        <select id="searchCategory">
+            <option value="">Categorías</option>
+            <option value="Cadenas">Cadenas</option>
+            <option value="Aritos">Aritos</option>
+            <option value="Pulseras">Pulseras</option>
+            <option value="Carteras">Carteras</option>
+        </select>
 
-        etiqueta para = " searchCode " >Buscar por código: */ etiqueta>
-        <inputtypeEscritor de      
-    * * *>
-    
-    * botón onclick = " openSoldModal() ">"Registrar Venta ./ botón .
-    * mesa *>
-        *>
-            *>
-                * >Nombre * * * * * *>
-                * >Código * * * *>
-                Código >de Barras</th>
-                *A >Precio * *>
-                <th>Descuento (%)<//h>
-                Precio >Con Descuento</th>
-                Descripción></th>
-                * Categoría >* * * *>
-                Cantidad >en stock</th>
-                *></th>
-            */ tr *>
-        * * *>
-        <Tbody id = " inventarioList ">
-            Los productos se llenan dinámicamente --
-        * * * *>
-    */ cuadro *>
-    <Div id = " noResultsMessage " class = " no-results ">
-        No senreció productos que coincidan con los criterios de búsqueda.
-    * * *>
-* * *>
+        <label for="searchCode">Buscar por código:</label>
+        <input type="text" id="searchCode" placeholder="Código del producto">
+    </div>
 
-Modal para registrar venta --
-<Div id = " soldModal " class = " modal ">
-    <Div class = " modal-contenido ">
-        - clase de lata class= " cerrar " onclick = " closeSoldModal() ".&times;</span>
-        . h2 >Registrador Venta -/ h2>
-        etiqueta <labelpara = " vendidoCantidad " Cantidad Vendida: */ etiqueta *>
-        Escritorio de entrada type= " número " id = " vendidoCantidad " min = " 1 ">
-        * botón de pulsar = " processSale() ".</Registrador/botón>
-        <Div id = " confirmaciónMessage " class = " confirmación-mensaje ">
-            REGISTRO COMPLETO
-        * * *>
-    * * *>
-* * *>
+    <button onclick="openSoldModal()">Registrar Venta</button>
 
-El guión>
-    dejar inventario = JSON.parse(localStorage.getItem('inventory')
-    dejar currentSoldIndex = -1;
-    que debounceTimer;
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Código de Barras</th>
+                <th>Precio</th>
+                <th>Descuento (%)</th>
+                <th>Precio con Descuento</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Cantidad en stock</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryList">
+            <!-- Los productos se llenan dinámicamente -->
+        </tbody>
+    </table>
 
-    carga de funciónInventario (filtradoInventario = inventario)
-        const inventarioList = document.getElementById('inventoryList');
+    <div id="noResultsMessage" class="no-results">
+        No se encontraron productos que coincidan con los criterios de búsqueda.
+    </div>
+</div>
+
+<!-- Modal para registrar venta -->
+<div id="soldModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSoldModal()">&times;</span>
+        <h2>Registrar Venta</h2>
+        <label for="soldQuantity">Cantidad Vendida:</label>
+        <input type="number" id="soldQuantity" min="1">
+        <button onclick="processSale()">Registrar Venta</button>
+
+        <div id="confirmationMessage" class="confirmation-message">
+            ¡Registro Completo!
+        </div>
+    </div>
+</div>
+
+<script>
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    let currentSoldIndex = -1;
+    let debounceTimer;
+
+    function loadInventory(filteredInventory = inventory) {
+        const inventoryList = document.getElementById('inventoryList');
         const noResultsMessage = document.getElementById('noResultsMessage');
 
-        si (filtradoInventory.longitud === 0)
-            ofList.innerHTML = '';
-            noResultsMessage.style.display = 'bloque';
-        Si no,
+        if (filteredInventory.length === 0) {
+            inventoryList.innerHTML = '';
+            noResultsMessage.style.display = 'block';
+        } else {
             noResultsMessage.style.display = 'none';
-            ofList.innerHTML = filtradoInventory.map((partida, index) =
-                precio de constConDiscount = item. pricece * (1 - item.discount / 100);
-                de vuelta.
-                    *>
-                        - td . $.item.name./ 
-                        - td . $.item.code./ td>
-                        <Td . $.item.barcode/ td>
-                        <Td. >$.item.price./ td>
-                        - Td . . . . . . . . . . </td.     . . . . . .item.
-                        * >PapableWithDiscount.toFixed (2) */ td>
-                        <Td . $.item.description/ td>
-                        - Td. >$.item.category./ td>
-                        <Td . . .item.queantity/ td>
-                        Botón ><buttononclick = ""MarcadoSold($index) ">"Vender ./ button >. . . . . .                             
-                    */ tr *>
-                -
-            *). . . . . . . . . . . . . . .
-        -
-    -
+            inventoryList.innerHTML = filteredInventory.map((item, index) => {
+                const priceWithDiscount = item.price * (1 - item.discount / 100);
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount}</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                        <td><button onclick="markSold(${index})">Vender</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
 
-    marca de funciónSold(index)
-        el índice currentSoldIndex =;
-        documento.getElementById('soldModal').style.display = 'bloque';
-    -
+    function markSold(index) {
+        currentSoldIndex = index;
+        document.getElementById('soldModal').style.display = 'block';
+    }
 
-    función openSoldModal()
-        documento.getElementById('soldModal').style.display = 'bloque';
-    -
+    function openSoldModal() {
+        document.getElementById('soldModal').style.display = 'block';
+    }
 
-    función closeSoldModal()
+    function closeSoldModal() {
         document.getElementById('soldModal').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'none';
-    -
+    }
 
-    proceso de función Ventas ()
+    function processSale() {
         const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
-        artículo de const = inventario[ActualSoldIndex];
+        const item = inventory[currentSoldIndex];
 
-        si (se vendió Cuantidad 0 && vendidoCantidad = artículo.cantidad)
-            artículo.queantidad -= vendidaCantidad;
-            localStorage.setItem ('inventario', JSON.stringify (inventario);
+        if (soldQuantity > 0 && soldQuantity <= item.quantity) {
+            item.quantity -= soldQuantity;
+            localStorage.setItem('inventory', JSON.stringify(inventory));
 
-            const soldItem =
-                nombre: artículo.name,
-                código: item.code,
-                precio: artículo. pricece * (1 - item.discount / 100),
-                cantidad: se vendialCantidad,
-                total: (item. pricece * (1 - item.discount / 100)) * vendidaCantidad
-            -
+            const soldItem = {
+                name: item.name,
+                code: item.code,
+                price: item.price * (1 - item.discount / 100),
+                quantity: soldQuantity,
+                total: (item.price * (1 - item.discount / 100)) * soldQuantity
+            };
 
-            deje venderInventory = JSON.parse(localStorage.getItem('soldInventory')
-            vendidaInventory.push (soldItem);
-            localStorage.setItem('soldInventory', JSON.stringify (inventario vendido);
+            let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
+            soldInventory.push(soldItem);
+            localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            filterInventory ();
-            showConfirmationMessage ();
-        Si no,
-            alertas 'Cantidad inválida.') ;
-        -
-    -
+            filterInventory();
+            showConfirmationMessage();
+        } else {
+            alert('Cantidad inválida.');
+        }
+    }
 
-    función showConfirmationMessage()
-        const confirmaciónMessage = document.getElementById('confirmationMessage');
-        confirmaciónMessage.style.display = 'bloque';
-        setTimeout(() =
-            confirmaciónMessage.style.display = 'none';
-        - 3000);
-    -
+    function showConfirmationMessage() {
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        confirmationMessage.style.display = 'block';
+        setTimeout(() => {
+            confirmationMessage.style.display = 'none';
+        }, 3000);
+    }
 
-    filtro de funciónInventario ()
-        const categoría = documento.getElementById('searchCategory').value.trim().toLowerCase (*);
-        const code = documento.getElementById('searchCode').value.trim().toLowerCase ();
+    function filterInventory() {
+        const category = document.getElementById('searchCategory').value.trim().toLowerCase();
+        const code = document.getElementById('searchCode').value.trim().toLowerCase();
 
-        const filtradoInventory = inventario.filter(item = .
-            conte itemCategoría = item.category.trim().toLowerCase();
+        const filteredInventory = inventory.filter(item => {
+            const itemCategory = item.category.trim().toLowerCase();
             const itemCode = item.code.trim().toLowerCase();
 
-            const matchesCategoría = categoría === '' ítemCategoría === categoría;
-            const coincidesCode = código === '' . itemCode.includes (código);
+            const matchesCategory = category === '' || itemCategory === category;
+            const matchesCode = code === '' || itemCode.includes(code);
 
-            vuelta partidosCategoría & & &partysCode;
-        -);
+            return matchesCategory && matchesCode;
+        });
 
-        cargaInventario (inventario filtrado);
-    -
+        loadInventory(filteredInventory);
+    }
 
-    función debounce(func, retraso)
-        función de retorno ()
-            ClearTimeout (debounceTimer);
-            debounceTimer = setTimeout(() =
-                func.apply(es, argumentos);
-            -, retraso);
-        -
-    -
+    function debounce(func, delay) {
+        return function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                func.apply(this, arguments);
+            }, delay);
+        };
+    }
 
-    documento.getElementById('searchCategory').dEventListener ('cambi', debounce (filtroInventario, 300));
-    documento.getElementById('searchCode').addEventListener', debounce(filterInventory, 300));
+    document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
+    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
-    cargaInventario ();
-* / script *>
+    loadInventory();
+</script>
 
-*/ cuerpo *
-*/ html>
+</body>
+</html>
