@@ -213,8 +213,7 @@
                 noProductsMessage.style.display = 'none';
 
                 let totalQuantity = 0;
-                let start = (currentPageNumber - 1) * itemsPerPage;
-                let end = start + itemsPerPage;
+                let start = (currentPageNumber - 1) * itemsPerPage                let end = start + itemsPerPage;
 
                 filteredInventory.slice(start, end).forEach((item, index) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
@@ -231,7 +230,7 @@
                         <td>$${priceWithDiscount.toFixed(2)}</td>
                         <td>${item.description}</td>
                         <td>${item.category}</td>
-                                               <td>${item.quantity}</td>
+                        <td>${item.quantity}</td>
                         <td><button onclick="viewProduct('${item.code}')">Visualizar</button></td>
                     `;
                     inventoryList.appendChild(row);
