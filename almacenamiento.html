@@ -80,9 +80,11 @@
         .search-container {
             margin-bottom: 20px;
         }
-        .search-container select, .search-container input {
+        .search-container select,
+        .search-container input {
             padding: 10px;
             width: 20%;
+            margin-right: 10px;
         }
         .no-results {
             text-align: center;
@@ -107,7 +109,7 @@
 </div>
 
 <div class="container">
-    <!-- Filtro de Búsqueda por Categoría -->
+    <!-- Filtro de Búsqueda por Categoría y Código -->
     <div class="search-container">
         <label for="searchCategory">Filtrar por categoría:</label>
         <select id="searchCategory">
@@ -117,12 +119,9 @@
             <option value="Pulseras">Pulseras</option>
             <option value="Carteras">Carteras</option>
         </select>
-    </div>
 
-    <!-- Filtro de Búsqueda por Código -->
-    <div class="search-container">
-        <label for="searchCode">Filtrar por código:</label>
-        <input type="text" id="searchCode" placeholder="Ingrese el código del producto">
+        <label for="searchCode">Buscar por código:</label>
+        <input type="text" id="searchCode" placeholder="Ingrese el código">
     </div>
     
     <button onclick="openSoldModal()">Registrar Venta</button>
@@ -209,7 +208,7 @@
 
     function closeSoldModal() {
         document.getElementById('soldModal').style.display = 'none';
-        document.getElementById('confirmationMessage').style.display = 'none'; // Ocultar el mensaje al cerrar el modal
+        document.getElementById('confirmationMessage').style.display = 'none';
     }
 
     function processSale() {
@@ -218,25 +217,21 @@
 
         if (soldQuantity > 0 && soldQuantity <= item.quantity) {
             item.quantity -= soldQuantity;
-
-            // Calcular el precio con descuento aplicado
-            const priceWithDiscount = item.price * (1 - item.discount / 100);
-
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
             const soldItem = {
                 name: item.name,
                 code: item.code,
-                price: priceWithDiscount, // Utilizar el precio con descuento
+                price: item.price * (1 - item.discount / 100),
                 quantity: soldQuantity,
-                total: priceWithDiscount * soldQuantity // Calcular el total con el precio con descuento
+                total: (item.price * (1 - item.discount / 100)) * soldQuantity
             };
 
             let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            filterInventory(); // Actualizar la lista de inventario en la pantalla
+            filterInventory();
             showConfirmationMessage();
         } else {
             alert('Cantidad inválida.');
@@ -248,7 +243,7 @@
         confirmationMessage.style.display = 'block';
         setTimeout(() => {
             confirmationMessage.style.display = 'none';
-        }, 3000); // Mostrar el mensaje durante 3 segundos
+        }, 3000);
     }
 
     function filterInventory() {
@@ -258,13 +253,17 @@
         const filteredInventory = inventory.filter(item => {
             const itemCategory = item.category.trim().toLowerCase();
             const itemCode = item.code.trim().toLowerCase();
-            return (category === '' || itemCategory === category) && (code === '' || itemCode.includes(code));
+
+            const matchesCategory = category === '' || itemCategory === category;
+            const matchesCode = code === '' || itemCode.includes(code);
+
+            return matchesCategory && matchesCode;
         });
 
         loadInventory(filteredInventory);
     }
 
-    function debounce(func, delay)    function debounce(func, delay) {
+    function debounce(func, delay) {
         return function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
@@ -273,11 +272,9 @@
         };
     }
 
-    // Agregar eventos de filtrado
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
     document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
-    // Cargar la lista de inventario al cargar la página
     loadInventory();
 </script>
 
