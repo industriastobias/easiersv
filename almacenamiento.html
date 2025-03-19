@@ -103,184 +103,180 @@
     </style>
 </head>
 <body>
-
-<div class="header">
-    Gestión de Inventario
-</div>
-
-<div class="container">
-    Filtro de Búsqueda por Categoría y Código...
-    <div class="search-container">
-        <label for="searchCategory">Filtrar por categoría:</label>
-        <select id="searchCategory">
-            <option value="">Todas las categorías</option>
-            <option value="Cadenas">Cadenas</option>
-            <option value="Aritos">Aritos</option>
-            <option value="Pulseras">Pulseras</option>
-            <option value="Carteras">Carteras</option>
-        </select>
-
-        <label for="searchCode">Buscar por código:</label>
-        <input type="text" id="searchCode" placeholder="Código de producto">
+    <div class="header">
+        Gestión de Inventario
     </div>
-    
-    <button onclick="openSoldModal()">Registrar Venta</button>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Código de Barras</th>
-                <th>Precio</th>
-                <th>Descuento (%)</th>
-                <th>Precio con Descuento</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Cantidad en stock</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody id="inventoryList">
-            <!-- Los productos se llenan dinámicamente -->
-        </tbody>
-    </table>
+    <div class="container">
+        <p>Filtro de Búsqueda por Categoría y Código...</p>
+        <div class="search-container">
+            <label for="searchCategory">Filtrar por categoría:</label>
+            <select id="searchCategory">
+                <option value="">Seleccionar categoría</option>
+                <option value="cadenas">Cadenas</option>
+                <option value="aros">Aros</option>
+                <option value="pulseras">Pulseras</option>
+                <option value="carteras">Carteras</option>
+            </select>
+            <label for="searchCode">Buscar por código:</label>
+            <input type="text" id="searchCode" placeholder="Buscar código...">
+        </div>
 
-    <div id="noResultsMessage" class="no-results">
-        No se encontraron productos que coincidan con los criterios de búsqueda.
-    </div>
-</div>
+        <button onclick="openSoldModal()">Registrar Venta</button>
 
-<!-- Modal para registrar venta -->
-<div id="soldModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeSoldModal()">&times;</span>
-        <h2>Registrar Venta</h2>
-        <label for="soldQuantity">Cantidad Vendida:</label>
-        <input type="number" id="soldQuantity" min="1">
-        <button onclick="processSale()">Registrar</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList">
+                <!-- Los productos se llenan dinámicamente -->
+            </tbody>
+        </table>
+
+        <div id="noResultsMessage" class="no-results">
+            No se encontraron productos que coincidan con los criterios de búsqueda.
+        </div>
+
         <div id="confirmationMessage" class="confirmation-message">
             REGISTRO COMPLETO
         </div>
     </div>
-</div>
 
-<script>
-    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    let currentSoldIndex = -1;
-    let debounceTimer;
+    <!-- Modal para registrar venta -->
+    <div id="soldModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSoldModal()">&times;</span>
+            <h2>Registrar Venta</h2>
+            <label for="soldQuantity">Cantidad Vendida:</label>
+            <input type="number" id="soldQuantity" min="1">
+            <button onclick="processSale()">Registrar</button>
+        </div>
+    </div>
 
-    function loadInventory(filteredInventory = inventory) {
-        const inventoryList = document.getElementById('inventoryList');
-        const noResultsMessage = document.getElementById('noResultsMessage');
+    <script>
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let currentSoldIndex = -1;
+        let debounceTimer;
 
-        if (filteredInventory.length === 0) {
-            inventoryList.innerHTML = '';
-            noResultsMessage.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
-            inventoryList.innerHTML = filteredInventory.map((item, index) => {
-                const priceWithDiscount = item.price * (1 - item.discount / 100);
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount}</td>
-                        <td>${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td><button onclick="markSold(${index})">Vender</button></td>
-                    </tr>
-                `;
-            }).join('');
+        function loadInventory(filteredInventory = inventory) {
+            const inventoryList = document.getElementById('inventoryList');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+
+            if (filteredInventory.length === 0) {
+                inventoryList.innerHTML = '';
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+                inventoryList.innerHTML = filteredInventory.map((item, index) => {
+                    const priceWithDiscount = item.price * (1 - item.discount / 100);
+                    return `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.code}</td>
+                            <td>${item.barcode}</td>
+                            <td>${item.price}</td>
+                            <td>${item.discount}</td>
+                            <td>${priceWithDiscount.toFixed(2)}</td>
+                            <td>${item.description}</td>
+                            <td>${item.category}</td>
+                            <td>${item.quantity}</td>
+                            <td><button onclick="markSold(${index})">Vender</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
         }
-    }
 
-    function markSold(index) {
-        currentSoldIndex = index;
-        document.getElementById('soldModal').style.display = 'block';
-    }
+        function markSold(index) {
+            currentSoldIndex = index;
+            document.getElementById('soldModal').style.display = 'block';
+        }
 
-    function openSoldModal() {
-        document.getElementById('soldModal').style.display = 'block';
-    }
+        function openSoldModal() {
+            document.getElementById('soldModal').style.display = 'block';
+        }
 
-    function closeSoldModal() {
-        document.getElementById('soldModal').style.display = 'none';
-        document.getElementById('confirmationMessage').style.display = 'none';
-    }
+        function closeSoldModal() {
+            document.getElementById('soldModal').style.display = 'none';
+            document.getElementById('confirmationMessage').style.display = 'none';
+        }
 
-    function processSale() {
-        const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
-        const item = inventory[currentSoldIndex];
+        function processSale() {
+            const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
+            const item = inventory[currentSoldIndex];
 
-        if (soldQuantity > 0 && soldQuantity <= item.quantity) {
-            item.quantity -= soldQuantity;
-            localStorage.setItem('inventory', JSON.stringify(inventory));
+            if (soldQuantity > 0 && soldQuantity <= item.quantity) {
+                item.quantity -= soldQuantity;
+                localStorage.setItem('inventory', JSON.stringify(inventory));
 
-            const soldItem = {
-                name: item.name,
-                code: item.code,
-                price: item.price * (1 - item.discount / 100),
-                quantity: soldQuantity,
-                total: (item.price * (1 - item.discount / 100)) * soldQuantity
+                const soldItem = {
+                    name: item.name,
+                    code: item.code,
+                    price: item.price * (1 - item.discount / 100),
+                    quantity: soldQuantity,
+                    total: (item.price * (1 - item.discount / 100)) * soldQuantity
+                };
+
+                let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
+                soldInventory.push(soldItem);
+                localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+
+                filterInventory();
+                showConfirmationMessage();
+            } else {
+                alert('Cantidad inválida.');
+            }
+        }
+
+        function showConfirmationMessage() {
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            confirmationMessage.style.display = 'block';
+            setTimeout(() => {
+                confirmationMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function filterInventory() {
+            const category = document.getElementById('searchCategory').value.trim().toLowerCase();
+            const code = document.getElementById('searchCode').value.trim().toLowerCase();
+
+            const filteredInventory = inventory.filter(item => {
+                const itemCategory = item.category.trim().toLowerCase();
+                const itemCode = item.code.trim().toLowerCase();
+
+                const matchesCategory = category === '' || itemCategory === category;
+                const matchesCode = code === '' || itemCode.includes(code);
+
+                return matchesCategory && matchesCode;
+            });
+
+            loadInventory(filteredInventory);
+        }
+
+        function debounce(func, delay) {
+            return function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    func.apply(this, arguments);
+                }, delay);
             };
-
-            let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
-            soldInventory.push(soldItem);
-            localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
-
-            // Llamar a loadInventory para actualizar la interfaz después de la venta
-            loadInventory();
-
-            showConfirmationMessage();
-        } else {
-            alert('Cantidad inválida.');
         }
-    }
 
-    function showConfirmationMessage() {
-        const confirmationMessage = document.getElementById('confirmationMessage');
-        confirmationMessage.style.display = 'block';
-        setTimeout(() => {
-            confirmationMessage.style.display = 'none';
-        }, 3000);
-    }
+        document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
+        document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
-    function filterInventory() {
-        const category = document.getElementById('searchCategory').value.trim().toLowerCase();
-        const code = document.getElementById('searchCode').value.trim().toLowerCase();
-
-        const filteredInventory = inventory.filter(item => {
-            const itemCategory = item.category.trim().toLowerCase();
-            const itemCode = item.code.trim().toLowerCase();
-
-            const matchesCategory = category === '' || itemCategory === category;
-            const matchesCode = code === '' || itemCode.includes(code);
-
-            return matchesCategory && matchesCode;
-        });
-
-        loadInventory(filteredInventory);
-    }
-
-    function debounce(func, delay) {
-        return function() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                func.apply(this, arguments);
-            }, delay);
-        };
-    }
-
-    document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
-    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
-
-    loadInventory();
-</script>
-
+        loadInventory();
+    </script>
 </body>
 </html>
