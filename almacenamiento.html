@@ -211,21 +211,25 @@
 
         if (soldQuantity > 0 && soldQuantity <= item.quantity) {
             item.quantity -= soldQuantity;
+
+            // Calcular el precio con descuento aplicado
+            const priceWithDiscount = item.price * (1 - item.discount / 100);
+
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
             const soldItem = {
                 name: item.name,
                 code: item.code,
-                price: item.price,
+                price: priceWithDiscount, // Utilizar el precio con descuento
                 quantity: soldQuantity,
-                total: item.price * soldQuantity
+                total: priceWithDiscount * soldQuantity // Calcular el total con el precio con descuento
             };
 
             let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            filterInventory();
+            filterInventory(); // Actualizar la lista de inventario en la pantalla
             closeSoldModal();
             showConfirmationMessage();
         } else {
