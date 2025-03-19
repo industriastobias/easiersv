@@ -246,10 +246,10 @@
     }
 
     function filterInventory() {
-        const category = document.getElementById('searchCategory').value.toLowerCase();
+        const category = document.getElementById('searchCategory').value.trim().toLowerCase();
 
         const filteredInventory = inventory.filter(item => {
-            const itemCategory = item.category.toLowerCase();
+            const itemCategory = item.category.trim().toLowerCase();
             return category === '' || itemCategory === category;
         });
 
