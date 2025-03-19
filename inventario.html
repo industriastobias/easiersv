@@ -21,9 +21,6 @@
         .container {
             padding: 20px;
         }
-        .search-container, .info-container, .total-container {
-            margin-bottom: 20px;
-        }
         .inventory-table {
             width: 100%;
             border-collapse: collapse;
@@ -63,23 +60,6 @@
         .storage-button:hover {
             background-color: #555;
         }
-        .no-products-message {
-            color: red;
-            font-weight: bold;
-        }
-        .search-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-            font-size: 24px;
-        }
         .pagination {
             margin-top: 20px;
             text-align: center;
@@ -102,34 +82,15 @@
 </div>
 
 <div class="container">
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
-        <button id="searchButton">Buscar</button>
-        <button class="clear-search" id="clearSearchButton">Limpiar</button>
-        <br><br>
-        <label for="filterField">Filtrar por campo:</label>
-        <select id="filterField">
-            <option value="all">Todos los campos</option>
-            <option value="name">Nombre</option>
-            <option value="code">Código</option>
-            <option value="barcode">Código de Barras</option>
-            <option value="category">Categoría</option>
+    <div class="filter-container">
+        <label for="categoryFilter">Filtrar por categoría:</label>
+        <select id="categoryFilter">
+            <option value="all">Todas las categorías</option>
+            <option value="Cadenas">Cadenas</option>
+            <option value="Pulseras">Pulseras</option>
+            <option value="Aritos">Aritos</option>
+            <option value="Carteras">Carteras</option>
         </select>
-        <br><br>
-        <label for="priceRange">Rango de precios:</label>
-        <input type="number" id="priceMin" placeholder="Mínimo">
-        <input type="number" id="priceMax" placeholder="Máximo">
-        <br><br>
-        <label for="stockRange">Rango de stock:</label>
-        <input type="number" id="stockMin" placeholder="Mínimo">
-        <input type="number" id="stockMax" placeholder="Máximo">
-        <br><br>
-    </div>
-
-    <div class="info-container">
-        <p id="totalCount">Número de productos disponibles: 0</p>
-        <p id="totalStock">Cantidad total en stock: 0</p>
-        <p id="noProductsMessage" class="no-products-message" style="display: none;">0 RESULTADOS</p>
     </div>
 
     <div class="inventory-table">
@@ -160,95 +121,56 @@
         </div>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
-
-    <div class="total-container">
-        <h2>Total en Dólares Americanos:</h2>
-        <p id="totalAmount">0,00 dólares</p>
-    </div>
-
-    <a href="almacenamiento.html" class="storage-button">Ir a Almacenamiento</a>
-</div>
-
-<div id="searchScreen" class="search-screen">
-    Buscando producto...
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
-        const totalAmount = document.getElementById('totalAmount');
-        const searchInput = document.getElementById('searchInput');
-        const searchButton = document.getElementById('searchButton');
-        const clearSearchButton = document.getElementById('clearSearchButton');
-        const totalCount = document.getElementById('totalCount');
-        const totalStock = document.getElementById('totalStock');
-        const noProductsMessage = document.getElementById('noProductsMessage');
-        const searchScreen = document.getElementById('searchScreen');
-
-        const filterField = document.getElementById('filterField');
-        const priceMin = document.getElementById('priceMin');
-        const priceMax = document.getElementById('priceMax');
-        const stockMin = document.getElementById('stockMin');
-        const stockMax = document.getElementById('stockMax');
-
+        const categoryFilter = document.getElementById('categoryFilter');
         const prevPage = document.getElementById('prevPage');
         const nextPage = document.getElementById('nextPage');
         const currentPage = document.getElementById('currentPage');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-        let filteredInventory = inventory;
         let currentPageNumber = 1;
         const itemsPerPage = 50; // Número de productos por página
 
         function loadInventory(filteredInventory) {
-            searchScreen.style.display = 'block';
             inventoryList.innerHTML = '';
 
             if (filteredInventory.length === 0) {
-                noProductsMessage.style.display = 'block';
-                totalCount.textContent = "Número de productos disponibles: 0";
-                totalStock.textContent = "Cantidad total en stock: 0";
-                totalAmount.textContent = "0,00 dólares";
-            } else {
-                noProductsMessage.style.display = 'none';
-
-                let totalQuantity = 0;
-                let start = (currentPageNumber - 1) * itemsPerPage;
-                let end = start + itemsPerPage;
-
-                filteredInventory.slice(start, end).forEach((item, index) => {
-                    let priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                    totalQuantity += parseInt(item.quantity);
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${(currentPageNumber - 1) * itemsPerPage + index + 1}</td> 
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>${item.discount || 0}%</td>
-                        <td>$${priceWithDiscount.toFixed(2)}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td><button onclick="viewProduct('${item.code}')">Visualizar</button></td>
-                                      `;
-                    inventoryList.appendChild(row);
-                });
-
-                const total = filteredInventory.reduce((sum, item) => {
-                    let priceWithDiscount = item.price - (item.price * (item.discount / 100));
-                    return sum + (priceWithDiscount * parseInt(item.quantity));
-                }, 0);
-
-                totalAmount.textContent = `$${total.toFixed(2)}`;
-                totalCount.textContent = `Número de productos disponibles: ${filteredInventory.length}`;
-                totalStock.textContent = `Cantidad total en stock: ${totalQuantity}`;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="11" style="text-align: center; color: red;">No hay productos disponibles</td>
+                `;
+                inventoryList.appendChild(row);
+                return;
             }
 
+            let start = (currentPageNumber - 1) * itemsPerPage;
+            let end = start + itemsPerPage;
+
+            filteredInventory.slice(start, end).forEach((item, index) => {
+                let priceWithDiscount = item.price - (item.price * (item.discount / 100));
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${(currentPageNumber - 1) * itemsPerPage + index + 1}</td> 
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.barcode}</td>
+                    <td>${item.price}</td>
+                    <td>${item.discount || 0}%</td>
+                    <td>$${priceWithDiscount.toFixed(2)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>${item.quantity}</td>
+                    <td><button onclick="viewProduct('${item.code}')">Visualizar</button></td>
+                `;
+                inventoryList.appendChild(row);
+            });
+
             updatePagination(filteredInventory.length);
-            searchScreen.style.display = 'none';
         }
 
         function updatePagination(totalItems) {
@@ -268,59 +190,11 @@
             currentPage.textContent = currentPageNumber;
         }
 
-        function filterInventory(query) {
-            const normalizedQuery = query.toLowerCase().trim();
-            const field = filterField.value;
-            const minPrice = parseFloat(priceMin.value) || 0;
-            const maxPrice = parseFloat(priceMax.value) || Infinity;
-            const minStock = parseFloat(stockMin.value) || 0;
-            const maxStock = parseFloat(stockMax.value) || Infinity;
-
-            return inventory.filter(item => {
-                let matchesQuery = false;
-                if (field === 'all') {
-                    matchesQuery = (
-                        item.name.toLowerCase().includes(normalizedQuery) ||
-                        item.code.toLowerCase().includes(normalizedQuery) ||
-                        item.barcode.toLowerCase().includes(normalizedQuery) ||
-                        item.description.toLowerCase().includes(normalizedQuery) ||
-                        item.category.toLowerCase().includes(normalizedQuery)
-                    );
-                } else {
-                    matchesQuery = item[field].toString().toLowerCase().includes(normalizedQuery);
-                }
-
-                const priceInRange = item.price >= minPrice && item.price <= maxPrice;
-                const stockInRange = item.quantity >= minStock && item.quantity <= maxStock;
-
-                return matchesQuery && priceInRange && stockInRange;
-            });
-        }
-
-        searchButton.addEventListener('click', function() {
-            if (searchInput.value.trim() === '') {
-                alert('Por favor, ingrese un término de búsqueda.');
-                return;
+        categoryFilter.addEventListener('change', function() {
+            let filteredInventory = inventory;
+            if (categoryFilter.value !== 'all') {
+                filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
             }
-            filteredInventory = filterInventory(searchInput.value);
-            currentPageNumber = 1; // Reiniciar a la primera página
-            loadInventory(filteredInventory);
-        });
-
-        searchInput.addEventListener('input', debounce(function() {
-            filteredInventory = filterInventory(searchInput.value);
-            currentPageNumber = 1; // Reiniciar a la primera página
-            loadInventory(filteredInventory);
-        }, 300));
-
-        clearSearchButton.addEventListener('click', function() {
-            searchInput.value = '';
-            priceMin.value = '';
-            priceMax.value = '';
-            stockMin.value = '';
-            stockMax.value = '';
-            filterField.value = 'all';
-            filteredInventory = inventory;
             currentPageNumber = 1; // Reiniciar a la primera página
             loadInventory(filteredInventory);
         });
@@ -328,29 +202,20 @@
         prevPage.addEventListener('click', function() {
             if (currentPageNumber > 1) {
                 currentPageNumber--;
-                loadInventory(filteredInventory);
+                loadInventory(inventory);
             }
         });
 
         nextPage.addEventListener('click', function() {
-            const totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
+            const totalPages = Math.ceil(inventory.length / itemsPerPage);
             if (currentPageNumber < totalPages) {
                 currentPageNumber++;
-                loadInventory(filteredInventory);
+                loadInventory(inventory);
             }
         });
 
         loadInventory(inventory);
     });
-
-    // Función debounce para evitar múltiples búsquedas innecesarias
-    function debounce(func, wait) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
 
     // Función para visualizar producto (puede implementarse según sea necesario)
     function viewProduct(productCode) {
