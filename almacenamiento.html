@@ -113,6 +113,10 @@
             margin-top: 20px;
             display: none;
         }
+
+        .highlight {
+            background-color: red !important;
+        }
     </style>
 </head>
 <body>
@@ -194,7 +198,7 @@
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price * (1 - item.discount / 100);
                 return `
-                    <tr>
+                    <tr id="product-${index}">
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -275,6 +279,20 @@
         });
 
         loadInventory(filteredInventory);
+
+        // Si se encuentra un producto por código, desplazarse hacia él
+        if (code) {
+            const productRow = document.querySelector(`#product-${filteredInventory[0].code}`);
+            if (productRow) {
+                productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                productRow.classList.add('highlight');
+                
+                // Quitar el resaltado después de un tiempo
+                setTimeout(() => {
+                    productRow.classList.remove('highlight');
+                }, 2000);
+            }
+        }
     }
 
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
