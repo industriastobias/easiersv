@@ -207,51 +207,49 @@
 
         function updateTotalStock(filteredInventory) {
             // Calcula la cantidad total de productos en stock
-            const totalStock = filteredInventory.reduce((total, item) => {
-                return total + (item.quantity || 0); // Asegúrate de que la propiedad `quantity` exista y sea un número
-            }, 0);
-
+            const totalStock = filteredInventory.reduce((total, item) => total + item.quantity, 0);
             // Actualiza el contenido del elemento <span id="totalStock">
             totalStockElement.textContent = totalStock;
         }
 
         categoryFilter.addEventListener('change', function() {
-            let filtered<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario</title>
-    <style>
-        /* Estilos CSS aquí */
-    </style>
-</head>
-<body>
+            let filteredInventory = inventory;
+            if (categoryFilter.value !== 'all') {
+                filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
+            }
+            currentPageNumber = 1; // Reiniciar a la primera página
+            loadInventory(filteredInventory);
+        });
 
-<div class="header">
-    Inventario
-</div>
+        prevPage.addEventListener('click', function() {
+            if (currentPageNumber > 1) {
+                currentPageNumber--;
+                loadInventory(inventory);
+            }
+        });
 
-<div class="container">
-    <!-- Contenido del inventario aquí -->
-</div>
+        nextPage.addEventListener('click', function() {
+            const totalPages = Math.ceil(inventory.length / itemsPerPage);
+            if (currentPageNumber < totalPages) {
+                currentPageNumber++;
+                loadInventory(inventory);
+            }
+        });
 
-<script>
-    // Código JavaScript aquí
-    document.addEventListener('DOMContentLoaded', function() {
-        // Funciones y lógica del inventario aquí
+        loadInventory(inventory);
     });
 
-    // Función para visualizar producto
+    // Función para visualizar producto (puede implementarse según sea necesario)
     function viewProduct(productCode) {
         alert(`Visualizando producto con código: ${productCode}`);
+        // Aquí puedes redirigir a otra página o mostrar detalles del producto
     }
 
-    // Función para eliminar todos los productos
+    // Función para eliminar todos los productos (implementación básica)
     function deleteAll() {
         if (confirm("¿Está seguro de que desea eliminar todos los productos?")) {
-            localStorage.removeItem('inventory');
-            location.reload();
+            localStorage.removeItem('inventory'); // Elimina el inventario del localStorage
+            location.reload(); // Recarga la página para actualizar el inventario
         }
     }
 </script>
