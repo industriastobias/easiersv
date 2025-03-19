@@ -142,9 +142,6 @@
     <div id="noResultsMessage" class="no-results">
         No se encontraron productos que coincidan con los criterios de búsqueda.
     </div>
-    <div id="confirmationMessage" class="confirmation-message">
-        REGISTRO COMPLETO
-    </div>
 </div>
 
 <!-- Modal para registrar venta -->
@@ -155,6 +152,9 @@
         <label for="soldQuantity">Cantidad Vendida:</label>
         <input type="number" id="soldQuantity" min="1">
         <button onclick="processSale()">Registrar</button>
+        <div id="confirmationMessage" class="confirmation-message">
+            REGISTRO COMPLETO
+        </div>
     </div>
 </div>
 
@@ -203,6 +203,7 @@
 
     function closeSoldModal() {
         document.getElementById('soldModal').style.display = 'none';
+        document.getElementById('confirmationMessage').style.display = 'none'; // Ocultar el mensaje al cerrar el modal
     }
 
     function processSale() {
@@ -230,7 +231,6 @@
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
             filterInventory(); // Actualizar la lista de inventario en la pantalla
-            closeSoldModal();
             showConfirmationMessage();
         } else {
             alert('Cantidad inválida.');
