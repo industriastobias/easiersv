@@ -99,12 +99,10 @@
         </select>
     </div>
 
-    <!-- Contenedor para mostrar la cantidad total de productos en stock -->
     <div class="total-stock-container">
         <p>Total de productos en stock: <span id="totalStock">0</span></p>
     </div>
 
-    <!-- Paginación arriba -->
     <div class="pagination">
         <button id="prevPage" class="disabled">Anterior</button>
         <span id="currentPage">1</span>
@@ -129,7 +127,6 @@
                 </tr>
             </thead>
             <tbody id="inventoryList">
-                <!-- Las filas se llenarán dinámicamente -->
             </tbody>
         </table>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
@@ -143,11 +140,11 @@
         const prevPage = document.getElementById('prevPage');
         const nextPage = document.getElementById('nextPage');
         const currentPage = document.getElementById('currentPage');
-        const totalStockElement = document.getElementById('totalStock'); // Elemento para mostrar la cantidad total de productos en stock
+        const totalStockElement = document.getElementById('totalStock');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentPageNumber = 1;
-        const itemsPerPage = 50; // Número de productos por página
+        const itemsPerPage = 50;
 
         function loadInventory(filteredInventory) {
             inventoryList.innerHTML = '';
@@ -185,30 +182,18 @@
             });
 
             updatePagination(filteredInventory.length);
-            updateTotalStock(filteredInventory); // Actualizar la cantidad total de productos en stock
+            updateTotalStock(filteredInventory);
         }
 
         function updatePagination(totalItems) {
             const totalPages = Math.ceil(totalItems / itemsPerPage);
-            if (currentPageNumber > 1) {
-                prevPage.classList.remove('disabled');
-            } else {
-                prevPage.classList.add('disabled');
-            }
-
-            if (currentPageNumber < totalPages) {
-                nextPage.classList.remove('disabled');
-            } else {
-                nextPage.classList.add('disabled');
-            }
-
+            prevPage.classList.toggle('disabled', currentPageNumber === 1);
+            nextPage.classList.toggle('disabled', currentPageNumber >= totalPages);
             currentPage.textContent = currentPageNumber;
         }
 
         function updateTotalStock(filteredInventory) {
-            // Calcula la cantidad total de productos en stock
-            const totalStock = filteredInventory.reduce((total, item) => total + item.quantity, 0);
-            // Actualiza el contenido del elemento <span id="totalStock">
+            const totalStock = filteredInventory.reduce((total, item) => total + Number(item.quantity || 0), 0);
             totalStockElement.textContent = totalStock;
         }
 
@@ -217,7 +202,7 @@
             if (categoryFilter.value !== 'all') {
                 filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
             }
-            currentPageNumber = 1; // Reiniciar a la primera página
+            currentPageNumber = 1;
             loadInventory(filteredInventory);
         });
 
@@ -239,17 +224,14 @@
         loadInventory(inventory);
     });
 
-    // Función para visualizar producto (puede implementarse según sea necesario)
     function viewProduct(productCode) {
         alert(`Visualizando producto con código: ${productCode}`);
-        // Aquí puedes redirigir a otra página o mostrar detalles del producto
     }
 
-    // Función para eliminar todos los productos (implementación básica)
     function deleteAll() {
         if (confirm("¿Está seguro de que desea eliminar todos los productos?")) {
-            localStorage.removeItem('inventory'); // Elimina el inventario del localStorage
-            location.reload(); // Recarga la página para actualizar el inventario
+            localStorage.removeItem('inventory');
+            location.reload();
         }
     }
 </script>
