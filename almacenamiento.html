@@ -282,7 +282,7 @@
 
         loadInventory(filteredInventory);
 
-        // Si se encuentra un producto por código, desplazarse hacia él
+        // Si se encuentra un producto por código, desplazarse hacia él y resaltar la fila
         if (code) {
             const productRow = Array.from(document.querySelectorAll('.product-row')).find(row => row.cells[2].textContent.trim().toLowerCase() === code);
             if (productRow) {
