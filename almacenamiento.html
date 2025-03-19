@@ -90,6 +90,13 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        .confirmation-message {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +140,9 @@
     </table>
     <div id="noResultsMessage" class="no-results" style="display: none;">
         No se encontraron productos que coincidan con los criterios de búsqueda.
+    </div>
+    <div id="confirmationMessage" class="confirmation-message">
+        REGISTRO COMPLETO
     </div>
 </div>
 
@@ -216,10 +226,18 @@
 
             filterInventory();
             closeSoldModal();
-            alert('REGISTRO COMPLETO'); // Mensaje de confirmación
+            showConfirmationMessage();
         } else {
             alert('Cantidad inválida.');
         }
+    }
+
+    function showConfirmationMessage() {
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        confirmationMessage.style.display = 'block';
+        setTimeout(() => {
+            confirmationMessage.style.display = 'none';
+        }, 3000); // Mostrar el mensaje durante 3 segundos
     }
 
     function filterInventory() {
@@ -244,7 +262,7 @@
 
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
 
-    loadInventory();
+    loadInventory    loadInventory();
 </script>
 
 </body>
