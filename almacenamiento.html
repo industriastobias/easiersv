@@ -123,6 +123,20 @@
             font-weight: bold;
             color: #555;
         }
+
+        .go-to-row-container {
+            margin-top: 20px;
+        }
+
+        .go-to-row-container input {
+            padding: 10px;
+            width: 10%;
+        }
+
+        .go-to-row-container button {
+            padding: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -146,6 +160,13 @@
         <input type="text" id="searchCode">
 
         <button onclick="openSoldModal()">Registrar Venta</button>
+    </div>
+
+    <!-- Filtro para ir directamente a una fila -->
+    <div class="go-to-row-container">
+        <label for="goToRow">Ir a la fila (número):</label>
+        <input type="number" id="goToRow" min="1">
+        <button onclick="goToRow()">Ir</button>
     </div>
 
     <table>
@@ -304,6 +325,17 @@
             } else {
                 document.getElementById('resultMessage').style.display = 'none';
             }
+        }
+    }
+
+    function goToRow() {
+        const rowNumber = parseInt(document.getElementById('goToRow').value);
+        const rows = document.querySelectorAll('#inventoryList tr');
+
+        if (rowNumber >= 1 && rowNumber <= rows.length) {
+            rows[rowNumber - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            alert('Número de fila fuera de rango.');
         }
     }
 
