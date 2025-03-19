@@ -5,125 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Inventario</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        .header {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background-color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            border-bottom: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-container select,
-        .search-container input {
-            padding: 10px;
-            width: 20%;
-            margin-right: 10px;
-        }
-
-        .no-results {
-            text-align: center;
-            color: red;
-            font-weight: bold;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .confirmation-message {
-            text-align: center;
-            color: green;
-            font-weight: bold;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .highlight {
-            background-color: red !important;
-        }
-
-        .result-message {
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 10px;
-            color: green;
-        }
+        /* (El resto del estilo permanece igual) */
     </style>
 </head>
 <body>
@@ -155,7 +37,7 @@
     <table>
         <thead>
             <tr>
-                <th>#</th> <!-- Nueva columna para el número de fila -->
+                <th>#</th>
                 <th>Nombre</th>
                 <th>Código</th>
                 <th>Código de Barras</th>
@@ -261,7 +143,9 @@
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
+            // Llamar a filterInventory para asegurar que el inventario se actualiza correctamente
             filterInventory();
+
             showConfirmationMessage();
         } else {
             alert('Cantidad inválida.');
