@@ -198,7 +198,7 @@
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price * (1 - item.discount / 100);
                 return `
-                    <tr id="product-${index}">
+                    <tr id="product-${index}" class="product-row">
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -282,7 +282,7 @@
 
         // Si se encuentra un producto por código, desplazarse hacia él
         if (code) {
-            const productRow = document.querySelector(`#product-${filteredInventory[0].code}`);
+            const productRow = Array.from(document.querySelectorAll('.product-row')).find(row => row.cells[1].textContent.trim().toLowerCase() === code);
             if (productRow) {
                 productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 productRow.classList.add('highlight');
