@@ -86,6 +86,12 @@
             padding: 10px;
             width: 20%;
         }
+        .no-results {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +131,9 @@
             <!-- Los productos se llenarán dinámicamente -->
         </tbody>
     </table>
+    <div id="noResultsMessage" class="no-results" style="display: none;">
+        No se encontraron productos que coincidan con los criterios de búsqueda.
+    </div>
 </div>
 
 <!-- Modal para registrar venta -->
@@ -142,25 +151,33 @@
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     let debounceTimer;
 
-    function loadInventory() {
+    function loadInventory(filteredInventory = inventory) {
         const inventoryList = document.getElementById('inventoryList');
-        inventoryList.innerHTML = inventory.map((item, index) => {
-            const priceWithDiscount = item.price * (1 - item.discount / 100);
-            return `
-                <tr>
-                    <td>${item.name}</td>
-                    <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>${item.price}</td>
-                    <td>${item.discount}</td>
-                    <td>${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.quantity}</td>
-                    <td><button onclick="markAsSold(${index})">Vender</button></td>
-                </tr>
-            `;
-        }).join('');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+
+        if (filteredInventory.length === 0) {
+            inventoryList.innerHTML = '';
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+            inventoryList.innerHTML = filteredInventory.map((item, index) => {
+                const priceWithDiscount = item.price * (1 - item.discount / 100);
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>${item.discount}</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                        <td><button onclick="markAsSold(${index})">Vender</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
     }
 
     function markAsSold(index) {
@@ -225,30 +242,13 @@
             );
         });
 
-        const inventoryList = document.getElementById('inventoryList');
-        inventoryList.innerHTML = filteredInventory.map((item, index) => {
-            const priceWithDiscount = item.price * (1 - item.discount / 100);
-            return `
-                <tr>
-                    <td>${item.name}</td>
-                    <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>${item.price}</td>
-                    <td>${item.discount}</td>
-                    <td>${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.quantity}</td>
-                    <td><button onclick="markAsSold(${index})">Vender</button></td>
-                </tr>
-            `;
-        }).join('');
+        loadInventory(filteredInventory);
     }
 
     function debounce(func, delay) {
         return function() {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
+            debounceTimer = setTimeout(()            setTimeout(() => {
                 func.apply(this, arguments);
             }, delay);
         };
@@ -256,7 +256,7 @@
 
     document.getElementById('searchName').addEventListener('input', debounce(filterInventory, 300));
     document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchBarcode').addEventListener    ('input', debounce(filterInventory, 300));
+    document.getElementById('searchBarcode').addEventListener('input', debounce(filterInventory, 300));
     document.getElementById('searchPrice').addEventListener('input', debounce(filterInventory, 300));
     document.getElementById('searchDiscount').addEventListener('input', debounce(filterInventory, 300));
     document.getElementById('searchQuantity').addEventListener('input', debounce(filterInventory, 300));
