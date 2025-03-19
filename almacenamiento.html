@@ -115,7 +115,8 @@
         }
 
         .highlight {
-            background-color: red !important;
+            background-color: green !important;
+            color: white;
         }
 
         .result-message {
@@ -332,8 +333,14 @@
         const rowNumber = parseInt(document.getElementById('goToRow').value);
         const rows = document.querySelectorAll('#inventoryList tr');
 
+        // Remover la clase de resaltado de las filas anteriores
+        document.querySelectorAll('.highlight').forEach(row => {
+            row.classList.remove('highlight');
+        });
+
         if (rowNumber >= 1 && rowNumber <= rows.length) {
             rows[rowNumber - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            rows[rowNumber - 1].classList.add('highlight'); // Resaltar la fila
         } else {
             alert('Número de fila fuera de rango.');
         }
