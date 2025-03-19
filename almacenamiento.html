@@ -138,6 +138,20 @@
             padding: 10px;
             cursor: pointer;
         }
+
+        .clear-filters-button {
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .clear-filters-button:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -169,6 +183,8 @@
         <input type="number" id="goToRow" min="1">
         <button onclick="goToRow()">Ir</button>
     </div>
+
+    <button class="clear-filters-button" onclick="clearFilters()">Limpiar filtros</button>
 
     <table>
         <thead>
@@ -344,6 +360,14 @@
         } else {
             alert('Número de fila fuera de rango.');
         }
+    }
+
+    function clearFilters() {
+        document.getElementById('searchCategory').value = '';
+        document.getElementById('searchCode').value = '';
+        document.getElementById('goToRow').value = '';
+        
+        loadInventory();
     }
 
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
