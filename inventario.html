@@ -73,6 +73,12 @@
             cursor: not-allowed;
             opacity: 0.5;
         }
+        .total-stock-container {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -93,11 +99,16 @@
         </select>
     </div>
 
+    <!-- Contenedor para mostrar la cantidad total de productos en stock -->
+    <div class="total-stock-container">
+        <p>Total de productos en stock: <span id="totalStock">0</span></p>
+    </div>
+
     <!-- Paginación arriba -->
     <div class="pagination">
-        <button id="prevPageTop" class="disabled">Anterior</button>
-        <span id="currentPageTop">1</span>
-        <button id="nextPageTop">Siguiente</button>
+        <button id="prevPage" class="disabled">Anterior</button>
+        <span id="currentPage">1</span>
+        <button id="nextPage">Siguiente</button>
     </div>
 
     <div class="inventory-table">
@@ -121,13 +132,6 @@
                 <!-- Las filas se llenarán dinámicamente -->
             </tbody>
         </table>
-
-        <!-- Paginación abajo -->
-        <div class="pagination">
-            <button id="prevPageBottom" class="disabled">Anterior</button>
-            <span id="currentPageBottom">1</span>
-            <button id="nextPageBottom">Siguiente</button>
-        </div>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
 </div>
@@ -136,12 +140,10 @@
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
         const categoryFilter = document.getElementById('categoryFilter');
-        const prevPageTop = document.getElementById('prevPageTop');
-        const nextPageTop = document.getElementById('nextPageTop');
-        const currentPageTop = document.getElementById('currentPageTop');
-        const prevPageBottom = document.getElementById('prevPageBottom');
-        const nextPageBottom = document.getElementById('nextPageBottom');
-        const currentPageBottom = document.getElementById('currentPageBottom');
+        const prevPage = document.getElementById('prevPage');
+        const nextPage = document.getElementById('nextPage');
+        const currentPage = document.getElementById('currentPage');
+        const totalStockElement = document.getElementById('totalStock'); // Elemento para mostrar la cantidad total de productos en stock
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentPageNumber = 1;
@@ -183,28 +185,29 @@
             });
 
             updatePagination(filteredInventory.length);
+            updateTotalStock(filteredInventory); // Actualizar la cantidad total de productos en stock
         }
 
         function updatePagination(totalItems) {
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             if (currentPageNumber > 1) {
-                prevPageTop.classList.remove('disabled');
-                prevPageBottom.classList.remove('disabled');
+                prevPage.classList.remove('disabled');
             } else {
-                prevPageTop.classList.add('disabled');
-                prevPageBottom.classList.add('disabled');
+                prevPage.classList.add('disabled');
             }
 
             if (currentPageNumber < totalPages) {
-                nextPageTop.classList.remove('disabled');
-                nextPageBottom.classList.remove('disabled');
+                nextPage.classList.remove('disabled');
             } else {
-                nextPageTop.classList.add('disabled');
-                nextPageBottom.classList.add('disabled');
+                nextPage.classList.add('disabled');
             }
 
-            currentPageTop.textContent = currentPageNumber;
-            currentPageBottom.textContent = currentPageNumber;
+            currentPage.textContent = currentPageNumber;
+        }
+
+        function updateTotalStock(filteredInventory) {
+            const totalStock = filteredInventory.reduce((total, item) => total + item.quantity, 0);
+            totalStockElement.textContent = totalStock; // Actualizar el contenido del elemento
         }
 
         categoryFilter.addEventListener('change', function() {
@@ -216,29 +219,14 @@
             loadInventory(filteredInventory);
         });
 
-        prevPageTop.addEventListener('click', function() {
+        prevPage.addEventListener('click', function() {
             if (currentPageNumber > 1) {
                 currentPageNumber--;
                 loadInventory(inventory);
             }
         });
 
-        nextPageTop.addEventListener('click', function() {
-            const totalPages = Math.ceil(inventory.length / itemsPerPage);
-            if (currentPageNumber < totalPages) {
-                currentPageNumber++;
-                loadInventory(inventory);
-            }
-        });
-
-        prevPageBottom.addEventListener('click', function() {
-            if (currentPageNumber > 1) {
-                currentPageNumber--;
-                loadInventory(inventory);
-            }
-        });
-
-        nextPageBottom.addEventListener('click', function() {
+        nextPage.addEventListener('click', function() {
             const totalPages = Math.ceil(inventory.length / itemsPerPage);
             if (currentPageNumber < totalPages) {
                 currentPageNumber++;
