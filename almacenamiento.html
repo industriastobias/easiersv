@@ -117,6 +117,12 @@
         .highlight {
             background-color: red !important;
         }
+
+        .result-message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -166,6 +172,9 @@
     <div id="noResultsMessage" class="no-results">
         No se encontraron productos que coincidan con los criterios de búsqueda.
     </div>
+
+    <!-- Mensaje de resultado -->
+    <div id="resultMessage" class="result-message" style="display:none;"></div>
 </div>
 
 <!-- Modal para registrar venta -->
@@ -282,21 +291,18 @@
 
         loadInventory(filteredInventory);
 
-        // Si se encuentra un producto por código, desplazarse hacia él, resaltar la fila y mostrar el número de fila
+        // Si se encuentra un producto por código, mostrar el número de fila entre el total de productos
         if (code) {
-            const productRow = Array.from(document.querySelectorAll('.product-row')).find(row => row.cells[2].textContent.trim().toLowerCase() === code);
-            if (productRow) {
-                productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                productRow.classList.add('highlight');
+            const productIndex = inventory.findIndex(item => item.code.trim().toLowerCase() === code);
 
-                // Mostrar el número de fila en el mensaje
-                const rowNumber = productRow.cells[0].textContent; // La primera celda es el número de fila
-                alert(`Producto encontrado en la fila: ${rowNumber}`);
-
-                // Quitar el resaltado después de 5 segundos
-                setTimeout(() => {
-                    productRow.classList.remove('highlight');
-                }, 5000);
+            if (productIndex !== -1) {
+                const totalProducts = inventory.length;
+                const positionMessage = `Producto encontrado en la posición ${productIndex + 1} de ${totalProducts} productos.`;
+                
+                document.getElementById('resultMessage').style.display = 'block';
+                document.getElementById('resultMessage').textContent = positionMessage;
+            } else {
+                document.getElementById('resultMessage').style.display = 'none';
             }
         }
     }
