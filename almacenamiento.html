@@ -287,10 +287,10 @@
                 productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 productRow.classList.add('highlight');
                 
-                // Quitar el resaltado después de un tiempo
+                // Quitar el resaltado después de 5 segundos
                 setTimeout(() => {
                     productRow.classList.remove('highlight');
-                }, 2000);
+                }, 5000);
             }
         }
     }
