@@ -79,10 +79,8 @@
         }
         .search-container {
             margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
         }
-        .search-container input, .search-container select {
+        .search-container select {
             padding: 10px;
             width: 20%;
         }
@@ -101,15 +99,10 @@
 </div>
 
 <div class="container">
-    <!-- Filtro de Búsqueda Avanzada -->
+    <!-- Filtro de Búsqueda por Categoría -->
     <div class="search-container">
-        <input type="text" id="searchName" placeholder="Buscar por nombre...">
-        <input type="text" id="searchCode" placeholder="Buscar por código...">
-        <input type="text" id="searchBarcode" placeholder="Buscar por código de barras...">
-        <input type="number" id="searchPrice" placeholder="Buscar por precio...">
-        <input type="number" id="searchDiscount" placeholder="Buscar por descuento...">
-        <input type="number" id="searchQuantity" placeholder="Buscar por cantidad...">
-        <select id="searchCategory" placeholder="Buscar por categoría...">
+        <label for="searchCategory">Filtrar por categoría:</label>
+        <select id="searchCategory">
             <option value="">Todas las categorías</option>
             <option value="Cadenas">Cadenas</option>
             <option value="Aritos">Aritos</option>
@@ -229,28 +222,11 @@
     }
 
     function filterInventory() {
-        const name = document.getElementById('searchName').value.toLowerCase();
-        const code = document.getElementById('searchCode').value.toLowerCase();
-        const barcode = document.getElementById('searchBarcode').value.toLowerCase();
-        const price = document.getElementById('searchPrice').value;
-        const discount = document.getElementById('searchDiscount').value;
-        const quantity = document.getElementById('searchQuantity').value;
         const category = document.getElementById('searchCategory').value.toLowerCase();
 
         const filteredInventory = inventory.filter(item => {
-            const itemName = item.name.toLowerCase();
-            const itemCode = item.code.toLowerCase();
-            const itemBarcode = item.barcode.toLowerCase();
             const itemCategory = item.category.toLowerCase();
-            return (
-                (name === '' || itemName.includes(name)) &&
-                (code === '' || itemCode.includes(code)) &&
-                (barcode === '' || itemBarcode.includes(barcode)) &&
-                (price === '' || item.price.toString().includes(price)) &&
-                (discount === '' || item.discount.toString().includes(discount)) &&
-                (quantity === '' || item.quantity.toString().includes(quantity)) &&
-                (category === '' || itemCategory ===category)
-            );
+            return category === '' || itemCategory === category;
         });
 
         loadInventory(filteredInventory);
@@ -265,12 +241,6 @@
         };
     }
 
-    document.getElementById('searchName').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchBarcode').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchPrice').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchDiscount').addEventListener('input', debounce(filterInventory, 300));
-    document.getElementById('searchQuantity').addEventListener('input', debounce(filterInventory, 300));
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
 
     loadInventory();
