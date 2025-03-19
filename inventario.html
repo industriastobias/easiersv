@@ -206,8 +206,10 @@
         }
 
         function updateTotalStock(filteredInventory) {
+            // Calcula la cantidad total de productos en stock
             const totalStock = filteredInventory.reduce((total, item) => total + item.quantity, 0);
-            totalStockElement.textContent = totalStock; // Actualizar el contenido del elemento
+            // Actualiza el contenido del elemento <span id="totalStock">
+            totalStockElement.textContent = totalStock;
         }
 
         categoryFilter.addEventListener('change', function() {
@@ -246,8 +248,8 @@
     // Función para eliminar todos los productos (implementación básica)
     function deleteAll() {
         if (confirm("¿Está seguro de que desea eliminar todos los productos?")) {
-            localStorage.removeItem('inventory');
-            location.reload(); // Recargar la página para actualizar el inventario
+            localStorage.removeItem('inventory'); // Elimina el inventario del localStorage
+            location.reload(); // Recarga la página para actualizar el inventario
         }
     }
 </script>
