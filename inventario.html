@@ -80,6 +80,19 @@
             padding-top: 20%;
             font-size: 24px;
         }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .pagination button.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +153,11 @@
                 <!-- Las filas se llenarán dinámicamente -->
             </tbody>
         </table>
+        <div class="pagination">
+            <button id="prevPage" class="disabled">Anterior</button>
+            <span id="currentPage">1</span>
+            <button id="nextPage">Siguiente</button>
+        </div>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
 
@@ -173,7 +191,14 @@
         const stockMin = document.getElementById('stockMin');
         const stockMax = document.getElementById('stockMax');
 
+        const prevPage = document.getElementById('prevPage');
+        const nextPage = document.getElementById('nextPage');
+        const currentPage = document.getElementById('currentPage');
+
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let filteredInventory = inventory;
+        let currentPageNumber = 1;
+        const itemsPerPage = 50; // Número de productos por página
 
         function loadInventory(filteredInventory) {
             searchScreen.style.display = 'block';
@@ -188,13 +213,16 @@
                 noProductsMessage.style.display = 'none';
 
                 let totalQuantity = 0;
-                filteredInventory.forEach((item, index) => {
+                let start = (currentPageNumber - 1) * itemsPerPage;
+                let end = start + itemsPerPage;
+
+                filteredInventory.slice(start, end).forEach((item, index) => {
                     let priceWithDiscount = item.price - (item.price * (item.discount / 100));
                     totalQuantity += parseInt(item.quantity);
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${index + 1}</td> 
+                        <td>${(currentPageNumber - 1) * itemsPerPage + index + 1}</td> 
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -203,7 +231,7 @@
                         <td>$${priceWithDiscount.toFixed(2)}</td>
                         <td>${item.description}</td>
                         <td>${item.category}</td>
-                        <td>${item.quantity}</td>
+                                               <td>${item.quantity}</td>
                         <td><button onclick="viewProduct('${item.code}')">Visualizar</button></td>
                     `;
                     inventoryList.appendChild(row);
@@ -219,7 +247,25 @@
                 totalStock.textContent = `Cantidad total en stock: ${totalQuantity}`;
             }
 
+            updatePagination(filteredInventory.length);
             searchScreen.style.display = 'none';
+        }
+
+        function updatePagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (currentPageNumber > 1) {
+                prevPage.classList.remove('disabled');
+            } else {
+                prevPage.classList.add('disabled');
+            }
+
+            if (currentPageNumber < totalPages) {
+                nextPage.classList.remove('disabled');
+            } else {
+                nextPage.classList.add('disabled');
+            }
+
+            currentPage.textContent = currentPageNumber;
         }
 
         function filterInventory(query) {
@@ -240,7 +286,8 @@
                         item.description.toLowerCase().includes(normalizedQuery) ||
                         item.category.toLowerCase().includes(normalizedQuery)
                     );
-                } else {                    matchesQuery = item[field].toString().toLowerCase().includes(normalizedQuery);
+                } else {
+                    matchesQuery = item[field].toString().toLowerCase().includes(normalizedQuery);
                 }
 
                 const priceInRange = item.price >= minPrice && item.price <= maxPrice;
@@ -255,11 +302,15 @@
                 alert('Por favor, ingrese un término de búsqueda.');
                 return;
             }
-            loadInventory(filterInventory(searchInput.value));
+            filteredInventory = filterInventory(searchInput.value);
+            currentPageNumber = 1; // Reiniciar a la primera página
+            loadInventory(filteredInventory);
         });
 
         searchInput.addEventListener('input', debounce(function() {
-            loadInventory(filterInventory(searchInput.value));
+            filteredInventory = filterInventory(searchInput.value);
+            currentPageNumber = 1; // Reiniciar a la primera página
+            loadInventory(filteredInventory);
         }, 300));
 
         clearSearchButton.addEventListener('click', function() {
@@ -269,7 +320,24 @@
             stockMin.value = '';
             stockMax.value = '';
             filterField.value = 'all';
-            loadInventory(inventory);
+            filteredInventory = inventory;
+            currentPageNumber = 1; // Reiniciar a la primera página
+            loadInventory(filteredInventory);
+        });
+
+        prevPage.addEventListener('click', function() {
+            if (currentPageNumber > 1) {
+                currentPageNumber--;
+                loadInventory(filteredInventory);
+            }
+        });
+
+        nextPage.addEventListener('click', function() {
+            const totalPages = Math.ceil(filteredInventory.length / itemsPerPage);
+            if (currentPageNumber < totalPages) {
+                currentPageNumber++;
+                loadInventory(filteredInventory);
+            }
         });
 
         loadInventory(inventory);
