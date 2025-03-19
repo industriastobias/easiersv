@@ -80,7 +80,7 @@
         .search-container {
             margin-bottom: 20px;
         }
-        .search-container select {
+        .search-container select, .search-container input {
             padding: 10px;
             width: 20%;
         }
@@ -117,6 +117,12 @@
             <option value="Pulseras">Pulseras</option>
             <option value="Carteras">Carteras</option>
         </select>
+    </div>
+
+    <!-- Filtro de Búsqueda por Código -->
+    <div class="search-container">
+        <label for="searchCode">Filtrar por código:</label>
+        <input type="text" id="searchCode" placeholder="Ingrese el código del producto">
     </div>
     
     <button onclick="openSoldModal()">Registrar Venta</button>
@@ -247,16 +253,18 @@
 
     function filterInventory() {
         const category = document.getElementById('searchCategory').value.trim().toLowerCase();
+        const code = document.getElementById('searchCode').value.trim().toLowerCase();
 
         const filteredInventory = inventory.filter(item => {
             const itemCategory = item.category.trim().toLowerCase();
-            return category === '' || itemCategory === category;
+            const itemCode = item.code.trim().toLowerCase();
+            return (category === '' || itemCategory === category) && (code === '' || itemCode.includes(code));
         });
 
         loadInventory(filteredInventory);
     }
 
-    function debounce(func, delay) {
+    function debounce(func, delay)    function debounce(func, delay) {
         return function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
@@ -265,8 +273,11 @@
         };
     }
 
+    // Agregar eventos de filtrado
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
+    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
+    // Cargar la lista de inventario al cargar la página
     loadInventory();
 </script>
 
