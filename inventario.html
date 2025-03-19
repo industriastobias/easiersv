@@ -207,12 +207,16 @@
 
         function updateTotalStock(filteredInventory) {
             // Calcula la cantidad total de productos en stock
-            const totalStock = filteredInventory.reduce((total, item) => total + item.quantity, 0);
+            const totalStock = filteredInventory.reduce((total, item) => {
+                return total + (item.quantity || 0); // Asegúrate de que la propiedad `quantity` exista y sea un número
+            }, 0);
+
             // Actualiza el contenido del elemento <span id="totalStock">
             totalStockElement.textContent = totalStock;
         }
 
         categoryFilter.addEventListener('change', function() {
+            let filtered        categoryFilter.addEventListener('change', function() {
             let filteredInventory = inventory;
             if (categoryFilter.value !== 'all') {
                 filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
@@ -241,8 +245,8 @@
 
     // Función para visualizar producto (puede implementarse según sea necesario)
     function viewProduct(productCode) {
-        alert(`Visualizando producto con código: ${productCode}`);
         // Aquí puedes redirigir a otra página o mostrar detalles del producto
+        alert(`Visualizando producto con código: ${productCode}`);
     }
 
     // Función para eliminar todos los productos (implementación básica)
@@ -252,7 +256,3 @@
             location.reload(); // Recarga la página para actualizar el inventario
         }
     }
-</script>
-
-</body>
-</html>
