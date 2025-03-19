@@ -93,6 +93,13 @@
         </select>
     </div>
 
+    <!-- Paginación arriba -->
+    <div class="pagination">
+        <button id="prevPageTop" class="disabled">Anterior</button>
+        <span id="currentPageTop">1</span>
+        <button id="nextPageTop">Siguiente</button>
+    </div>
+
     <div class="inventory-table">
         <table>
             <thead>
@@ -114,10 +121,12 @@
                 <!-- Las filas se llenarán dinámicamente -->
             </tbody>
         </table>
+
+        <!-- Paginación abajo -->
         <div class="pagination">
-            <button id="prevPage" class="disabled">Anterior</button>
-            <span id="currentPage">1</span>
-            <button id="nextPage">Siguiente</button>
+            <button id="prevPageBottom" class="disabled">Anterior</button>
+            <span id="currentPageBottom">1</span>
+            <button id="nextPageBottom">Siguiente</button>
         </div>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
     </div>
@@ -127,9 +136,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         const inventoryList = document.getElementById('inventoryList');
         const categoryFilter = document.getElementById('categoryFilter');
-        const prevPage = document.getElementById('prevPage');
-        const nextPage = document.getElementById('nextPage');
-        const currentPage = document.getElementById('currentPage');
+        const prevPageTop = document.getElementById('prevPageTop');
+        const nextPageTop = document.getElementById('nextPageTop');
+        const currentPageTop = document.getElementById('currentPageTop');
+        const prevPageBottom = document.getElementById('prevPageBottom');
+        const nextPageBottom = document.getElementById('nextPageBottom');
+        const currentPageBottom = document.getElementById('currentPageBottom');
 
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentPageNumber = 1;
@@ -176,18 +188,23 @@
         function updatePagination(totalItems) {
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             if (currentPageNumber > 1) {
-                prevPage.classList.remove('disabled');
+                prevPageTop.classList.remove('disabled');
+                prevPageBottom.classList.remove('disabled');
             } else {
-                prevPage.classList.add('disabled');
+                prevPageTop.classList.add('disabled');
+                prevPageBottom.classList.add('disabled');
             }
 
             if (currentPageNumber < totalPages) {
-                nextPage.classList.remove('disabled');
+                nextPageTop.classList.remove('disabled');
+                nextPageBottom.classList.remove('disabled');
             } else {
-                nextPage.classList.add('disabled');
+                nextPageTop.classList.add('disabled');
+                nextPageBottom.classList.add('disabled');
             }
 
-            currentPage.textContent = currentPageNumber;
+            currentPageTop.textContent = currentPageNumber;
+            currentPageBottom.textContent = currentPageNumber;
         }
 
         categoryFilter.addEventListener('change', function() {
@@ -199,14 +216,29 @@
             loadInventory(filteredInventory);
         });
 
-        prevPage.addEventListener('click', function() {
+        prevPageTop.addEventListener('click', function() {
             if (currentPageNumber > 1) {
                 currentPageNumber--;
                 loadInventory(inventory);
             }
         });
 
-        nextPage.addEventListener('click', function() {
+        nextPageTop.addEventListener('click', function() {
+            const totalPages = Math.ceil(inventory.length / itemsPerPage);
+            if (currentPageNumber < totalPages) {
+                currentPageNumber++;
+                loadInventory(inventory);
+            }
+        });
+
+        prevPageBottom.addEventListener('click', function() {
+            if (currentPageNumber > 1) {
+                currentPageNumber--;
+                loadInventory(inventory);
+            }
+        });
+
+        nextPageBottom.addEventListener('click', function() {
             const totalPages = Math.ceil(inventory.length / itemsPerPage);
             if (currentPageNumber < totalPages) {
                 currentPageNumber++;
