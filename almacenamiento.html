@@ -282,13 +282,17 @@
 
         loadInventory(filteredInventory);
 
-        // Si se encuentra un producto por código, desplazarse hacia él y resaltar la fila
+        // Si se encuentra un producto por código, desplazarse hacia él, resaltar la fila y mostrar el número de fila
         if (code) {
             const productRow = Array.from(document.querySelectorAll('.product-row')).find(row => row.cells[2].textContent.trim().toLowerCase() === code);
             if (productRow) {
                 productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 productRow.classList.add('highlight');
-                
+
+                // Mostrar el número de fila en el mensaje
+                const rowNumber = productRow.cells[0].textContent; // La primera celda es el número de fila
+                alert(`Producto encontrado en la fila: ${rowNumber}`);
+
                 // Quitar el resaltado después de 5 segundos
                 setTimeout(() => {
                     productRow.classList.remove('highlight');
