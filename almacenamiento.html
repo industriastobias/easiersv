@@ -145,6 +145,7 @@
     <table>
         <thead>
             <tr>
+                <th>#</th> <!-- Nueva columna para el número de fila -->
                 <th>Nombre</th>
                 <th>Código</th>
                 <th>Código de Barras</th>
@@ -199,6 +200,7 @@
                 const priceWithDiscount = item.price * (1 - item.discount / 100);
                 return `
                     <tr id="product-${index}" class="product-row">
+                        <td>${index + 1}</td> <!-- Número de fila -->
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -282,7 +284,7 @@
 
         // Si se encuentra un producto por código, desplazarse hacia él
         if (code) {
-            const productRow = Array.from(document.querySelectorAll('.product-row')).find(row => row.cells[1].textContent.trim().toLowerCase() === code);
+            const productRow = Array.from(document.querySelectorAll('.product-row')).find(row => row.cells[2].textContent.trim().toLowerCase() === code);
             if (productRow) {
                 productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 productRow.classList.add('highlight');
