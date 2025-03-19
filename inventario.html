@@ -216,43 +216,45 @@
         }
 
         categoryFilter.addEventListener('change', function() {
-            let filtered        categoryFilter.addEventListener('change', function() {
-            let filteredInventory = inventory;
-            if (categoryFilter.value !== 'all') {
-                filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
-            }
-            currentPageNumber = 1; // Reiniciar a la primera página
-            loadInventory(filteredInventory);
-        });
+            let filtered<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+    <style>
+        /* Estilos CSS aquí */
+    </style>
+</head>
+<body>
 
-        prevPage.addEventListener('click', function() {
-            if (currentPageNumber > 1) {
-                currentPageNumber--;
-                loadInventory(inventory);
-            }
-        });
+<div class="header">
+    Inventario
+</div>
 
-        nextPage.addEventListener('click', function() {
-            const totalPages = Math.ceil(inventory.length / itemsPerPage);
-            if (currentPageNumber < totalPages) {
-                currentPageNumber++;
-                loadInventory(inventory);
-            }
-        });
+<div class="container">
+    <!-- Contenido del inventario aquí -->
+</div>
 
-        loadInventory(inventory);
+<script>
+    // Código JavaScript aquí
+    document.addEventListener('DOMContentLoaded', function() {
+        // Funciones y lógica del inventario aquí
     });
 
-    // Función para visualizar producto (puede implementarse según sea necesario)
+    // Función para visualizar producto
     function viewProduct(productCode) {
-        // Aquí puedes redirigir a otra página o mostrar detalles del producto
         alert(`Visualizando producto con código: ${productCode}`);
     }
 
-    // Función para eliminar todos los productos (implementación básica)
+    // Función para eliminar todos los productos
     function deleteAll() {
         if (confirm("¿Está seguro de que desea eliminar todos los productos?")) {
-            localStorage.removeItem('inventory'); // Elimina el inventario del localStorage
-            location.reload(); // Recarga la página para actualizar el inventario
+            localStorage.removeItem('inventory');
+            location.reload();
         }
     }
+</script>
+
+</body>
+</html>
