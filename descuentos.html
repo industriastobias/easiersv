@@ -27,6 +27,8 @@
         }
         .search-container {
             margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
         }
         .search-container input {
             width: 100%;
@@ -101,7 +103,9 @@
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <input type="text" id="codeFilter" placeholder="Filtrar por código">
+        <input type="text" id="categoryFilter" placeholder="Filtrar por categoría">
+        <button onclick="clearFilters()">Limpiar Filtros</button>
     </div>
 
     <div class="apply-discount-container">
@@ -111,7 +115,7 @@
     </div>
     
     <div class="info-container">
-        <p id="totalCount">Número de productos con descuento: 0</p>
+        <p id="totalCount">Número de productos: 0</p>
     </div>
     
     <div class="discount-table">
@@ -131,7 +135,7 @@
                 </tr>
             </thead>
             <tbody id="discountList">
-                <!-- Las filas de productos con descuento se llenarán dinámicamente -->
+                <!-- Las filas de productos se llenarán dinámicamente -->
             </tbody>
         </table>
     </div>
@@ -146,15 +150,21 @@
     document.addEventListener('DOMContentLoaded', function() {
         const discountList = document.getElementById('discountList');
         const totalAmount = document.getElementById('totalAmount');
-        const searchInput = document.getElementById('searchInput');
+        const codeFilter = document.getElementById('codeFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
         const totalCount = document.getElementById('totalCount');
         const globalDiscountInput = document.getElementById('globalDiscount');
 
         // Cargar todos los productos del inventario
-        function loadDiscountedProducts() {
+        function loadProducts() {
             const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            const discountedProducts = inventory.map((item, index) => {
-                // Calcular el precio con descuento, si es que tiene descuento
+            const filteredProducts = inventory.filter(item => {
+                const codeMatch = item.code.includes(codeFilter.value);
+                const categoryMatch = item.category.includes(categoryFilter.value);
+                return codeMatch && categoryMatch;
+            });
+
+            const productsWithDiscount = filteredProducts.map((item, index) => {
                 if (item.discount && item.discount > 0) {
                     item.priceWithDiscount = item.price - (item.price * item.discount / 100);
                 } else {
@@ -163,10 +173,7 @@
                 return item;
             });
 
-            // Filtrar para mostrar solo productos con descuento
-            const filteredDiscountedProducts = discountedProducts.filter(item => item.discount && item.discount > 0);
-
-            discountList.innerHTML = discountedProducts.map((item, index) => `
+            discountList.innerHTML = productsWithDiscount.map((item, index) => `
                 <tr>
                     <td>${item.name}</td>
                     <td>${item.code}</td>
@@ -186,9 +193,9 @@
                 </tr>
             `).join('');
 
-            const total = discountedProducts.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
+            const total = productsWithDiscount.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos con descuento: ${filteredDiscountedProducts.length}`;
+            totalCount.textContent = `Número de productos: ${productsWithDiscount.length}`;
         }
 
         // Actualizar descuento
@@ -202,7 +209,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
+            loadProducts();
         };
 
         // Quitar descuento
@@ -214,7 +221,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
+            loadProducts();
         };
 
         // Marcar producto como vendido
@@ -235,7 +242,7 @@
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            loadDiscountedProducts();
+            loadProducts();
         };
 
         // Aplicar descuento global a todos los productos
@@ -254,7 +261,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
+            loadProducts();
         };
 
         // Quitar descuento global de todos los productos
@@ -267,14 +274,20 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
+            loadProducts();
         };
 
-        searchInput.addEventListener('input', function() {
-            loadDiscountedProducts();
-        });
+        // Limpiar filtros
+        window.clearFilters = function() {
+            codeFilter.value = '';
+            categoryFilter.value = '';
+            loadProducts();
+        };
 
-        loadDiscountedProducts();
+        codeFilter.addEventListener('input', loadProducts);
+        categoryFilter.addEventListener('input', loadProducts);
+
+        loadProducts();
     });
 </script>
 
