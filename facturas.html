@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura - ARENA & MARFIL</title>
+    <title>Factura - TOBIAS JEWELRY</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -70,7 +70,7 @@
     <div class="container" id="invoice">
         <div class="header">
             <div>
-                <h2>ARENA & MARFIL JEWELRY</h2>
+                <h2>TOBIAS JEWELRY</h2>
                 <p>Dirección: El Salvador, San Salvador</p>
                 <p>Correo: Industriastobias@gmail.com</p>
             </div>
@@ -116,6 +116,20 @@
     </div>
 
     <script>
+        // Función para obtener la fecha actual en formato dd/mm/yyyy
+        function obtenerFechaActual() {
+            const fecha = new Date();
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses comienzan desde 0
+            const año = fecha.getFullYear();
+            return `${dia}/${mes}/${año}`;
+        }
+
+        // Asignar la fecha actual al campo de fecha
+        window.onload = function() {
+            document.getElementById("fecha").innerText = obtenerFechaActual();
+        };
+
         function calcularTotal() {
             let filas = document.querySelectorAll("#productos tr");
             let total = 0;
