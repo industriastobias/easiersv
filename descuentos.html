@@ -71,6 +71,7 @@
             border: none;
             padding: 5px 10px;
             cursor: pointer;
+            margin: 2px;
         }
         .discount-table button:hover {
             background-color: #45a049;
@@ -92,6 +93,31 @@
             margin-right: 10px;
             border-radius: 4px;
             border: 1px solid #ddd;
+        }
+        .edit-container {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .edit-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .edit-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .edit-container button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -140,6 +166,19 @@
         </table>
     </div>
 
+    <div class="edit-container" id="editContainer">
+        <input type="text" id="editName" placeholder="Nombre">
+        <input type="text" id="editCode" placeholder="Código">
+        <input type="text" id="editBarcode" placeholder="Código de Barras">
+        <input type="number" id="editPrice" placeholder="Precio">
+        <input type="number" id="editDiscount" placeholder="Descuento (%)" min="0" max="100">
+        <input type="text" id="editDescription" placeholder="Descripción">
+        <input type="text" id="editCategory" placeholder="Categoría">
+        <input type="number" id="editQuantity" placeholder="Cantidad en Stock">
+        <button onclick="saveEdit()">Guardar Cambios</button>
+        <button onclick="cancelEdit()">Cancelar</button>
+    </div>
+
     <div class="total-container">
         <h2>Total en Dólares Americanos:</h2>
         <p id="totalAmount">$0.00</p>
@@ -154,6 +193,8 @@
         const categoryFilter = document.getElementById('categoryFilter');
         const totalCount = document.getElementById('totalCount');
         const globalDiscountInput = document.getElementById('globalDiscount');
+        const editContainer = document.getElementById('editContainer');
+        let editingIndex = null;
 
         // Cargar todos los productos del inventario
         function loadProducts() {
@@ -188,6 +229,7 @@
                     <td>${item.quantity}</td>
                     <td>
                         <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                        <button onclick="editProduct(${index})">Editar</button>
                         <button onclick="removeDiscount(${index})">Quitar Descuento</button>
                     </td>
                 </tr>
@@ -243,6 +285,60 @@
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
             loadProducts();
+        };
+
+        // Editar producto
+        window.editProduct = function(index) {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            const item = inventory[index];
+            editingIndex = index;
+
+            // Llenar el contenedor de edición con los datos del producto
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editCode').value = item.code;
+            document.getElementById('editBarcode').value = item.barcode;
+            document.getElementById('editPrice').value = item.price;
+            document.getElementById('editDiscount').value = item.discount || 0;
+            document.getElementById('editDescription').value = item.description;
+            document.getElementById('editCategory').value = item.category;
+            document.getElementById('editQuantity').value = item.quantity;
+
+            // Mostrar el contenedor de edición
+            editContainer.style.display = 'block';
+        };
+
+        // Guardar cambios al editar
+        window.saveEdit = function() {
+            if (editingIndex === null) return;
+
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            const item = inventory[editingIndex];
+
+            // Actualizar los datos del producto
+            item.name = document.getElementById('editName').value;
+            item.code = document.getElementById('editCode').value;
+            item.barcode = document.getElementById('editBarcode').value;
+            item.price = parseFloat(document.getElementById('editPrice').value);
+            item.discount = parseFloat(document.getElementById('editDiscount').value);
+            item.description = document.getElementById('editDescription').value;
+            item.category = document.getElementById('editCategory').value;
+            item.quantity = parseInt(document.getElementById('editQuantity').value);
+
+            // Calcular el precio con descuento
+            item.priceWithDiscount = item.price - (item.price * item.discount / 100);
+
+            // Actualizar el almacenamiento local
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            // Ocultar el contenedor de edición y recargar la lista
+            editContainer.style.display = 'none';
+            loadProducts();
+        };
+
+        // Cancelar edición
+        window.cancelEdit = function() {
+            editContainer.style.display = 'none';
+            editingIndex = null;
         };
 
         // Aplicar descuento global a todos los productos
