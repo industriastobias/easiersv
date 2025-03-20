@@ -143,6 +143,11 @@
         <button onclick="clearFilters()">Limpiar Filtros</button>
     </div>
 
+    <div class="search-container">
+        <input type="number" id="rowFilter" placeholder="Ir a la fila">
+        <button onclick="goToRow()">Ir</button>
+    </div>
+
     <div class="apply-discount-container">
         <input type="number" id="globalDiscount" placeholder="Descuento global (%)" min="0" max="100">
         <button onclick="applyGlobalDiscount()">Aplicar Descuento</button>
@@ -195,6 +200,7 @@
         const totalAmount = document.getElementById('totalAmount');
         const codeFilter = document.getElementById('codeFilter');
         const categoryFilter = document.getElementById('categoryFilter');
+        const rowFilter = document.getElementById('rowFilter');
         const totalCount = document.getElementById('totalCount');
         const globalDiscountInput = document.getElementById('globalDiscount');
         const editContainer = document.getElementById('editContainer');
@@ -275,6 +281,24 @@
                 rowNumberInfo.style.display = 'none';
             }
         }
+
+        // Función para ir a una fila específica
+        window.goToRow = function() {
+            const rowNumber = parseInt(rowFilter.value);
+            if (isNaN(rowNumber) {
+                alert("Por favor, ingrese un número de fila válido.");
+                return;
+            }
+
+            const row = document.getElementById(`row-${rowNumber - 1}`);
+            if (row) {
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                row.classList.add('highlight');
+                setTimeout(() => row.classList.remove('highlight'), 2000); // Resaltar temporalmente
+            } else {
+                alert("La fila especificada no existe.");
+            }
+        };
 
         // Aplicar debounce a la función loadProducts
         const debouncedLoadProducts = debounce(loadProducts, 300);
