@@ -27,32 +27,33 @@
         }
         .search-container {
             margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
         }
         .search-container input {
-            width: 100%;
+            width: 48%; /* Ajustado para que quepan dos inputs en una fila */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            margin-right: 2%; /* Espacio entre los inputs */
+        }
+        .search-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .search-container button:hover {
+            background-color: #45a049;
         }
         .info-container {
             margin-bottom: 20px;
-        }
-        .total-container {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .total-container p {
-            font-size: 18px;
         }
         .discount-table {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            max-height: 400px;
-            overflow-y: auto;
         }
         .discount-table table {
             width: 100%;
@@ -67,13 +68,19 @@
             background-color: #f2f2f2;
             font-weight: bold;
         }
+        .total-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .total-container p {
+            font-size: 18px;
+        }
         .discount-table button {
             background-color: #4CAF50;
             color: white;
             border: none;
             padding: 5px 10px;
             cursor: pointer;
-            margin: 2px;
         }
         .discount-table button:hover {
             background-color: #45a049;
@@ -96,38 +103,6 @@
             border-radius: 4px;
             border: 1px solid #ddd;
         }
-        .edit-container {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        .edit-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .edit-container button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        .edit-container button:hover {
-            background-color: #45a049;
-        }
-        .highlight {
-            background-color: #d4edda; /* Verde claro */
-        }
     </style>
 </head>
 <body>
@@ -138,8 +113,8 @@
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="codeFilter" placeholder="Filtrar por código">
-        <input type="text" id="categoryFilter" placeholder="Filtrar por categoría">
+        <input type="text" id="searchByCode" placeholder="Buscar por código">
+        <input type="text" id="searchByCategory" placeholder="Buscar por categoría">
         <button onclick="clearFilters()">Limpiar Filtros</button>
     </div>
 
@@ -149,21 +124,14 @@
         <button onclick="removeGlobalDiscount()">Quitar Descuento</button>
     </div>
     
-    <div class="total-container">
-        <h2>Total en Dólares Americanos:</h2>
-        <p id="totalAmount">$0.00</p>
-    </div>
-
     <div class="info-container">
         <p id="totalCount">Número de productos: 0</p>
-        <p id="rowNumberInfo" style="display: none;">Fila encontrada: <span id="rowNumber"></span></p>
     </div>
     
     <div class="discount-table">
         <table>
             <thead>
                 <tr>
-                    <th>N°</th>
                     <th>Nombre</th>
                     <th>Código</th>
                     <th>Código de Barras</th>
@@ -182,10 +150,9 @@
         </table>
     </div>
 
-    <div class="edit-container" id="editContainer">
-        <input type="number" id="editDiscount" placeholder="Descuento (%)" min="0" max="100">
-        <button onclick="saveEdit()">Guardar Cambios</button>
-        <button onclick="cancelEdit()">Cancelar</button>
+    <div class="total-container">
+        <h2>Total en Dólares Americanos:</h2>
+        <p id="totalAmount">$0.00</p>
     </div>
 </div>
 
@@ -193,91 +160,46 @@
     document.addEventListener('DOMContentLoaded', function() {
         const discountList = document.getElementById('discountList');
         const totalAmount = document.getElementById('totalAmount');
-        const codeFilter = document.getElementById('codeFilter');
-        const categoryFilter = document.getElementById('categoryFilter');
         const totalCount = document.getElementById('totalCount');
         const globalDiscountInput = document.getElementById('globalDiscount');
-        const editContainer = document.getElementById('editContainer');
-        const rowNumberInfo = document.getElementById('rowNumberInfo');
-        const rowNumberSpan = document.getElementById('rowNumber');
-        let editingIndex = null;
-
-        // Función debounce para optimizar el filtrado
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
+        const searchByCode = document.getElementById('searchByCode');
+        const searchByCategory = document.getElementById('searchByCategory');
 
         // Cargar todos los productos del inventario
         function loadProducts() {
             const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            const codeFilterValue = codeFilter.value.toLowerCase();
-            const categoryFilterValue = categoryFilter.value.toLowerCase();
+            const filteredProducts = inventory.filter(item => 
+                (searchByCode.value === '' || item.code.toLowerCase().includes(searchByCode.value.toLowerCase())) &&
+                (searchByCategory.value === '' || item.category.toLowerCase().includes(searchByCategory.value.toLowerCase()))
+            );
 
-            const filteredProducts = inventory.filter(item => {
-                const codeMatch = item.code.toLowerCase().includes(codeFilterValue);
-                const categoryMatch = item.category.toLowerCase().includes(categoryFilterValue);
-                return codeMatch && categoryMatch;
-            });
+            discountList.innerHTML = filteredProducts.map((item, index) => {
+                const priceWithDiscount = item.discount ? (item.price - (item.price * item.discount / 100)).toFixed(2) : 'N/A';
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>${item.price}</td>
+                        <td>
+                            <input type="number" value="${item.discount || 0}" min="0" max="100" onchange="updateDiscount(${index}, this.value)">
+                        </td>
+                        <td>${priceWithDiscount}</td>
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                        <td>
+                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
+                            <button onclick="removeDiscount(${index})">Quitar Descuento</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
-            const productsWithDiscount = filteredProducts.map((item, index) => {
-                if (item.discount && item.discount > 0) {
-                    item.priceWithDiscount = item.price - (item.price * item.discount / 100);
-                } else {
-                    item.priceWithDiscount = null;
-                }
-                return item;
-            });
-
-            discountList.innerHTML = productsWithDiscount.map((item, index) => `
-                <tr id="row-${index}">
-                    <td>${index + 1}</td>
-                    <td>${item.name}</td>
-                    <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>${item.price}</td>
-                    <td>
-                        <input type="number" value="${item.discount || 0}" min="0" max="100" onchange="updateDiscount(${index}, this.value)">
-                    </td>
-                    <td>${item.priceWithDiscount ? '$' + item.priceWithDiscount.toFixed(2) : 'N/A'}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.quantity}</td>
-                    <td>
-                        <button onclick="editProduct(${index})">Editar</button>
-                        <button onclick="removeDiscount(${index})">Quitar Descuento</button>
-                    </td>
-                </tr>
-            `).join('');
-
-            const total = productsWithDiscount.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
+            const total = filteredProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos: ${productsWithDiscount.length}`;
-
-            // Resaltar la fila encontrada
-            if (codeFilterValue) {
-                const rowIndex = filteredProducts.findIndex(item => item.code.toLowerCase() === codeFilterValue);
-                if (rowIndex !== -1) {
-                    const row = document.getElementById(`row-${rowIndex}`);
-                    row.classList.add('highlight');
-                    rowNumberSpan.textContent = rowIndex + 1;
-                    rowNumberInfo.style.display = 'block';
-
-                    // Desplazar la tabla a la fila encontrada
-                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    rowNumberInfo.style.display = 'none';
-                }
-            } else {
-                rowNumberInfo.style.display = 'none';
-            }
+            totalCount.textContent = `Número de productos: ${filteredProducts.length}`;
         }
-
-        // Aplicar debounce a la función loadProducts
-        const debouncedLoadProducts = debounce(loadProducts, 300);
 
         // Actualizar descuento
         window.updateDiscount = function(index, discountValue) {
@@ -285,12 +207,9 @@
             let item = inventory[index];
             item.discount = parseFloat(discountValue);
 
-            // Calcular el precio con descuento
-            item.priceWithDiscount = item.price - (item.price * item.discount / 100);
-
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            debouncedLoadProducts();
+            loadProducts();
         };
 
         // Quitar descuento
@@ -298,57 +217,35 @@
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             let item = inventory[index];
             item.discount = 0;
-            item.priceWithDiscount = null;
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            debouncedLoadProducts();
+            loadProducts();
         };
 
-        // Editar producto
-        window.editProduct = function(index) {
-            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        // Marcar producto como vendido
+        window.markAsSold = function(index) {
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+
             const item = inventory[index];
-            editingIndex = index;
+            soldItems.push(item);
 
-            // Llenar el contenedor de edición con el descuento actual
-            document.getElementById('editDiscount').value = item.discount || 0;
+            item.quantity -= 1;
+            if (item.quantity <= 0) {
+                inventory.splice(index, 1);
+            }
 
-            // Mostrar el contenedor de edición
-            editContainer.style.display = 'block';
-        };
-
-        // Guardar cambios al editar
-        window.saveEdit = function() {
-            if (editingIndex === null) return;
-
-            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            const item = inventory[editingIndex];
-
-            // Actualizar solo el descuento
-            item.discount = parseFloat(document.getElementById('editDiscount').value);
-
-            // Calcular el precio con descuento
-            item.priceWithDiscount = item.price - (item.price * item.discount / 100);
-
-            // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            // Ocultar el contenedor de edición y recargar la lista
-            editContainer.style.display = 'none';
-            debouncedLoadProducts();
-        };
-
-        // Cancelar edición
-        window.cancelEdit = function() {
-            editContainer.style.display = 'none';
-            editingIndex = null;
+            loadProducts();
         };
 
         // Aplicar descuento global a todos los productos
         window.applyGlobalDiscount = function() {
             const discount = parseFloat(globalDiscountInput.value);
-            if (isNaN(discount) || discount < 0 || discount > 100) {
+            if (isNaN(discount) ||            if (isNaN(discount) || discount < 0 || discount > 100) {
                 alert("Por favor, ingrese un descuento válido entre 0 y 100.");
                 return;
             }
@@ -361,7 +258,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            debouncedLoadProducts();
+            loadProducts();
         };
 
         // Quitar descuento global de todos los productos
@@ -374,21 +271,21 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            debouncedLoadProducts();
+            loadProducts();
         };
 
         // Limpiar filtros
         window.clearFilters = function() {
-            codeFilter.value = '';
-            categoryFilter.value = '';
-            debouncedLoadProducts();
+            searchByCode.value = '';
+            searchByCategory.value = '';
+            loadProducts();
         };
 
-        // Usar debouncedLoadProducts en los eventos de input
-        codeFilter.addEventListener('input', debouncedLoadProducts);
-        categoryFilter.addEventListener('input', debouncedLoadProducts);
+        // Agregar listeners para las casillas de búsqueda
+        searchByCode.addEventListener('input', loadProducts);
+        searchByCategory.addEventListener('input', loadProducts);
 
-        // Cargar productos al inicio
+        // Cargar productos al cargar la página
         loadProducts();
     });
 </script>
