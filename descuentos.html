@@ -27,27 +27,25 @@
         }
         .search-container {
             margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
         }
         .search-container input {
-            width: 48%; /* Ajustado para que quepan dos inputs en una fila */
+            flex: 1;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            margin-right: 2%; /* Espacio entre los inputs */
         }
         .search-container button {
-            background-color: #4CAF50;
+            padding: 10px;
+            background-color: red;
             color: white;
             border: none;
-            padding: 10px 20px;
-            cursor: pointer;
             border-radius: 4px;
+            cursor: pointer;
         }
         .search-container button:hover {
-            background-color: #45a049;
-        }
-        .info-container {
-            margin-bottom: 20px;
+            background-color: darkred;
         }
         .discount-table {
             background-color: #fff;
@@ -68,30 +66,6 @@
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        .total-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .total-container p {
-            font-size: 18px;
-        }
-        .discount-table button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .discount-table button:hover {
-            background-color: #45a049;
-        }
-        .discount-table input {
-            width: 60px;
-            padding: 5px;
-            margin-right: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
         .apply-discount-container {
             margin: 20px 0;
             text-align: center;
@@ -103,19 +77,29 @@
             border-radius: 4px;
             border: 1px solid #ddd;
         }
+        .apply-discount-container button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .apply-discount-container button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
-    Productos con Descuento
+    Gestión de Descuentos
 </div>
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="searchByCode" placeholder="Buscar por código">
-        <input type="text" id="searchByCategory" placeholder="Buscar por categoría">
-        <button onclick="clearFilters()">Limpiar Filtros</button>
+        <input type="text" id="searchCode" placeholder="Buscar por código">
+        <input type="text" id="searchCategory" placeholder="Buscar por categoría">
+        <button onclick="clearFilters()">Limpiar filtros</button>
     </div>
 
     <div class="apply-discount-container">
@@ -123,130 +107,82 @@
         <button onclick="applyGlobalDiscount()">Aplicar Descuento</button>
         <button onclick="removeGlobalDiscount()">Quitar Descuento</button>
     </div>
-    
-    <div class="info-container">
-        <p id="totalCount">Número de productos: 0</p>
-    </div>
-    
+
     <div class="discount-table">
         <table>
             <thead>
                 <tr>
                     <th>Nombre</th>
                     <th>Código</th>
-                    <th>Código de Barras</th>
+                    <th>Categoría</th>
                     <th>Precio</th>
                     <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
+                    <th>Precio con Descuento</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="discountList">
-                <!-- Las filas de productos se llenarán dinámicamente -->
+            <tbody id="productList">
+                <!-- Productos cargados dinámicamente -->
             </tbody>
         </table>
-    </div>
-
-    <div class="total-container">
-        <h2>Total en Dólares Americanos:</h2>
-        <p id="totalAmount">$0.00</p>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const discountList = document.getElementById('discountList');
-        const totalAmount = document.getElementById('totalAmount');
-        const totalCount = document.getElementById('totalCount');
+    document.addEventListener('DOMContentLoaded', function () {
+        const productList = document.getElementById('productList');
+        const searchCode = document.getElementById('searchCode');
+        const searchCategory = document.getElementById('searchCategory');
         const globalDiscountInput = document.getElementById('globalDiscount');
-        const searchByCode = document.getElementById('searchByCode');
-        const searchByCategory = document.getElementById('searchByCategory');
 
-        // Cargar todos los productos del inventario
         function loadProducts() {
-            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
             const filteredProducts = inventory.filter(item => 
-                (searchByCode.value === '' || item.code.toLowerCase().includes(searchByCode.value.toLowerCase())) &&
-                (searchByCategory.value === '' || item.category.toLowerCase().includes(searchByCategory.value.toLowerCase()))
+                (searchCode.value === "" || item.code.includes(searchCode.value)) &&
+                (searchCategory.value === "" || item.category.includes(searchCategory.value))
             );
 
-            discountList.innerHTML = filteredProducts.map((item, index) => {
-                const priceWithDiscount = item.discount ? (item.price - (item.price * item.discount / 100)).toFixed(2) : 'N/A';
-                return `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.code}</td>
-                        <td>${item.barcode}</td>
-                        <td>${item.price}</td>
-                        <td>
-                            <input type="number" value="${item.discount || 0}" min="0" max="100" onchange="updateDiscount(${index}, this.value)">
-                        </td>
-                        <td>${priceWithDiscount}</td>
-                        <td>${item.description}</td>
-                        <td>${item.category}</td>
-                        <td>${item.quantity}</td>
-                        <td>
-                            <button onclick="markAsSold(${index})">Marcar como Vendido</button>
-                            <button onclick="removeDiscount(${index})">Quitar Descuento</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            const total = filteredProducts.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos: ${filteredProducts.length}`;
+            productList.innerHTML = filteredProducts.map((item, index) => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.code}</td>
+                    <td>${item.category}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>
+                        <input type="number" value="${item.discount || 0}" min="0" max="100" 
+                            onchange="updateDiscount(${index}, this.value)">
+                    </td>
+                    <td>$${(item.priceWithDiscount || item.price).toFixed(2)}</td>
+                    <td>
+                        <button onclick="removeDiscount(${index})">Quitar Descuento</button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
-        // Actualizar descuento
-        window.updateDiscount = function(index, discountValue) {
+        window.updateDiscount = function (index, discountValue) {
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             let item = inventory[index];
             item.discount = parseFloat(discountValue);
-
-            // Actualizar el almacenamiento local
+            item.priceWithDiscount = item.price - (item.price * item.discount / 100);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadProducts();
         };
 
-        // Quitar descuento
-        window.removeDiscount = function(index) {
+        window.removeDiscount = function (index) {
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             let item = inventory[index];
             item.discount = 0;
-
-            // Actualizar el almacenamiento local
+            item.priceWithDiscount = item.price;
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadProducts();
         };
 
-        // Marcar producto como vendido
-        window.markAsSold = function(index) {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-
-            const item = inventory[index];
-            soldItems.push(item);
-
-            item.quantity -= 1;
-            if (item.quantity <= 0) {
-                inventory.splice(index, 1);
-            }
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            loadProducts();
-        };
-
-        // Aplicar descuento global a todos los productos
-        window.applyGlobalDiscount = function() {
-            const discount = parseFloat(globalDiscountInput.value);
-            if (isNaN(discount) ||            if (isNaN(discount) || discount < 0 || discount > 100) {
-                alert("Por favor, ingrese un descuento válido entre 0 y 100.");
+        window.applyGlobalDiscount = function () {
+            let discount = parseFloat(globalDiscountInput.value);
+            if (isNaN(discount) || discount < 0 || discount > 100) {
+                alert("Ingrese un descuento válido entre 0 y 100.");
                 return;
             }
 
@@ -256,36 +192,30 @@
                 item.priceWithDiscount = item.price - (item.price * discount / 100);
             });
 
-            // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadProducts();
         };
 
-        // Quitar descuento global de todos los productos
-        window.removeGlobalDiscount = function() {
+        window.removeGlobalDiscount = function () {
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             inventory.forEach(item => {
                 item.discount = 0;
-                item.priceWithDiscount = null;
+                item.priceWithDiscount = item.price;
             });
 
-            // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadProducts();
         };
 
-        // Limpiar filtros
-        window.clearFilters = function() {
-            searchByCode.value = '';
-            searchByCategory.value = '';
+        window.clearFilters = function () {
+            searchCode.value = "";
+            searchCategory.value = "";
             loadProducts();
         };
 
-        // Agregar listeners para las casillas de búsqueda
-        searchByCode.addEventListener('input', loadProducts);
-        searchByCategory.addEventListener('input', loadProducts);
+        searchCode.addEventListener('input', loadProducts);
+        searchCategory.addEventListener('input', loadProducts);
 
-        // Cargar productos al cargar la página
         loadProducts();
     });
 </script>
