@@ -52,19 +52,50 @@
             background-color: #f1f1f1;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .search-container {
             margin-bottom: 20px;
         }
 
-        .search-container input,
-        .search-container select {
+        .search-container select,
+        .search-container input {
             padding: 10px;
+            width: 20%;
             margin-right: 10px;
-        }
-
-        .highlight {
-            background-color: green !important;
-            color: white;
         }
 
         .no-results {
@@ -74,11 +105,60 @@
             margin-top: 20px;
             display: none;
         }
+
+        .confirmation-message {
+            text-align: center;
+            color: green;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .highlight {
+            background-color: green !important;
+            color: white;
+        }
+
+        .result-message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .go-to-row-container {
+            margin-top: 20px;
+        }
+
+        .go-to-row-container input {
+            padding: 10px;
+            width: 10%;
+        }
+
+        .go-to-row-container button {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .clear-filters-button {
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .clear-filters-button:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
 
-<div class="header">Gestión de Inventario</div>
+<div class="header">
+    Gestión de Inventario
+</div>
 
 <div class="container">
     <div class="search-container">
@@ -94,17 +174,22 @@
         <label for="searchCode">Buscar por código:</label>
         <input type="text" id="searchCode">
 
-        <label for="goToRow">Ir a fila:</label>
-        <input type="number" id="goToRow" min="1" placeholder="Número de fila">
-
-        <button onclick="filterInventory()">Buscar</button>
-        <button onclick="clearFilters()">Limpiar Filtros</button>
+        <button onclick="openSoldModal()">Registrar Venta</button>
     </div>
+
+    <!-- Filtro para ir directamente a una fila -->
+    <div class="go-to-row-container">
+        <label for="goToRow">Ir a la fila (número):</label>
+        <input type="number" id="goToRow" min="1">
+        <button onclick="goToRow()">Ir</button>
+    </div>
+
+    <button class="clear-filters-button" onclick="clearFilters()">Limpiar filtros</button>
 
     <table>
         <thead>
             <tr>
-                <th>#</th>
+                <th>#</th> <!-- Nueva columna para el número de fila -->
                 <th>Nombre</th>
                 <th>Código</th>
                 <th>Código de Barras</th>
@@ -114,87 +199,189 @@
                 <th>Descripción</th>
                 <th>Categoría</th>
                 <th>Cantidad en Stock</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody id="inventoryList">
-            <!-- Productos se llenan dinámicamente -->
+            <!-- Los productos se llenan dinámicamente -->
         </tbody>
     </table>
 
-    <div id="noResultsMessage" class="no-results">No se encontraron productos.</div>
+    <div id="noResultsMessage" class="no-results">
+        No se encontraron productos que coincidan con los criterios de búsqueda.
+    </div>
+
+    <!-- Mensaje de resultado -->
+    <div id="resultMessage" class="result-message" style="display:none;"></div>
+</div>
+
+<!-- Modal para registrar venta -->
+<div id="soldModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSoldModal()">&times;</span>
+        <h2>Registrar Venta</h2>
+        <label for="soldQuantity">Cantidad Vendida:</label>
+        <input type="number" id="soldQuantity" min="1">
+        <button onclick="processSale()">Registrar Venta</button>
+
+        <div id="confirmationMessage" class="confirmation-message">
+            ¡Venta registrada correctamente!
+        </div>
+    </div>
 </div>
 
 <script>
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    let currentSoldIndex = -1;
 
     function loadInventory(filteredInventory = inventory) {
         const inventoryList = document.getElementById('inventoryList');
-        inventoryList.innerHTML = filteredInventory.map((item, index) => {
-            const priceWithDiscount = item.price * (1 - item.discount / 100);
-            return `
-                <tr id="product-${index}">
-                    <td>${index + 1}</td>
-                    <td>${item.name}</td>
-                    <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>$${item.price.toFixed(2)}</td>
-                    <td>${item.discount}%</td>
-                    <td>$${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.quantity}</td>
-                </tr>
-            `;
-        }).join('');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+
+        if (filteredInventory.length === 0) {
+            inventoryList.innerHTML = '';
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+            inventoryList.innerHTML = filteredInventory.map((item, index) => {
+                const priceWithDiscount = item.price * (1 - item.discount / 100);
+                return `
+                    <tr id="product-${index}" class="product-row">
+                        <td>${index + 1}</td> <!-- Número de fila -->
+                        <td>${item.name}</td>
+                        <td>${item.code}</td>
+                        <td>${item.barcode}</td>
+                        <td>$${item.price.toFixed(2)}</td> <!-- Precio con signo de dólar -->
+                        <td>${item.discount}</td>
+                        <td>$${priceWithDiscount.toFixed(2)}</td> <!-- Precio con descuento con signo de dólar -->
+                        <td>${item.description}</td>
+                        <td>${item.category}</td>
+                        <td>${item.quantity}</td>
+                        <td><button onclick="markSold(${index})">Vender</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+
+    function markSold(index) {
+        currentSoldIndex = index;
+        document.getElementById('soldModal').style.display = 'block';
+    }
+
+    function openSoldModal() {
+        document.getElementById('soldModal').style.display = 'block';
+    }
+
+    function closeSoldModal() {
+        document.getElementById('soldModal').style.display = 'none';
+        document.getElementById('confirmationMessage').style.display = 'none';
+    }
+
+    function processSale() {
+        const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
+        const item = inventory[currentSoldIndex];
+
+        if (soldQuantity > 0 && soldQuantity <= item.quantity) {
+            item.quantity -= soldQuantity;
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            const soldItem = {
+                name: item.name,
+                code: item.code,
+                price: item.price * (1 - item.discount / 100),
+                quantity: soldQuantity,
+                total: (item.price * (1 - item.discount / 100)) * soldQuantity
+            };
+
+            let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
+            soldInventory.push(soldItem);
+            localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+
+            filterInventory();
+            showConfirmationMessage();
+        } else {
+            alert('Cantidad inválida.');
+        }
+    }
+
+    function showConfirmationMessage() {
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        confirmationMessage.style.display = 'block';
+        setTimeout(() => {
+            confirmationMessage.style.display = 'none';
+        }, 3000);
     }
 
     function filterInventory() {
         const category = document.getElementById('searchCategory').value.trim().toLowerCase();
         const code = document.getElementById('searchCode').value.trim().toLowerCase();
-        const rowNumber = parseInt(document.getElementById('goToRow').value);
 
-        let filteredInventory = inventory.filter(item => {
-            return (!category || item.category.toLowerCase() === category) &&
-                   (!code || item.code.toLowerCase().includes(code));
+        const filteredInventory = inventory.filter(item => {
+            const itemCategory = item.category.trim().toLowerCase();
+            const itemCode = item.code.trim().toLowerCase();
+
+            const matchesCategory = category === '' || itemCategory === category;
+            const matchesCode = code === '' || itemCode.includes(code);
+
+            return matchesCategory && matchesCode;
         });
 
         loadInventory(filteredInventory);
 
+        // Si se encuentra un producto por código, mostrar el número de fila entre el total de productos
         if (code) {
-            const row = Array.from(document.querySelectorAll('#inventoryList tr'))
-                .find(tr => tr.cells[2].textContent.trim().toLowerCase() === code);
+            const productIndex = inventory.findIndex(item => item.code.trim().toLowerCase() === code);
 
-            if (row) {
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                row.classList.add('highlight');
-
-                setTimeout(() => row.classList.remove('highlight'), 5000);
+            if (productIndex !== -1) {
+                const totalProducts = inventory.length;
+                const positionMessage = `Producto encontrado en la posición ${productIndex + 1} de ${totalProducts} productos.`;
+                
+                document.getElementById('resultMessage').style.display = 'block';
+                document.getElementById('resultMessage').textContent = positionMessage;
+            } else {
+                document.getElementById('resultMessage').style.display = 'none';
             }
         }
+    }
 
-        if (!isNaN(rowNumber) && rowNumber > 0 && rowNumber <= inventory.length) {
-            const row = document.getElementById(`product-${rowNumber - 1}`);
-            if (row) {
-                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                row.classList.add('highlight');
+    function goToRow() {
+        const rowNumber = parseInt(document.getElementById('goToRow').value);
+        const rows = document.querySelectorAll('#inventoryList tr');
 
-                setTimeout(() => row.classList.remove('highlight'), 5000);
-            }
+        // Remover la clase de resaltado de las filas anteriores
+        document.querySelectorAll('.highlight').forEach(row => {
+            row.classList.remove('highlight');
+        });
+
+        if (rowNumber >= 1 && rowNumber <= rows.length) {
+            rows[rowNumber - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            rows[rowNumber - 1].classList.add('highlight'); // Resaltar la fila
+        } else {
+            alert('Número de fila fuera de rango.');
         }
     }
 
     function clearFilters() {
-        document.getElementById('searchCategory').value = "";
-        document.getElementById('searchCode').value = "";
-        document.getElementById('goToRow').value = "";
+        document.getElementById('searchCategory').value = '';
+        document.getElementById('searchCode').value = '';
+        document.getElementById('goToRow').value = '';
+        
         loadInventory();
     }
 
-    document.getElementById('searchCategory').addEventListener('change', filterInventory);
-    document.getElementById('searchCode').addEventListener('input', filterInventory);
-    document.getElementById('goToRow').addEventListener('input', filterInventory);
+    document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
+    document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
     loadInventory();
+
+    function debounce(func, delay) {
+        let debounceTimer;
+        return function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => func.apply(this, arguments), delay);
+        };
+    }
 </script>
 
 </body>
