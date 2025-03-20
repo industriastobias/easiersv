@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,8 +115,42 @@
         }
 
         .highlight {
-            background-color: red !important;
-            transition: background-color 0.5s ease;
+            background-color: green !important;
+            color: white;
+        }
+
+        .result-message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .go-to-row-container {
+            margin-top: 20px;
+        }
+
+        .go-to-row-container input {
+            padding: 10px;
+            width: 10%;
+        }
+
+        .go-to-row-container button {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .clear-filters-button {
+            padding: 10px 15px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .clear-filters-button:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -143,9 +177,19 @@
         <button onclick="openSoldModal()">Registrar Venta</button>
     </div>
 
+    <!-- Filtro para ir directamente a una fila -->
+    <div class="go-to-row-container">
+        <label for="goToRow">Ir a la fila (número):</label>
+        <input type="number" id="goToRow" min="1">
+        <button onclick="goToRow()">Ir</button>
+    </div>
+
+    <button class="clear-filters-button" onclick="clearFilters()">Limpiar filtros</button>
+
     <table>
         <thead>
             <tr>
+                <th>#</th> <!-- Nueva columna para el número de fila -->
                 <th>Nombre</th>
                 <th>Código</th>
                 <th>Código de Barras</th>
@@ -166,6 +210,9 @@
     <div id="noResultsMessage" class="no-results">
         No se encontraron productos que coincidan con los criterios de búsqueda.
     </div>
+
+    <!-- Mensaje de resultado -->
+    <div id="resultMessage" class="result-message" style="display:none;"></div>
 </div>
 
 <!-- Modal para registrar venta -->
@@ -199,7 +246,8 @@
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price * (1 - item.discount / 100);
                 return `
-                    <tr id="product-${index}" data-code="${item.code}">
+                    <tr id="product-${index}" class="product-row">
+                        <td>${index + 1}</td> <!-- Número de fila -->
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
@@ -281,21 +329,45 @@
 
         loadInventory(filteredInventory);
 
-        // Si se encuentra un producto por código, desplazarse hacia él
+        // Si se encuentra un producto por código, mostrar el número de fila entre el total de productos
         if (code) {
-            const productRow = document.querySelector(`tr[data-code="${code}"]`);
-            if (productRow) {                productRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                productRow.classList.add('highlight');
+            const productIndex = inventory.findIndex(item => item.code.trim().toLowerCase() === code);
+
+            if (productIndex !== -1) {
+                const totalProducts = inventory.length;
+                const positionMessage = `Producto encontrado en la posición ${productIndex + 1} de ${totalProducts} productos.`;
                 
-                // Quitar el resaltado después de 5 segundos
-                setTimeout(() => {
-                    productRow.classList.remove('highlight');
-                }, 5000);
+                document.getElementById('resultMessage').style.display = 'block';
+                document.getElementById('resultMessage').textContent = positionMessage;
             } else {
-                // Mostrar mensaje de error si no se encuentra el producto
-                alert('No se encontró ningún producto con el código proporcionado.');
+                document.getElementById('resultMessage').style.display = 'none';
             }
         }
+    }
+
+    function goToRow() {
+        const rowNumber = parseInt(document.getElementById('goToRow').value);
+        const rows = document.querySelectorAll('#inventoryList tr');
+
+        // Remover la clase de resaltado de las filas anteriores
+        document.querySelectorAll('.highlight').forEach(row => {
+            row.classList.remove('highlight');
+        });
+
+        if (rowNumber >= 1 && rowNumber <= rows.length) {
+            rows[rowNumber - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            rows[rowNumber - 1].classList.add('highlight'); // Resaltar la fila
+        } else {
+            alert('Número de fila fuera de rango.');
+        }
+    }
+
+    function clearFilters() {
+        document.getElementById('searchCategory').value = '';
+        document.getElementById('searchCode').value = '';
+        document.getElementById('goToRow').value = '';
+        
+        loadInventory();
     }
 
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
