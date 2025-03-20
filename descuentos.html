@@ -29,10 +29,11 @@
             margin-bottom: 20px;
         }
         .search-container input {
-            width: 100%;
+            width: 48%; /* Ajustado para que quepan dos inputs en una fila */
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            margin-right: 2%; /* Espacio entre los inputs */
         }
         .info-container {
             margin-bottom: 20px;
@@ -101,7 +102,8 @@
 
 <div class="container">
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar por nombre, código o categoría">
+        <input type="text" id="searchByCode" placeholder="Buscar por código">
+        <input type="text" id="searchByCategory" placeholder="Buscar por categoría">
     </div>
 
     <div class="apply-discount-container">
@@ -146,7 +148,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const discountList = document.getElementById('discountList');
         const totalAmount = document.getElementById('totalAmount');
-        const searchInput = document.getElementById('searchInput');
         const totalCount = document.getElementById('totalCount');
         const globalDiscountInput = document.getElementById('globalDiscount');
 
@@ -163,10 +164,18 @@
                 return item;
             });
 
-            // Filtrar para mostrar solo productos con descuento
-            const filteredDiscountedProducts = discountedProducts.filter(item => item.discount && item.discount > 0);
+            // Obtener los valores de búsqueda
+            const searchByCode = document.getElementById('searchByCode').value.toLowerCase();
+            const searchByCategory = document.getElementById('searchByCategory').value.toLowerCase();
 
-            discountList.innerHTML = discountedProducts.map((item, index) => `
+            // Filtrar para mostrar solo productos con descuento y que coincidan con los filtros de búsqueda
+            const filteredDiscountedProducts = discountedProducts.filter(item => 
+                item.discount && item.discount > 0 &&
+                (searchByCode === '' || item.code.toLowerCase().includes(searchByCode)) &&
+                (searchByCategory === '' || item.category.toLowerCase().includes(searchByCategory))
+            );
+
+            discountList.innerHTML = filteredDiscountedProducts.map((item, index) => `
                 <tr>
                     <td>${item.name}</td>
                     <td>${item.code}</td>
@@ -186,7 +195,7 @@
                 </tr>
             `).join('');
 
-            const total = discountedProducts.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
+            const total = filteredDiscountedProducts.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
             totalCount.textContent = `Número de productos con descuento: ${filteredDiscountedProducts.length}`;
         }
@@ -228,7 +237,7 @@
             // Actualizar la cantidad en stock
             item.quantity -= 1; // Disminuir cantidad
             if (item.quantity <= 0) {
-                inventory.splice(index, 1); // Eliminar si no hay stock
+                inventory.splice(index, 1);                // Eliminar si no hay stock
             }
 
             // Sincronizar los datos con inventario.html
@@ -270,10 +279,16 @@
             loadDiscountedProducts();
         };
 
-        searchInput.addEventListener('input', function() {
+        // Agregar listeners para las nuevas casillas de búsqueda
+        document.getElementById('searchByCode').addEventListener('input', function() {
             loadDiscountedProducts();
         });
 
+        document.getElementById('searchByCategory').addEventListener('input', function() {
+            loadDiscountedProducts();
+        });
+
+        // Cargar productos con descuento al cargar la página
         loadDiscountedProducts();
     });
 </script>
