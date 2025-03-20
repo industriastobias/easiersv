@@ -109,9 +109,9 @@
         <button id="nextPage">Siguiente</button>
     </div>
 
-    <div class="inventory-table">
-        <table>
-            <thead>
+    <Div class = " inventario-table ">
+        * mesa *>
+            *>
                 <tr>
                     <th>#</th>
                     <th>Nombre</th>
@@ -123,13 +123,14 @@
                     <th>Descripción</th>
                     <th>Categoría</th>
                     <th>Cantidad en stock</th>
-                    <th>Visualizar</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList">
             </tbody>
         </table>
         <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
+        <button class="save-button" onclick="saveChanges()">Guardar Cambios</button>
     </div>
 </div>
 
@@ -167,74 +168,87 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${(currentPageNumber - 1) * itemsPerPage + index + 1}</td> 
-                    <td>${item.name}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'name', this)">${item.name}</td>
                     <td>${item.code}</td>
-                    <td>${item.barcode}</td>
-                    <td>${item.price}</td>
-                    <td>${item.discount || 0}%</td>
-                    <td>$${priceWithDiscount.toFixed(2)}</td>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${item.quantity}</td>
-                    <td><button onclick="viewProduct('${item.code}')">Visualizar</button></td>
-                `;
-                inventoryList.appendChild(row);
-            });
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'barcode', this)">${item.barcode}</td>
+                    <Td contenteditable = " true " onblur = " updateField('$-item.code', 'price', this) ">$-item.price.</td>
+                    <Td contenteditable = " true " onblur = " updateField($$-item.code', 'descuento', this) ">$.item.discount . .</td>
+                    <td>$$.priceWithDiscount.toFixed(2)</td>
+                    <Td contenteditable = " true " onblur = " updateField($'$-item.code', 'descripción', this"">$-item.description.</td>
+                    - td contenteditable = " true " onblur = " updateField($'$-item.code', 'category', this) ">$-item.category.</td>
+                    <Td contenteditable = " true " onblur = " updateField($'$-item.code', 'quantity', this"">$.item.quantity.</td>
+                    <td>* botón onclick = " editProduct($-item.code') ">Editar</button></td>
+                -
+                ofList.appendChild (row);
+            -);
 
             updatePagination(filteredInventory.length);
-            updateTotalStock(filteredInventory);
-        }
+            updateTotalStock (filtrateredInventory);
+        -
 
-        function updatePagination(totalItems) {
+        updatePagination(totalItems)
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             prevPage.classList.toggle('disabled', currentPageNumber === 1);
-            nextPage.classList.toggle('disabled', currentPageNumber >= totalPages);
-            currentPage.textContent = currentPageNumber;
-        }
+            nextPage.classList.toggle ('disabled', currentPageNumber .= totalPages);
+            currentPage.textContenido = currentPageNumber;
+        -
 
-        function updateTotalStock(filteredInventory) {
-            const totalStock = filteredInventory.reduce((total, item) => total + Number(item.quantity || 0), 0);
-            totalStockElement.textContent = totalStock;
-        }
+        updateTotalStock (filtrateredInventory)
+            const totalStock = filtradoInventory.reducir((total, item) =-total - Número.item.queantity - 0), 0);
+            totalStockElement.textContenido = totalStock;
+        -
 
-        categoryFilter.addEventListener('change', function() {
-            let filteredInventory = inventory;
-            if (categoryFilter.value !== 'all') {
-                filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
-            }
-            currentPageNumber = 1;
-            loadInventory(filteredInventory);
-        });
+        categoryFilter.addEventListener ('cambiar', function()
+            deje filtradoInventario = inventario;
+            si (categoría de filtro.valor == 'todos')
+                filtradoInventory = inventario.filter(item =- item.category === categoryFilter.value);
+            -
+            de corrientePageNúmero = 1;
+            cargaInventario (inventario filtrado);
+        -);
 
-        prevPage.addEventListener('click', function() {
-            if (currentPageNumber > 1) {
-                currentPageNumber--;
-                loadInventory(inventory);
-            }
-        });
+        prevPage.addEventListener ('click', function()
+            i (PageNumber actual, 1)
+                corrientePageNumber--;
+                cargaInventario (inventario);
+            -
+        -);
 
-        nextPage.addEventListener('click', function() {
+        nextPage.addEventListener('click', function()
             const totalPages = Math.ceil(inventory.length / itemsPerPage);
-            if (currentPageNumber < totalPages) {
-                currentPageNumber++;
-                loadInventory(inventory);
-            }
-        });
+            si (actualPageNumber - totalPages)
+                corrientePageNumberá;
+                cargaInventario (inventario);
+            -
+        -);
 
-        loadInventory(inventory);
-    });
+        cargaInventario (inventario);
+    -);
 
-    function viewProduct(productCode) {
-        alert(`Visualizando producto con código: ${productCode}`);
-    }
+    actualización de funciónField(productCode, campo, elemento)
+        const inventario = JSON.parse(localStorage.getItem('inventory'))
+        const productIndex = inventory.findIndex(item = ítem.code === productCode;
+        si (productIndex == -1)
+            inventario[productIndex][campo] = elemento.textContenido;
+            localStorage.setItem ('inventario', JSON.stringify (inventario);
+        -
+    -
 
-    function deleteAll() {
-        if (confirm("¿Está seguro de que desea eliminar todos los productos?")) {
-            localStorage.removeItem('inventory');
-            location.reload();
-        }
-    }
-</script>
+    function editProduct (productoCode)
+        alerta(Editando producto con código: $-productCode-);
+    -
 
-</body>
-</html>
+    función deleteAll()
+        si (confirmar: "Segura de que desea todos los productos?") -
+            localStorage.removeItem('inventario');
+            lugar.reload();
+        -
+    -
+
+    función saveChanges ()
+        alertas ("Cambios guardados en el almacenamiento local") ;
+    -
+* / script *>
+
+*/ cuerpo *
+*/ html>
