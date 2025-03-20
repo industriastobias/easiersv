@@ -224,7 +224,15 @@
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadProducts();
-                   // Marcar producto como vendido
+        };
+
+        // Marcar producto como vendido
+        window.markAsSold = function(index) {
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+
+            const item = inventory[index]; // Obtener el elemento sin eliminarlo
+            soldItems.push(item); // Agregar el            // Marcar producto como vendido
             window.markAsSold = function(index) {
                 let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
                 let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
