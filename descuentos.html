@@ -39,6 +39,13 @@
         .info-container {
             margin-bottom: 20px;
         }
+        .total-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .total-container p {
+            font-size: 18px;
+        }
         .discount-table {
             background-color: #fff;
             border-radius: 8px;
@@ -57,13 +64,6 @@
         .discount-table th {
             background-color: #f2f2f2;
             font-weight: bold;
-        }
-        .total-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .total-container p {
-            font-size: 18px;
         }
         .discount-table button {
             background-color: #4CAF50;
@@ -140,6 +140,11 @@
         <button onclick="removeGlobalDiscount()">Quitar Descuento</button>
     </div>
     
+    <div class="total-container">
+        <h2>Total en Dólares Americanos:</h2>
+        <p id="totalAmount">$0.00</p>
+    </div>
+
     <div class="info-container">
         <p id="totalCount">Número de productos: 0</p>
     </div>
@@ -177,11 +182,6 @@
         <input type="number" id="editQuantity" placeholder="Cantidad en Stock">
         <button onclick="saveEdit()">Guardar Cambios</button>
         <button onclick="cancelEdit()">Cancelar</button>
-    </div>
-
-    <div class="total-container">
-        <h2>Total en Dólares Americanos:</h2>
-        <p id="totalAmount">$0.00</p>
     </div>
 </div>
 
