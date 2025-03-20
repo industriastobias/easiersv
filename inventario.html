@@ -79,6 +79,17 @@
             font-size: 18px;
             font-weight: bold;
         }
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .save-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -109,33 +120,31 @@
         <button id="nextPage">Siguiente</button>
     </div>
 
-    <div class="inventory-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio Con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en stock</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryList">
-            </tbody>
-        </table>
-        <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
-        <button class="save-button" onclick="saveChanges()">Guardar Cambios</button>
-    </div>
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Código de Barras</th>
+                <th>Precio</th>
+                <th>Descuento (%)</th>
+                <th>Precio Con Descuento</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Cantidad en stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="inventoryList">
+        </tbody>
+    </table>
+    <button class="delete-all" onclick="deleteAll()">Eliminar Todo</button>
+    <button class="save-button" onclick="saveChanges()">Guardar Cambios</button>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const inventoryList = document.getElementById('inventoryList');
         const categoryFilter = document.getElementById('categoryFilter');
         const prevPage = document.getElementById('prevPage');
@@ -167,17 +176,17 @@
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><span class="math-inline">\{\(currentPageNumber \- 1\) \* itemsPerPage \+ index \+ 1\}</td\> 
-<td contenteditable\="true" onblur\="updateField\('</span>{item.code}', 'name', this)"><span class="math-inline">\{item\.name\}</td\>
-<td\></span>{item.code}</td>
-                    <td contenteditable="true" onblur="updateField('<span class="math-inline">\{item\.code\}', 'barcode', this\)"\></span>{item.barcode}</td>
-                    <td contenteditable="true" onblur="updateField('<span class="math-inline">\{item\.code\}', 'price', this\)"\></span>{item.price}</td>
-                    <td contenteditable="true" onblur="updateField('<span class="math-inline">\{item\.code\}', 'discount', this\)"\></span>{item.discount}</td>
-                    <td><span class="math-inline">\{priceWithDiscount\.toFixed\(2\)\}</td\>
-<td contenteditable\="true" onblur\="updateField\('</span>{item.code}', 'description', this)"><span class="math-inline">\{item\.description\}</td\>
-<td contenteditable\="true" onblur\="updateField\('</span>{item.code}', 'category', this)"><span class="math-inline">\{item\.category\}</td\>
-<td contenteditable\="true" onblur\="updateField\('</span>{item.code}', 'quantity', this)"><span class="math-inline">\{item\.quantity\}</td\>
-<td\><button onclick\="editProduct\('</span>{item.code}')">Editar</button></td>
+                    <td>${(currentPageNumber - 1) * itemsPerPage + index + 1}</td> 
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'name', this)">${item.name}</td>
+                    <td>${item.code}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'barcode', this)">${item.barcode}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'price', this)">${item.price}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'discount', this)">${item.discount || 0}</td>
+                    <td>$${priceWithDiscount.toFixed(2)}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'description', this)">${item.description}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'category', this)">${item.category}</td>
+                    <td contenteditable="true" onblur="updateField('${item.code}', 'quantity', this)">${item.quantity}</td>
+                    <td><button onclick="editProduct('${item.code}')">Editar</button></td>
                 `;
                 inventoryList.appendChild(row);
             });
@@ -198,7 +207,7 @@
             totalStockElement.textContent = totalStock;
         }
 
-        categoryFilter.addEventListener('change', function() {
+        categoryFilter.addEventListener('change', function () {
             let filteredInventory = inventory;
             if (categoryFilter.value !== 'all') {
                 filteredInventory = inventory.filter(item => item.category === categoryFilter.value);
@@ -207,14 +216,14 @@
             loadInventory(filteredInventory);
         });
 
-        prevPage.addEventListener('click', function() {
+        prevPage.addEventListener('click', function () {
             if (currentPageNumber > 1) {
                 currentPageNumber--;
                 loadInventory(inventory);
             }
         });
 
-        nextPage.addEventListener('click', function() {
+        nextPage.addEventListener('click', function () {
             const totalPages = Math.ceil(inventory.length / itemsPerPage);
             if (currentPageNumber < totalPages) {
                 currentPageNumber++;
@@ -230,13 +239,12 @@
         const productIndex = inventory.findIndex(item => item.code === productCode);
         if (productIndex !== -1) {
             inventory[productIndex][field] = element.textContent;
-            localStorage.setItem('inventory', JSON.stringify(inventory);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
         }
     }
 
     function editProduct(productCode) {
         alert(`Editando producto con código: ${productCode}`);
-        // Aquí puedes agregar la lógica para editar el producto
     }
 
     function deleteAll() {
@@ -247,7 +255,7 @@
     }
 
     function saveChanges() {
-        alert("Cambios guardados en el almacenamiento local");
+        alert("Cambios guardados en el almacenamiento local.");
     }
 </script>
 
