@@ -96,11 +96,15 @@
         }
         .edit-container {
             display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            z-index: 1000;
         }
         .edit-container input {
             width: 100%;
@@ -172,14 +176,7 @@
     </div>
 
     <div class="edit-container" id="editContainer">
-        <input type="text" id="editName" placeholder="Nombre">
-        <input type="text" id="editCode" placeholder="Código">
-        <input type="text" id="editBarcode" placeholder="Código de Barras">
-        <input type="number" id="editPrice" placeholder="Precio">
         <input type="number" id="editDiscount" placeholder="Descuento (%)" min="0" max="100">
-        <input type="text" id="editDescription" placeholder="Descripción">
-        <input type="text" id="editCategory" placeholder="Categoría">
-        <input type="number" id="editQuantity" placeholder="Cantidad en Stock">
         <button onclick="saveEdit()">Guardar Cambios</button>
         <button onclick="cancelEdit()">Cancelar</button>
     </div>
@@ -240,7 +237,6 @@
                     <td>${item.category}</td>
                     <td>${item.quantity}</td>
                     <td>
-                        <button onclick="markAsSold(${index})">Marcar como Vendido</button>
                         <button onclick="editProduct(${index})">Editar</button>
                         <button onclick="removeDiscount(${index})">Quitar Descuento</button>
                     </td>
@@ -281,42 +277,14 @@
             debouncedLoadProducts();
         };
 
-        // Marcar producto como vendido
-        window.markAsSold = function(index) {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
-
-            const item = inventory[index]; // Obtener el elemento sin eliminarlo
-            soldItems.push(item); // Agregar el producto a soldItems
-
-            // Actualizar la cantidad en stock
-            item.quantity -= 1; // Disminuir cantidad
-            if (item.quantity <= 0) {
-                inventory.splice(index, 1); // Eliminar si no hay stock
-            }
-
-            // Sincronizar los datos con inventario.html
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
-
-            debouncedLoadProducts();
-        };
-
         // Editar producto
         window.editProduct = function(index) {
             const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             const item = inventory[index];
             editingIndex = index;
 
-            // Llenar el contenedor de edición con los datos del producto
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editCode').value = item.code;
-            document.getElementById('editBarcode').value = item.barcode;
-            document.getElementById('editPrice').value = item.price;
+            // Llenar el contenedor de edición con el descuento actual
             document.getElementById('editDiscount').value = item.discount || 0;
-            document.getElementById('editDescription').value = item.description;
-            document.getElementById('editCategory').value = item.category;
-            document.getElementById('editQuantity').value = item.quantity;
 
             // Mostrar el contenedor de edición
             editContainer.style.display = 'block';
@@ -329,15 +297,8 @@
             const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
             const item = inventory[editingIndex];
 
-            // Actualizar los datos del producto
-            item.name = document.getElementById('editName').value;
-            item.code = document.getElementById('editCode').value;
-            item.barcode = document.getElementById('editBarcode').value;
-            item.price = parseFloat(document.getElementById('editPrice').value);
+            // Actualizar solo el descuento
             item.discount = parseFloat(document.getElementById('editDiscount').value);
-            item.description = document.getElementById('editDescription').value;
-            item.category = document.getElementById('editCategory').value;
-            item.quantity = parseInt(document.getElementById('editQuantity').value);
 
             // Calcular el precio con descuento
             item.priceWithDiscount = item.price - (item.price * item.discount / 100);
