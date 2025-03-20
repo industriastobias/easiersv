@@ -44,9 +44,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .search-container button:hover {
-            background-color: darkred;
-        }
         .discount-table {
             background-color: #fff;
             border-radius: 8px;
@@ -66,27 +63,6 @@
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        .apply-discount-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-        .apply-discount-container input {
-            width: 60px;
-            padding: 5px;
-            margin-right: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .apply-discount-container button {
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .apply-discount-container button:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 <body>
@@ -102,12 +78,6 @@
         <button onclick="clearFilters()">Limpiar filtros</button>
     </div>
 
-    <div class="apply-discount-container">
-        <input type="number" id="globalDiscount" placeholder="Descuento global (%)" min="0" max="100">
-        <button onclick="applyGlobalDiscount()">Aplicar Descuento</button>
-        <button onclick="removeGlobalDiscount()">Quitar Descuento</button>
-    </div>
-
     <div class="discount-table">
         <table>
             <thead>
@@ -118,7 +88,6 @@
                     <th>Precio</th>
                     <th>Descuento (%)</th>
                     <th>Precio con Descuento</th>
-                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="productList">
@@ -133,10 +102,19 @@
         const productList = document.getElementById('productList');
         const searchCode = document.getElementById('searchCode');
         const searchCategory = document.getElementById('searchCategory');
-        const globalDiscountInput = document.getElementById('globalDiscount');
 
         function loadProducts() {
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+            if (inventory.length === 0) {
+                // Si no hay productos en localStorage, crear ejemplos
+                inventory = [
+                    { name: "Collar Oro", code: "A001", category: "Joyería", price: 120.00, discount: 0 },
+                    { name: "Anillo Plata", code: "A002", category: "Joyería", price: 80.00, discount: 0 },
+                    { name: "Bolso Cuero", code: "B001", category: "Carteras", price: 150.00, discount: 0 }
+                ];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+            }
 
             const filteredProducts = inventory.filter(item => 
                 (searchCode.value === "" || item.code.includes(searchCode.value)) &&
@@ -154,55 +132,17 @@
                             onchange="updateDiscount(${index}, this.value)">
                     </td>
                     <td>$${(item.priceWithDiscount || item.price).toFixed(2)}</td>
-                    <td>
-                        <button onclick="removeDiscount(${index})">Quitar Descuento</button>
-                    </td>
                 </tr>
             `).join('');
         }
 
         window.updateDiscount = function (index, discountValue) {
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            let item = inventory[index];
-            item.discount = parseFloat(discountValue);
-            item.priceWithDiscount = item.price - (item.price * item.discount / 100);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
-        };
+            let product = inventory.find((_, i) => i === index);
+            if (!product) return;
 
-        window.removeDiscount = function (index) {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            let item = inventory[index];
-            item.discount = 0;
-            item.priceWithDiscount = item.price;
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
-        };
-
-        window.applyGlobalDiscount = function () {
-            let discount = parseFloat(globalDiscountInput.value);
-            if (isNaN(discount) || discount < 0 || discount > 100) {
-                alert("Ingrese un descuento válido entre 0 y 100.");
-                return;
-            }
-
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            inventory.forEach(item => {
-                item.discount = discount;
-                item.priceWithDiscount = item.price - (item.price * discount / 100);
-            });
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
-        };
-
-        window.removeGlobalDiscount = function () {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            inventory.forEach(item => {
-                item.discount = 0;
-                item.priceWithDiscount = item.price;
-            });
-
+            product.discount = parseFloat(discountValue);
+            product.priceWithDiscount = product.price - (product.price * product.discount / 100);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             loadProducts();
         };
