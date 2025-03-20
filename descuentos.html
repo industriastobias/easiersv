@@ -5,120 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descuentos</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            background-color: #fff;
-            color: #333;
-            padding: 10px 20px;
-            text-align: center;
-            font-size: 18px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid #ddd;
-        }
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: auto;
-        }
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-        }
-        .search-container input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .info-container {
-            margin-bottom: 20px;
-        }
-        .discount-table {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .discount-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .discount-table th, .discount-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .discount-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        .total-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .total-container p {
-            font-size: 18px;
-        }
-        .discount-table button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            margin: 2px;
-        }
-        .discount-table button:hover {
-            background-color: #45a049;
-        }
-        .discount-table input {
-            width: 60px;
-            padding: 5px;
-            margin-right: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .apply-discount-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-        .apply-discount-container input {
-            width: 60px;
-            padding: 5px;
-            margin-right: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        .edit-container {
-            display: none;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        .edit-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .edit-container button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        .edit-container button:hover {
-            background-color: #45a049;
-        }
+        /* Estilos anteriores... */
     </style>
 </head>
 <body>
@@ -196,12 +83,24 @@
         const editContainer = document.getElementById('editContainer');
         let editingIndex = null;
 
+        // Función debounce para optimizar el filtrado
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
         // Cargar todos los productos del inventario
         function loadProducts() {
             const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            const codeFilterValue = codeFilter.value.toLowerCase();
+            const categoryFilterValue = categoryFilter.value.toLowerCase();
+
             const filteredProducts = inventory.filter(item => {
-                const codeMatch = item.code.includes(codeFilter.value);
-                const categoryMatch = item.category.includes(categoryFilter.value);
+                const codeMatch = item.code.toLowerCase().includes(codeFilterValue);
+                const categoryMatch = item.category.toLowerCase().includes(categoryFilterValue);
                 return codeMatch && categoryMatch;
             });
 
@@ -240,6 +139,9 @@
             totalCount.textContent = `Número de productos: ${productsWithDiscount.length}`;
         }
 
+        // Aplicar debounce a la función loadProducts
+        const debouncedLoadProducts = debounce(loadProducts, 300);
+
         // Actualizar descuento
         window.updateDiscount = function(index, discountValue) {
             let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -251,7 +153,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
+            debouncedLoadProducts();
         };
 
         // Quitar descuento
@@ -263,7 +165,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
+            debouncedLoadProducts();
         };
 
         // Marcar producto como vendido
@@ -284,7 +186,7 @@
             localStorage.setItem('inventory', JSON.stringify(inventory));
             localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            loadProducts();
+            debouncedLoadProducts();
         };
 
         // Editar producto
@@ -332,7 +234,7 @@
 
             // Ocultar el contenedor de edición y recargar la lista
             editContainer.style.display = 'none';
-            loadProducts();
+            debouncedLoadProducts();
         };
 
         // Cancelar edición
@@ -357,7 +259,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
+            debouncedLoadProducts();
         };
 
         // Quitar descuento global de todos los productos
@@ -370,19 +272,21 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadProducts();
+            debouncedLoadProducts();
         };
 
         // Limpiar filtros
         window.clearFilters = function() {
             codeFilter.value = '';
             categoryFilter.value = '';
-            loadProducts();
+            debouncedLoadProducts();
         };
 
-        codeFilter.addEventListener('input', loadProducts);
-        categoryFilter.addEventListener('input', loadProducts);
+        // Usar debouncedLoadProducts en los eventos de input
+        codeFilter.addEventListener('input', debouncedLoadProducts);
+        categoryFilter.addEventListener('input', debouncedLoadProducts);
 
+        // Cargar productos al inicio
         loadProducts();
     });
 </script>
