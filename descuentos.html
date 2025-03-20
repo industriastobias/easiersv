@@ -35,6 +35,17 @@
             border-radius: 4px;
             margin-right: 2%; /* Espacio entre los inputs */
         }
+        .search-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .search-container button:hover {
+            background-color: #45a049;
+        }
         .info-container {
             margin-bottom: 20px;
         }
@@ -104,6 +115,7 @@
     <div class="search-container">
         <input type="text" id="searchByCode" placeholder="Buscar por código">
         <input type="text" id="searchByCategory" placeholder="Buscar por categoría">
+        <button onclick="clearFilters()">Limpiar Filtros</button>
     </div>
 
     <div class="apply-discount-container">
@@ -113,7 +125,7 @@
     </div>
     
     <div class="info-container">
-        <p id="totalCount">Número de productos con descuento: 0</p>
+        <p id="totalCount">Número de productos: 0</p>
     </div>
     
     <div class="discount-table">
@@ -133,7 +145,7 @@
                 </tr>
             </thead>
             <tbody id="discountList">
-                <!-- Las filas de productos con descuento se llenarán dinámicamente -->
+                <!-- Las filas de productos se llenarán dinámicamente -->
             </tbody>
         </table>
     </div>
@@ -152,30 +164,18 @@
         const globalDiscountInput = document.getElementById('globalDiscount');
 
         // Cargar todos los productos del inventario
-        function loadDiscountedProducts() {
+        function loadProducts() {
             const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            const discountedProducts = inventory.map((item, index) => {
-                // Calcular el precio con descuento, si es que tiene descuento
-                if (item.discount && item.discount > 0) {
-                    item.priceWithDiscount = item.price - (item.price * item.discount / 100);
-                } else {
-                    item.priceWithDiscount = null;
-                }
-                return item;
-            });
-
-            // Obtener los valores de búsqueda
             const searchByCode = document.getElementById('searchByCode').value.toLowerCase();
             const searchByCategory = document.getElementById('searchByCategory').value.toLowerCase();
 
-            // Filtrar para mostrar solo productos con descuento y que coincidan con los filtros de búsqueda
-            const filteredDiscountedProducts = discountedProducts.filter(item => 
-                item.discount && item.discount > 0 &&
+            // Filtrar productos según los valores de búsqueda
+            const filteredProducts = inventory.filter(item => 
                 (searchByCode === '' || item.code.toLowerCase().includes(searchByCode)) &&
                 (searchByCategory === '' || item.category.toLowerCase().includes(searchByCategory))
             );
 
-            discountList.innerHTML = filteredDiscountedProducts.map((item, index) => `
+            discountList.innerHTML = filteredProducts.map((item, index) => `
                 <tr>
                     <td>${item.name}</td>
                     <td>${item.code}</td>
@@ -195,9 +195,9 @@
                 </tr>
             `).join('');
 
-            const total = filteredDiscountedProducts.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
+            const total = filteredProducts.reduce((sum, item) => sum + (parseFloat(item.priceWithDiscount || item.price) * parseInt(item.quantity)), 0);
             totalAmount.textContent = `$${total.toFixed(2)}`;
-            totalCount.textContent = `Número de productos con descuento: ${filteredDiscountedProducts.length}`;
+            totalCount.textContent = `Número de productos: ${filteredProducts.length}`;
         }
 
         // Actualizar descuento
@@ -211,7 +211,7 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
+            loadProducts();
         };
 
         // Quitar descuento
@@ -223,74 +223,79 @@
 
             // Actualizar el almacenamiento local
             localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
-        };
+            loadProducts();
+                   // Marcar producto como vendido
+            window.markAsSold = function(index) {
+                let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+                let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
 
-        // Marcar producto como vendido
-        window.markAsSold = function(index) {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            let soldItems = JSON.parse(localStorage.getItem('soldItems')) || [];
+                const item = inventory[index]; // Obtener el elemento sin eliminarlo
+                soldItems.push(item); // Agregar el producto a soldItems
 
-            const item = inventory[index]; // Obtener el elemento sin eliminarlo
-            soldItems.push(item); // Agregar el producto a soldItems
+                // Actualizar la cantidad en stock
+                item.quantity -= 1; // Disminuir cantidad
+                if (item.quantity <= 0) {
+                    inventory.splice(index, 1); // Eliminar si no hay stock
+                }
 
-            // Actualizar la cantidad en stock
-            item.quantity -= 1; // Disminuir cantidad
-            if (item.quantity <= 0) {
-                inventory.splice(index, 1);                // Eliminar si no hay stock
-            }
+                // Sincronizar los datos con inventario.html
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                localStorage.setItem('soldItems', JSON.stringify(soldItems));
 
-            // Sincronizar los datos con inventario.html
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('soldItems', JSON.stringify(soldItems));
+                loadProducts();
+            };
 
-            loadDiscountedProducts();
-        };
+            // Aplicar descuento global a todos los productos
+            window.applyGlobalDiscount = function() {
+                const discount = parseFloat(globalDiscountInput.value);
+                if (isNaN(discount) || discount < 0 || discount > 100) {
+                    alert("Por favor, ingrese un descuento válido entre 0 y 100.");
+                    return;
+                }
 
-        // Aplicar descuento global a todos los productos
-        window.applyGlobalDiscount = function() {
-            const discount = parseFloat(globalDiscountInput.value);
-            if (isNaN(discount) || discount < 0 || discount > 100) {
-                alert("Por favor, ingrese un descuento válido entre 0 y 100.");
-                return;
-            }
+                let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+                inventory.forEach(item => {
+                    item.discount = discount;
+                    item.priceWithDiscount = item.price - (item.price * discount / 100);
+                });
 
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            inventory.forEach(item => {
-                item.discount = discount;
-                item.priceWithDiscount = item.price - (item.price * discount / 100);
+                // Actualizar el almacenamiento local
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadProducts();
+            };
+
+            // Quitar descuento global de todos los productos
+            window.removeGlobalDiscount = function() {
+                let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+                inventory.forEach(item => {
+                    item.discount = 0;
+                    item.priceWithDiscount = null;
+                });
+
+                // Actualizar el almacenamiento local
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadProducts();
+            };
+
+            // Limpiar filtros
+            window.clearFilters = function() {
+                document.getElementById('searchByCode').value = '';
+                document.getElementById('searchByCategory').value = '';
+                loadProducts();
+            };
+
+            // Agregar listeners para las casillas de búsqueda
+            document.getElementById('searchByCode').addEventListener('input', function() {
+                loadProducts();
             });
 
-            // Actualizar el almacenamiento local
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
-        };
-
-        // Quitar descuento global de todos los productos
-        window.removeGlobalDiscount = function() {
-            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-            inventory.forEach(item => {
-                item.discount = 0;
-                item.priceWithDiscount = null;
+            document.getElementById('searchByCategory').addEventListener('input', function() {
+                loadProducts();
             });
 
-            // Actualizar el almacenamiento local
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            loadDiscountedProducts();
-        };
-
-        // Agregar listeners para las nuevas casillas de búsqueda
-        document.getElementById('searchByCode').addEventListener('input', function() {
-            loadDiscountedProducts();
+            // Cargar productos al cargar la página
+            loadProducts();
         });
-
-        document.getElementById('searchByCategory').addEventListener('input', function() {
-            loadDiscountedProducts();
-        });
-
-        // Cargar productos con descuento al cargar la página
-        loadDiscountedProducts();
-    });
 </script>
 
 </body>
