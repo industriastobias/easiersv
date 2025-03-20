@@ -234,7 +234,6 @@
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     let currentSoldIndex = -1;
 
-    // Función para cargar el inventario
     function loadInventory(filteredInventory = inventory) {
         const inventoryList = document.getElementById('inventoryList');
         const noResultsMessage = document.getElementById('noResultsMessage');
@@ -246,43 +245,39 @@
             noResultsMessage.style.display = 'none';
             inventoryList.innerHTML = filteredInventory.map((item, index) => {
                 const priceWithDiscount = item.price * (1 - item.discount / 100);
-                return `
+                return 
                     <tr id="product-${index}" class="product-row">
                         <td>${index + 1}</td> <!-- Número de fila -->
                         <td>${item.name}</td>
                         <td>${item.code}</td>
                         <td>${item.barcode}</td>
-                        <td>$${item.price.toFixed(2)}</td> <!-- Precio con signo de dólar -->
-                        <td>${item.discount}%</td>
-                        <td>$${priceWithDiscount.toFixed(2)}</td> <!-- Precio con descuento y signo de dólar -->
+                        <td>${item.price}</td>
+                        <td>${item.discount}</td>
+                        <td>${priceWithDiscount.toFixed(2)}</td>
                         <td>${item.description}</td>
                         <td>${item.category}</td>
                         <td>${item.quantity}</td>
                         <td><button onclick="markSold(${index})">Vender</button></td>
                     </tr>
-                `;
+                ;
             }).join('');
         }
     }
 
-    // Función para marcar un producto como vendido
     function markSold(index) {
         currentSoldIndex = index;
         document.getElementById('soldModal').style.display = 'block';
     }
 
-    // Función para abrir el modal de venta
     function openSoldModal() {
         document.getElementById('soldModal').style.display = 'block';
     }
 
-    // Función para cerrar el modal de venta
     function closeSoldModal() {
         document.getElementById('soldModal').style.display = 'none';
         document.getElementById('confirmationMessage').style.display = 'none';
     }
 
-    // Función para procesar la venta
     function processSale() {
         const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
         const item = inventory[currentSoldIndex];
@@ -310,7 +305,6 @@
         }
     }
 
-    // Función para mostrar un mensaje de confirmación
     function showConfirmationMessage() {
         const confirmationMessage = document.getElementById('confirmationMessage');
         confirmationMessage.style.display = 'block';
@@ -319,7 +313,6 @@
         }, 3000);
     }
 
-    // Función para filtrar el inventario
     function filterInventory() {
         const category = document.getElementById('searchCategory').value.trim().toLowerCase();
         const code = document.getElementById('searchCode').value.trim().toLowerCase();
@@ -342,7 +335,7 @@
 
             if (productIndex !== -1) {
                 const totalProducts = inventory.length;
-                const positionMessage = `Producto encontrado en la posición ${productIndex + 1} de ${totalProducts} productos.`;
+                const positionMessage = Producto encontrado en la posición ${productIndex + 1} de ${totalProducts} productos.;
                 
                 document.getElementById('resultMessage').style.display = 'block';
                 document.getElementById('resultMessage').textContent = positionMessage;
@@ -352,7 +345,6 @@
         }
     }
 
-    // Función para ir a una fila específica
     function goToRow() {
         const rowNumber = parseInt(document.getElementById('goToRow').value);
         const rows = document.querySelectorAll('#inventoryList tr');
@@ -370,7 +362,6 @@
         }
     }
 
-    // Función para limpiar los filtros
     function clearFilters() {
         document.getElementById('searchCategory').value = '';
         document.getElementById('searchCode').value = '';
@@ -379,14 +370,11 @@
         loadInventory();
     }
 
-    // Event listeners para los filtros
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
     document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
-    // Cargar el inventario al inicio
     loadInventory();
 
-    // Función debounce para mejorar el rendimiento de los filtros
     function debounce(func, delay) {
         let debounceTimer;
         return function () {
