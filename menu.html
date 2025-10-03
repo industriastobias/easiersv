@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – AESIER COMPANY</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
     <style>
         :root {
             --bg: #111827;
@@ -167,7 +167,7 @@
         <a href="almacenamiento.html"><i class="fa-solid fa-warehouse"></i> Almacenamiento</a>
         <a href="lista_usuarios.html" id="usuarios-link"><i class="fa-solid fa-user-gear"></i> Usuarios</a>
         <a href="lista.html" id="lista"><i class="fa-solid fa-list"></i> Lista</a>
-        <a href="descuentos.html" id="descuentos"><i class="fa-solid fa-percent"></i> Descuentos</a>
+        <a href="descuentos.html" id="descuentos-link"><i class="fa-solid fa-percent"></i> Descuentos</a>
     </nav>
 </aside>
 
@@ -192,10 +192,12 @@
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
+        const descuentosLink = document.getElementById('descuentos-link');
         if (userID !== '2005') userLink.style.display = 'none';
         if (userID && userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
+            descuentosLink.style.display = 'none';
         }
     }
     function highlightCurrentPage() {
