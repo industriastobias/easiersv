@@ -30,6 +30,7 @@
             overflow: hidden;
         }
 
+        /* SIDEBAR */
         .sidebar {
             width: 260px;
             background: var(--panel);
@@ -39,6 +40,19 @@
             gap: 2rem;
             border-right: 1px solid #374151;
             animation: slideIn 0.4s ease-out;
+
+            /* scroll vertical cuando sea necesario */
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) transparent;
+        }
+        /* Chrome / Edge / Safari */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
         }
 
         @keyframes slideIn {
@@ -107,6 +121,7 @@
             color: #000;
         }
 
+        /* BOTÓN CERRAR SESIÓN (ESQ. SUPERIOR DERECHA) */
         .logout-btn-top {
             position: absolute;
             top: 1.5rem;
@@ -128,6 +143,7 @@
             transform: scale(1.1);
         }
 
+        /* MAIN */
         main {
             flex: 1;
             padding: 3rem 4rem;
