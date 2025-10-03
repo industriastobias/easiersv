@@ -7,16 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         :root {
-            --bg: #0d1117;
-            --panel: #161b22;
-            --card: #1e242e;
-            --accent: #22d3ee;
-            --danger: #f43f5e;
-            --text: #e6edf3;
-            --muted: #8b949e;
-            --border: #30363d;
-            --radius: 14px;
-            --shadow: 0 8px 24px rgba(0, 0, 0, .4);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent: #00f2fe;
+            --danger: #ff084a;
+            --success: #00ff87;
+            --bg-start: #0f0c29;
+            --bg-mid: #302b63;
+            --bg-end: #24243e;
         }
 
         * {
@@ -27,136 +25,69 @@
         }
 
         body {
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 260px;
-            background: var(--panel);
-            padding: 2rem 1.5rem;
+            background: linear-gradient(-45deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
-            border-right: 1px solid var(--border);
-            animation: slideIn .4s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-        }
-
-        .sidebar .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--accent);
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        .sidebar .links {
-            display: flex;
-            flex-direction: column;
-            gap: .75rem;
-        }
-
-        .sidebar .links a {
-            display: flex;
             align-items: center;
-            gap: .75rem;
-            padding: .75rem 1rem;
-            border-radius: var(--radius);
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 500;
-            transition: background .2s, color .2s;
-        }
-
-        .sidebar .links a:hover {
-            background: rgba(255, 255, 255, .05);
-        }
-
-        .sidebar .links a.active {
-            background: var(--accent);
-            color: #000;
-        }
-
-        /* MAIN */
-        main {
-            flex: 1;
-            padding: 2rem 3rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            overflow-y: auto;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .topbar h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-
-        .content {
-            display: flex;
-            gap: 2rem;
-            flex: 1;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
             padding: 2rem;
-            animation: fadeUp .5s ease-out;
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .form-card {
-            width: 320px;
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            letter-spacing: -1px;
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
             display: flex;
             flex-direction: column;
+            gap: 2rem;
+        }
+
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1rem;
         }
 
-        .form-card h2 {
-            margin-bottom: .5rem;
-            font-size: 1.25rem;
-            color: var(--accent);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: .5rem;
-        }
-
         label {
-            font-size: .9rem;
-            color: var(--muted);
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: .25rem;
         }
 
         input, select, textarea {
+            width: 100%;
             padding: .75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--panel);
-            color: var(--text);
-            transition: border-color .2s;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            transition: border-color .3s;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -165,85 +96,99 @@
         }
 
         button {
-            padding: .75rem 1rem;
+            padding: .75rem 1.5rem;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 700;
             cursor: pointer;
-            transition: background .2s, transform .2s;
+            transition: all .3s ease;
         }
 
         button.primary {
             background: var(--accent);
             color: #000;
+            box-shadow: 0 0 10px var(--accent);
         }
 
         button.primary:hover {
-            background: #1be0e0;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px var(--accent);
         }
 
         button.danger {
             background: var(--danger);
             color: #fff;
+            box-shadow: 0 0 10px var(--danger);
         }
 
         button.danger:hover {
-            background: #e11d48;
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px var(--danger);
         }
 
-        .table-card {
-            flex: 1;
+        .table-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: .5rem;
+            transition: transform .3s, box-shadow .3s;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: .9rem;
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px var(--accent);
         }
 
-        th, td {
-            padding: .75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
+        .card-item h3 {
+            font-size: 1.1rem;
             color: var(--accent);
-            font-weight: 600;
         }
 
-        tr:hover {
-            background: rgba(255, 255, 255, .03);
+        .card-item p {
+            font-size: .9rem;
+            color: #ddd;
         }
 
-        .total-card {
-            align-self: flex-start;
-            padding: 1.5rem 2rem;
+        .card-item .actions {
+            margin-top: auto;
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: var(--accent);
-            color: #000;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            animation: fadeUp .6s ease-out;
+            gap: .5rem;
         }
 
-        .total-card i {
-            font-size: 1.5rem;
+        .total-box {
+            align-self: center;
+            padding: 1.5rem 3rem;
+            background: var(--glass);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px var(--accent);
+            animation: pulse 2s infinite;
         }
 
-        .total-card div p:first-child {
-            font-weight: 600;
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px var(--accent); }
+            50% { box-shadow: 0 0 30px var(--accent); }
+            100% { box-shadow: 0 0 10px var(--accent); }
+        }
+
+        .total-box h2 {
+            font-size: 1rem;
+            color: var(--accent);
             margin: 0;
         }
 
-        .total-card div p:last-child {
-            font-size: 1.5rem;
+        .total-box p {
+            font-size: 2rem;
             font-weight: 800;
             margin: 0;
         }
@@ -261,50 +206,41 @@
 </head>
 <body>
 
-<aside class="sidebar">
-    <div class="logo">AESIER</div>
-    <nav class="links">
-        <a href="compra.html" class="active"><i class="fa-solid fa-cart-plus"></i> Compras</a>
-        <a href="venta.html"><i class="fa-solid fa-cash-register"></i> Ventas</a>
-        <a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
-        <a href="clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
-    </nav>
-</aside>
+    <h1>Gestión de Compras</h1>
 
-<main>
-    <div class="topbar">
-        <h1>Gestión de Compras</h1>
-    </div>
-
-    <div class="content">
-        <section class="card form-card">
-            <h2>Alta de producto</h2>
-            <form id="purchaseForm">
-                <div class="form-group">
+    <div class="container">
+        <!-- Formulario -->
+        <div class="glass">
+            <form id="purchaseForm" class="form-grid">
+                <div>
                     <label>Nombre del Producto:</label>
                     <input type="text" id="name" name="name" required />
                 </div>
-                <div class="form-group">
+                <div>
                     <label>Código:</label>
                     <input type="text" id="code" name="code" required />
                 </div>
-                <div class="form-group">
+                <div>
                     <label>Código de Barras:</label>
                     <input type="text" id="barcode" name="barcode" />
                 </div>
-                <div class="form-group">
+                <div>
                     <label>Precio:</label>
                     <input type="number" id="price" name="price" step="0.01" required />
                 </div>
-                <div class="form-group">
+                <div>
                     <label>Descuento (%):</label>
                     <input type="number" id="discount" name="discount" step="0.01" value="0" />
                 </div>
-                <div class="form-group">
-                    <label>Descripción:</label>
-                    <textarea id="description" name="description" rows="3"></textarea>
+                <div>
+                    <label>Cantidad en Stock:</label>
+                    <input type="number" id="quantity" name="quantity" required />
                 </div>
-                <div class="form-group">
+                <div style="grid-column: 1 / -1;">
+                    <label>Descripción:</label>
+                    <textarea id="description" name="description" rows="2"></textarea>
+                </div>
+                <div>
                     <label>Categoría:</label>
                     <select id="category" name="category">
                         <option value="Aritos">Aritos</option>
@@ -320,146 +256,124 @@
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Cantidad en Stock:</label>
-                    <input type="number" id="quantity" name="quantity" required />
+                <div style="grid-column: 1 / -1; display: flex; gap: 1rem;">
+                    <button type="submit" class="primary">Guardar</button>
+                    <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
+                    <button type="button" class="primary" onclick="document.getElementById('importFile').click()">Importar Excel</button>
+                    <button type="button" class="primary" onclick="exportToExcel()">Exportar Excel</button>
+                    <button type="button" class="danger" onclick="vaciarInventario()">Vaciar Inventario</button>
                 </div>
-                <button type="submit" class="primary">Guardar</button>
             </form>
-
-            <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
-            <button onclick="document.getElementById('importFile').click()" class="primary">Importar Excel</button>
-            <button onclick="exportToExcel()" class="primary">Exportar Excel</button>
-            <button onclick="vaciarInventario()" class="danger">Vaciar Inventario</button>
-        </section>
-
-        <section class="card table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Código</th>
-                        <th>Código de Barras</th>
-                        <th>Precio</th>
-                        <th>Descuento</th>
-                        <th>Descripción</th>
-                        <th>Categoría</th>
-                        <th>Stock</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryList"></tbody>
-            </table>
-        </section>
-    </div>
-
-    <div class="total-card">
-        <i class="fa-solid fa-dollar-sign"></i>
-        <div>
-            <p>Total en USD</p>
-            <p id="totalAmount">$0.00</p>
         </div>
+
+        <!-- Tabla convertida en tarjetas -->
+        <div class="table-cards" id="inventoryList"></div>
     </div>
-</main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-<script>
-    /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
-    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    let editIndex = -1;
+    <!-- Total animado -->
+    <div class="total-box">
+        <h2>Total en USD</h2>
+        <p id="totalAmount">$0.00</p>
+    </div>
 
-    function calculateTotal() {
-        const total = inventory.reduce((sum, item) => {
-            const price = parseFloat(item.price) || 0;
-            const quantity = parseFloat(item.quantity) || 0;
-            return sum + price * quantity;
-        }, 0);
-        document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
-    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script>
+        /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let editIndex = -1;
 
-    function renderTable() {
-        const list = document.getElementById('inventoryList');
-        list.innerHTML = inventory.map((item, idx) => `
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.code}</td>
-                <td>${item.barcode}</td>
-                <td>$${item.price}</td>
-                <td>${item.discount}%</td>
-                <td>${item.description}</td>
-                <td>${item.category}</td>
-                <td>${item.quantity}</td>
-                <td>
-                    <button onclick="editItem(${idx})" class="primary">Editar</button>
-                    <button onclick="deleteItem(${idx})" class="danger">Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
-    }
+        function calculateTotal() {
+            const total = inventory.reduce((sum, item) => {
+                const price = parseFloat(item.price) || 0;
+                const quantity = parseFloat(item.quantity) || 0;
+                return sum + price * quantity;
+            }, 0);
+            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+        }
 
-    document.getElementById('purchaseForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const newItem = Object.fromEntries(new FormData(e.target).entries());
-        editIndex === -1 ? inventory.push(newItem) : (inventory[editIndex] = newItem);
-        localStorage.setItem('inventory', JSON.stringify(inventory));
-        e.target.reset();
-        editIndex = -1;
+        function renderTable() {
+            const list = document.getElementById('inventoryList');
+            list.innerHTML = inventory.map((item, idx) => `
+                <div class="card-item">
+                    <h3>${item.name}</h3>
+                    <p><strong>Código:</strong> ${item.code}</p>
+                    <p><strong>Código de Barras:</strong> ${item.barcode}</p>
+                    <p><strong>Precio:</strong> $${item.price}</p>
+                    <p><strong>Descuento:</strong> ${item.discount}%</p>
+                    <p><strong>Descripción:</strong> ${item.description}</p>
+                    <p><strong>Categoría:</strong> ${item.category}</p>
+                    <p><strong>Stock:</strong> ${item.quantity}</p>
+                    <div class="actions">
+                        <button onclick="editItem(${idx})" class="primary">Editar</button>
+                        <button onclick="deleteItem(${idx})" class="danger">Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('purchaseForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const newItem = Object.fromEntries(new FormData(e.target).entries());
+            editIndex === -1 ? inventory.push(newItem) : (inventory[editIndex] = newItem);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            e.target.reset();
+            editIndex = -1;
+            renderTable();
+            calculateTotal();
+        });
+
+        function editItem(index) {
+            const item = inventory[index];
+            Object.keys(item).forEach(k => document.getElementById(k).value = item[k]);
+            editIndex = index;
+        }
+
+        function deleteItem(index) {
+            if (confirm('¿Eliminar producto?')) {
+                inventory.splice(index, 1);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                renderTable();
+                calculateTotal();
+            }
+        }
+
+        function vaciarInventario() {
+            if (confirm('¿Vaciar todo el inventario?')) {
+                inventory = [];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                renderTable();
+                calculateTotal();
+            }
+        }
+
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(inventory);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+            XLSX.writeFile(wb, "inventario.xlsx");
+        }
+
+        function importFromExcel(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = e => {
+                const wb = XLSX.read(e.target.result, { type: 'binary' });
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                inventory = inventory.concat(json);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                renderTable();
+                calculateTotal();
+                alert("Importación completada");
+            };
+            reader.readAsBinaryString(file);
+        }
+
+        window.addEventListener("beforeunload", () => localStorage.setItem('inventory', JSON.stringify(inventory)));
+
         renderTable();
         calculateTotal();
-    });
-
-    function editItem(index) {
-        const item = inventory[index];
-        Object.keys(item).forEach(k => document.getElementById(k).value = item[k]);
-        editIndex = index;
-    }
-
-    function deleteItem(index) {
-        if (confirm('¿Eliminar producto?')) {
-            inventory.splice(index, 1);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            renderTable();
-            calculateTotal();
-        }
-    }
-
-    function vaciarInventario() {
-        if (confirm('¿Vaciar todo el inventario?')) {
-            inventory = [];
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            renderTable();
-            calculateTotal();
-        }
-    }
-
-    function exportToExcel() {
-        const ws = XLSX.utils.json_to_sheet(inventory);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-        XLSX.writeFile(wb, "inventario.xlsx");
-    }
-
-    function importFromExcel(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = e => {
-            const wb = XLSX.read(e.target.result, { type: 'binary' });
-            const sheet = wb.Sheets[wb.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(sheet);
-            inventory = inventory.concat(json);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            renderTable();
-            calculateTotal();
-            alert("Importación completada");
-        };
-        reader.readAsBinaryString(file);
-    }
-
-    window.addEventListener("beforeunload", () => localStorage.setItem('inventory', JSON.stringify(inventory)));
-
-    renderTable();
-    calculateTotal();
-</script>
+    </script>
 
 </body>
 </html>
