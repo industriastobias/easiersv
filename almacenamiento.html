@@ -165,10 +165,17 @@
         <label for="searchCategory">Filtrar por categoría:</label>
         <select id="searchCategory">
             <option value="">Todas las categorías</option>
-            <option value="Cadenas">Cadenas</option>
             <option value="Aritos">Aritos</option>
-            <option value="Pulseras">Pulseras</option>
+            <option value="Billeteras">Billeteras</option>
             <option value="Carteras">Carteras</option>
+            <option value="Chokers">Chokers</option>
+            <option value="Collares">Collares</option>
+            <option value="Lentes de sol">Lentes de sol</option>
+            <option value="Pulseras">Pulseras</option>
+            <option value="Relojes">Relojes</option>
+            <option value="Anillos">Anillos</option>
+            <option value="Accesorios para el cabello">Accesorios para el cabello</option>
+            <option value="otros">otros</option>
         </select>
 
         <label for="searchCode">Buscar por código:</label>
@@ -342,6 +349,8 @@
             } else {
                 document.getElementById('resultMessage').style.display = 'none';
             }
+        } else {
+            document.getElementById('resultMessage').style.display = 'none';
         }
     }
 
@@ -368,6 +377,7 @@
         document.getElementById('goToRow').value = '';
         
         loadInventory();
+        document.getElementById('resultMessage').style.display = 'none';
     }
 
     document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
