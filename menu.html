@@ -3,163 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal</title>
+    <title>Dashboard – AESIER COMPANY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        :root {
+            --bg: #111827;
+            --panel: #1f2937;
+            --accent: #38bdf8;
+            --text: #e5e7eb;
+            --muted: #6b7280;
+            --danger: #f43f5e;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #e0f0ff, #f5f9ff);
+            background: var(--bg);
+            color: var(--text);
             display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
-            padding: 2em;
-            color: #2c3e50;
-            transition: background 0.3s ease;
+            overflow: hidden;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 3em 4em;
-            width: 100%;
-            max-width: 1200px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: var(--panel);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 3em;
-            position: relative;
-            border: 1px solid #e0e6ed;
+            padding: 2rem 1.5rem;
+            gap: 2rem;
+            border-right: 1px solid #374151;
         }
 
-        .header {
-            font-size: 2.8em;
-            font-weight: 700;
-            color: #1a3a5f;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
             letter-spacing: 1px;
+            color: var(--accent);
             text-align: center;
-            border-bottom: 3px solid #d0d9e4;
-            padding-bottom: 0.3em;
-            width: 100%;
         }
 
-        .menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.5em;
-            width: 100%;
+        .nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
         }
 
-        .menu a {
-            background: #f0f4f9;
-            color: #1a3a5f;
-            padding: 1.4em 1em;
-            border-radius: 16px;
-            text-decoration: none;
-            font-size: 1.1em;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e0e6ed;
-        }
-
-        .menu a:hover {
-            background: #d9e4f0;
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .menu a.active {
-            background: #1a3a5f;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(26, 58, 95, 0.3);
-        }
-
-        .logout {
-            position: absolute;
-            top: 2em;
-            right: 2em;
-            padding: 10px 20px;
-            background: #1a3a5f;
-            color: #ffffff;
-            border: none;
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .85rem 1rem;
             border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s ease;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: background .2s, color .2s;
         }
 
-        .logout:hover {
-            background: #0f2540;
+        .nav a:hover {
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .nav a.active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            border: none;
+            padding: .85rem 1rem;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .logout-btn:hover {
+            background: #e11d48;
+        }
+
+        /* MAIN */
+        main {
+            flex: 1;
+            padding: 3rem 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--accent);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">AESIER COMPANY</div>
-    <div class="menu">
-        <a href="compra.html" id="compra-link">Compra</a>
-        <a href="venta.html" id="venta-link">Venta</a>
-        <a href="inventario.html">Inventario</a>
-        <a href="clientes.html">Clientes</a>
-        <a href="traslados.html">Traslados</a>
-        <a href="facturas.html">Facturas</a>
-        <a href="gastos.html">Gastos</a>
-        <a href="almacenamiento.html">Almacenamiento</a>
-        <a href="lista_usuarios.html" id="usuarios-link">Usuarios</a>
-        <a href="lista.html" id="lista">Lista</a>
-        <a href="descuentos.html" id="descuentos">Descuentos</a>
-    </div>
-    <button class="logout" onclick="logout();">Cerrar Sesión</button>
-</div>
+<aside class="sidebar">
+    <div class="logo">AESIER</div>
+    <nav class="nav">
+        <a href="compra.html" id="compra-link"><i class="fa-solid fa-cart-plus"></i> Compra</a>
+        <a href="venta.html" id="venta-link"><i class="fa-solid fa-cash-register"></i> Venta</a>
+        <a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
+        <a href="clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
+        <a href="traslados.html"><i class="fa-solid fa-truck"></i> Traslados</a>
+        <a href="facturas.html"><i class="fa-solid fa-file-invoice"></i> Facturas</a>
+        <a href="gastos.html"><i class="fa-solid fa-money-check-dollar"></i> Gastos</a>
+        <a href="almacenamiento.html"><i class="fa-solid fa-warehouse"></i> Almacenamiento</a>
+        <a href="lista_usuarios.html" id="usuarios-link"><i class="fa-solid fa-user-gear"></i> Usuarios</a>
+        <a href="lista.html" id="lista"><i class="fa-solid fa-list"></i> Lista</a>
+        <a href="descuentos.html" id="descuentos"><i class="fa-solid fa-percent"></i> Descuentos</a>
+    </nav>
+    <button class="logout-btn" onclick="logout();">Cerrar sesión</button>
+</aside>
+
+<main>
+    <h1 class="welcome">Bienvenido al sistema</h1>
+</main>
 
 <script>
+    /* ======  LÓGICA ORIGINAL SIN TOCAR  ====== */
     function checkAuthentication() {
         if (sessionStorage.getItem('loggedIn') !== 'true') {
             window.location.replace('index.html');
         }
     }
-
     function logout() {
         sessionStorage.clear();
         localStorage.removeItem('userID');
         window.location.replace('index.html');
     }
-
     function configureUserLinks() {
         const userID = localStorage.getItem('userID');
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
-
-        if (userID !== '2005') {
-            userLink.style.display = 'none';
-        }
-
+        if (userID !== '2005') userLink.style.display = 'none';
         if (userID && userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
         }
     }
-
     function highlightCurrentPage() {
         const currentPage = window.location.pathname.split('/').pop();
-        document.querySelectorAll('.menu a').forEach(link => {
-            if (link.getAttribute('href') === currentPage) {
-                link.classList.add('active');
-            }
+        document.querySelectorAll('.nav a').forEach(link => {
+            if (link.getAttribute('href') === currentPage) link.classList.add('active');
         });
     }
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", () => {
         checkAuthentication();
         configureUserLinks();
         highlightCurrentPage();
