@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – AESIER COMPANY</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
             --bg: #111827;
@@ -30,7 +30,6 @@
             overflow: hidden;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 260px;
             background: var(--panel);
@@ -108,7 +107,6 @@
             color: #000;
         }
 
-        /* BOTÓN CERRAR SESIÓN (ESQ. SUPERIOR DERECHA) */
         .logout-btn-top {
             position: absolute;
             top: 1.5rem;
@@ -130,7 +128,6 @@
             transform: scale(1.1);
         }
 
-        /* MAIN */
         main {
             flex: 1;
             padding: 3rem 4rem;
@@ -166,7 +163,7 @@
         <a href="gastos.html"><i class="fa-solid fa-money-check-dollar"></i> Gastos</a>
         <a href="almacenamiento.html"><i class="fa-solid fa-warehouse"></i> Almacenamiento</a>
         <a href="lista_usuarios.html" id="usuarios-link"><i class="fa-solid fa-user-gear"></i> Usuarios</a>
-        <a href="lista.html" id="lista"><i class="fa-solid fa-list"></i> Lista</a>
+        <a href="lista.html" id="lista-link"><i class="fa-solid fa-list"></i> Lista</a>
         <a href="descuentos.html" id="descuentos-link"><i class="fa-solid fa-percent"></i> Descuentos</a>
     </nav>
 </aside>
@@ -176,36 +173,38 @@
 </main>
 
 <script>
-    /* ======  LÓGICA ORIGINAL SIN TOCAR  ====== */
     function checkAuthentication() {
         if (sessionStorage.getItem('loggedIn') !== 'true') {
             window.location.replace('index.html');
         }
     }
+
     function logout() {
         sessionStorage.clear();
         localStorage.removeItem('userID');
         window.location.replace('index.html');
     }
+
     function configureUserLinks() {
         const userID = localStorage.getItem('userID');
         const userLink = document.getElementById('usuarios-link');
         const compraLink = document.getElementById('compra-link');
         const ventaLink = document.getElementById('venta-link');
-        const descuentosLink = document.getElementById('descuentos-link');
+
         if (userID !== '2005') userLink.style.display = 'none';
         if (userID && userID.startsWith('100')) {
             compraLink.style.display = 'none';
             ventaLink.style.display = 'none';
-            descuentosLink.style.display = 'none';
         }
     }
+
     function highlightCurrentPage() {
         const currentPage = window.location.pathname.split('/').pop();
         document.querySelectorAll('.nav a').forEach(link => {
             if (link.getAttribute('href') === currentPage) link.classList.add('active');
         });
     }
+
     document.addEventListener("DOMContentLoaded", () => {
         checkAuthentication();
         configureUserLinks();
