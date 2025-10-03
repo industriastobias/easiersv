@@ -39,6 +39,12 @@
             padding: 2rem 1.5rem;
             gap: 2rem;
             border-right: 1px solid #374151;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
         }
 
         .logo {
@@ -47,6 +53,12 @@
             letter-spacing: 1px;
             color: var(--accent);
             text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .nav {
@@ -65,11 +77,30 @@
             text-decoration: none;
             color: var(--text);
             font-weight: 500;
-            transition: background .2s, color .2s;
+            transition: background .2s, color .2s, transform .2s;
+            animation: popIn 0.4s ease-out backwards;
+        }
+
+        .nav a:nth-child(1) { animation-delay: 0.05s; }
+        .nav a:nth-child(2) { animation-delay: 0.1s; }
+        .nav a:nth-child(3) { animation-delay: 0.15s; }
+        .nav a:nth-child(4) { animation-delay: 0.2s; }
+        .nav a:nth-child(5) { animation-delay: 0.25s; }
+        .nav a:nth-child(6) { animation-delay: 0.3s; }
+        .nav a:nth-child(7) { animation-delay: 0.35s; }
+        .nav a:nth-child(8) { animation-delay: 0.4s; }
+        .nav a:nth-child(9) { animation-delay: 0.45s; }
+        .nav a:nth-child(10) { animation-delay: 0.5s; }
+        .nav a:nth-child(11) { animation-delay: 0.55s; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .nav a:hover {
             background: rgba(255, 255, 255, .05);
+            transform: translateX(6px);
         }
 
         .nav a.active {
@@ -86,6 +117,11 @@
             font-weight: 600;
             cursor: pointer;
             transition: background .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .logout-btn:hover {
@@ -106,6 +142,7 @@
             font-weight: 800;
             letter-spacing: -1px;
             color: var(--accent);
+            animation: fadeIn 1s ease-out;
         }
     </style>
 </head>
@@ -126,11 +163,13 @@
         <a href="lista.html" id="lista"><i class="fa-solid fa-list"></i> Lista</a>
         <a href="descuentos.html" id="descuentos"><i class="fa-solid fa-percent"></i> Descuentos</a>
     </nav>
-    <button class="logout-btn" onclick="logout();">Cerrar sesión</button>
+    <button class="logout-btn" onclick="logout();">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+    </button>
 </aside>
 
 <main>
-    <h1 class="welcome">INDUSTRIAS TOBIAS</h1>
+    <h1 class="welcome">Bienvenido al sistema</h1>
 </main>
 
 <script>
@@ -171,4 +210,3 @@
 
 </body>
 </html>
-
