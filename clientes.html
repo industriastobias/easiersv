@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Clientes — Split View</title>
+  <title>Clientes — 20/80 Split</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -31,8 +31,6 @@
     body {
       background: var(--bg);
       color: var(--text);
-      display: flex;
-      flex-direction: column;
     }
 
     .split {
@@ -40,23 +38,24 @@
       height: 100%;
     }
 
-    .left, .right {
-      flex: 1;
+    .left {
+      flex: 0 0 20%;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      overflow-y: auto;
+    }
+
+    .right {
+      flex: 0 0 80%;
       padding: 2rem;
       overflow-y: auto;
     }
 
-    .left {
-      background: var(--card);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
     h1 {
-      font-size: 1.75rem;
+      font-size: 1.5rem;
       font-weight: 600;
+      margin-bottom: 1.5rem;
     }
 
     label {
@@ -67,9 +66,10 @@
 
     input {
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: 0.6rem 0.75rem;
       border: 1px solid var(--border);
       border-radius: 8px;
+      margin-bottom: 1rem;
     }
 
     input:focus {
@@ -78,7 +78,8 @@
     }
 
     button {
-      padding: 0.75rem 1.5rem;
+      width: 100%;
+      padding: 0.6rem;
       border: none;
       border-radius: 8px;
       font-weight: 500;
@@ -98,7 +99,7 @@
     }
 
     th, td {
-      padding: 0.75rem 1rem;
+      padding: 0.6rem 0.75rem;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
@@ -110,16 +111,17 @@
 
     .actions {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.25rem;
     }
 
     .actions button {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       padding: 0;
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--text);
+      font-size: 0.9rem;
     }
 
     .actions button:hover {
@@ -179,9 +181,14 @@
       transform: none;
     }
 
+    /* Responsive: vuelve a columna */
     @media (max-width: 768px) {
       .split {
         flex-direction: column;
+      }
+      .left, .right {
+        flex: 1 1 auto;
+        width: 100%;
       }
       .left {
         border-right: none;
@@ -193,27 +200,27 @@
 <body>
   <div class="split">
     <div class="left">
-      <h1>Agregar Cliente</h1>
+      <h1>Agregar</h1>
       <form id="form-cliente">
-        <label for="cliente-id">ID del Cliente</label>
-        <input id="cliente-id" placeholder="Ej: ABC123" required />
+        <label for="cliente-id">ID</label>
+        <input id="cliente-id" placeholder="ABC123" required />
 
-        <label for="cliente-correo">Correo Electrónico</label>
+        <label for="cliente-correo">Correo</label>
         <input id="cliente-correo" type="email" placeholder="correo@ejemplo.com" required />
 
         <label for="cliente-telefono">Celular</label>
         <input id="cliente-telefono" type="tel" placeholder="777123456" required />
 
-        <button id="btn-guardar" class="btn-primary">Agregar Cliente</button>
+        <button id="btn-guardar">Agregar Cliente</button>
       </form>
     </div>
 
     <div class="right">
-      <h1>Listado de Clientes</h1>
+      <h1>Clientes</h1>
       <div class="filters" style="display:flex;gap:1rem;margin-bottom:1rem;">
-        <input id="filtro-id" placeholder="Filtrar ID" />
-        <input id="filtro-correo" type="email" placeholder="Filtrar Correo" />
-        <input id="filtro-telefono" type="tel" placeholder="Filtrar Celular" />
+        <input id="filtro-id" placeholder="ID" />
+        <input id="filtro-correo" placeholder="Correo" />
+        <input id="filtro-telefono" placeholder="Celular" />
       </div>
       <table>
         <thead>
@@ -234,7 +241,7 @@
   <!-- Modal -->
   <div class="modal" id="modal-overlay">
     <div class="modal-content">
-      <h2 style="margin-bottom:1rem;">Modificar Puntos</h2>
+      <h2>Modificar Puntos</h2>
       <input id="input-puntos" type="number" min="1" placeholder="Cantidad" />
       <div class="modal-actions">
         <button id="btn-sumar" class="btn-primary">Sumar</button>
