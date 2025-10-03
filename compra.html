@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
     <style>
         body {
@@ -156,23 +156,23 @@
         <form id="purchaseForm">
             <div class="form-group">
                 <label for="name">Nombre del Producto:</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" required />
             </div>
             <div class="form-group">
                 <label for="code">Código:</label>
-                <input type="text" id="code" name="code" required>
+                <input type="text" id="code" name="code" required />
             </div>
             <div class="form-group">
                 <label for="barcode">Código de Barras:</label>
-                <input type="text" id="barcode" name="barcode">
+                <input type="text" id="barcode" name="barcode" />
             </div>
             <div class="form-group">
                 <label for="price">Precio:</label>
-                <input type="number" id="price" name="price" step="0.01" required>
+                <input type="number" id="price" name="price" step="0.01" required />
             </div>
             <div class="form-group">
                 <label for="discount">Descuento (%):</label>
-                <input type="number" id="discount" name="discount" step="0.01" value="0">
+                <input type="number" id="discount" name="discount" step="0.01" value="0" />
             </div>
             <div class="form-group">
                 <label for="description">Descripción:</label>
@@ -181,23 +181,29 @@
             <div class="form-group">
                 <label for="category">Categoría:</label>
                 <select id="category" name="category">
-                    <option value="Cadenas">Cadenas</option>
-                    <option value="Pulseras">Pulseras</option>
                     <option value="Aritos">Aritos</option>
+                    <option value="Billeteras">Billeteras</option>
                     <option value="Carteras">Carteras</option>
+                    <option value="Chokers">Chokers</option>
+                    <option value="Collares">Collares</option>
+                    <option value="Lentes de sol">Lentes de sol</option>
+                    <option value="Pulseras">Pulseras</option>
+                    <option value="Relojes">Relojes</option>
+                    <option value="Anillos">Anillos</option>
+                    <option value="Accesorios para el cabello">Accesorios para el cabello</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="quantity">Cantidad en Stock:</label>
-                <input type="number" id="quantity" name="quantity" required>
+                <input type="number" id="quantity" name="quantity" required />
             </div>
             <button type="submit">Guardar</button>
         </form>
         <!-- Botones para exportar, importar y vaciar -->
         <button onclick="exportToExcel()">Exportar a Excel</button>
-        <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)">
+        <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
         <button onclick="document.getElementById('importFile').click()">Importar desde Excel</button>
-        <button class="vaciar" onclick="vaciarInventario()">VACIAR</button> <!-- Botón VACIAR -->
+        <button class="vaciar" onclick="vaciarInventario()">VACIAR</button>
     </div>
 
     <div class="inventory-table">
@@ -232,7 +238,7 @@
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     let editIndex = -1;
 
-    // Función para calcular el total en USD
+    // Calcula el total en USD
     function calculateTotal() {
         const total = inventory.reduce((sum, item) => {
             const price = parseFloat(item.price) || 0;
@@ -242,7 +248,7 @@
         document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
     }
 
-    // Función para renderizar la tabla
+    // Renderiza la tabla de inventario
     function renderTable() {
         const inventoryList = document.getElementById('inventoryList');
         inventoryList.innerHTML = inventory.map((item, index) => ` 
@@ -263,10 +269,10 @@
         `).join('');
     }
 
-    // Función para agregar o editar un item
+    // Añadir o editar producto
     document.getElementById('purchaseForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        
+
         const name = document.getElementById('name').value;
         const code = document.getElementById('code').value;
         const barcode = document.getElementById('barcode').value;
@@ -275,7 +281,7 @@
         const description = document.getElementById('description').value;
         const category = document.getElementById('category').value;
         const quantity = document.getElementById('quantity').value;
-        
+
         const newItem = { name, code, barcode, price, discount, description, category, quantity };
 
         if (editIndex === -1) {
@@ -291,7 +297,7 @@
         calculateTotal();
     });
 
-    // Función para editar un item
+    // Editar un producto
     function editItem(index) {
         const item = inventory[index];
         document.getElementById('name').value = item.name;
@@ -305,7 +311,7 @@
         editIndex = index;
     }
 
-    // Función para eliminar un item
+    // Eliminar un producto
     function deleteItem(index) {
         if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
             inventory.splice(index, 1);
@@ -315,17 +321,17 @@
         }
     }
 
-    // Función para vaciar el inventario
+    // Vaciar todo el inventario
     function vaciarInventario() {
         if (confirm('¿Estás seguro de que deseas vaciar todo el inventario? Esta acción no se puede deshacer.')) {
-            inventory = []; // Vacía el array del inventario
-            localStorage.setItem('inventory', JSON.stringify(inventory)); // Actualiza el localStorage
-            renderTable(); // Renderiza la tabla vacía
-            calculateTotal(); // Actualiza el total a $0.00
+            inventory = [];
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            renderTable();
+            calculateTotal();
         }
     }
 
-    // Función para exportar datos a Excel
+    // Exportar tabla a Excel
     function exportToExcel() {
         const ws = XLSX.utils.json_to_sheet(inventory);
         const wb = XLSX.utils.book_new();
@@ -333,7 +339,7 @@
         XLSX.writeFile(wb, "inventario.xlsx");
     }
 
-    // Función para importar desde Excel
+    // Importar desde archivo Excel
     function importFromExcel(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -354,12 +360,12 @@
         reader.readAsBinaryString(file);
     }
 
-    // Guardar datos antes de salir o recargar
+    // Guardar al salir o recargar
     window.addEventListener("beforeunload", function() {
         localStorage.setItem('inventory', JSON.stringify(inventory));
     });
 
-    // Renderizar la tabla y calcular total al cargar la página
+    // Cargar tabla y total al iniciar
     renderTable();
     calculateTotal();
 </script>
