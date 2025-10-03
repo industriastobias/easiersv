@@ -2,366 +2,469 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Clientes</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gestión Moderna de Clientes</title>
     <style>
+        /* RESET Y DISEÑO MODERNO */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
             margin: 0;
-            padding: 0;
-            color: #333;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        header {
-            background-color: #dcdcdc;
-            color: #333;
-            text-align: center;
-            padding: 15px 0;
-            font-size: 22px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            min-height: 90vh;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            min-height: 100vh;
+            color: #222;
         }
 
+        header {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #3b82f6;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px 30px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* FORMULARIO DE CLIENTE */
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .form-group input {
+            flex: 1 1 30%;
+            padding: 10px 12px;
+            font-size: 1rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            user-select: none;
+            align-self: flex-start;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        /* TABLA SIMPLIFICADA */
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            font-size: 0.9rem;
+            color: #334155;
         }
 
-        th, td {
-            padding: 12px;
+        thead tr {
+            background-color: #eef2ff;
+        }
+
+        thead th {
+            padding: 12px 16px;
+            font-weight: 700;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
+            border-bottom: 2px solid #3b82f6;
+            border-radius: 12px 12px 0 0;
         }
 
-        th {
-            background-color: #f2f2f2;
-            color: #555;
+        tbody tr {
+            background-color: #ffffff;
+            box-shadow: 0 2px 12px rgb(0 0 0 / 0.05);
+            transition: background-color 0.3s;
+            border-radius: 12px;
         }
 
-        .editable {
+        tbody tr:hover {
+            background-color: #e0e7ff;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+        }
+
+        tbody td.actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        tbody button {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            background-color: #60a5fa;
+            color: white;
+            border: none;
             cursor: pointer;
         }
 
-        .editable:hover {
-            background-color: #f9f9f9;
+        tbody button.delete {
+            background-color: #ef4444;
         }
 
-        .conversion {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
+        tbody button.delete:hover {
+            background-color: #b91c1c;
+        }
+
+        /* FILTRO */
+        #filtro-container {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            gap: 10px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
 
-        .conversion input {
-            padding: 5px;
-            margin: 10px 0;
-            font-size: 14px;
-            width: 120px;
+        #filtro-container input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            width: 200px;
+            transition: border-color 0.3s;
         }
 
-        .conversion p {
-            margin: 5px 0;
-            font-size: 14px;
+        #filtro-container input:focus {
+            border-color: #3b82f6;
+            outline: none;
         }
 
-        .sumar-puntos {
+        /* PUNTOS */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(59, 130, 246, 0.25);
+            width: 320px;
+            max-width: 90%;
             display: none;
-            margin-top: 20px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2563eb;
             text-align: center;
         }
 
-        .sumar-puntos input {
-            width: 100px;
-        }
-
-        .filtro-avanzado {
-            margin: 20px 0;
-            display: flex;
-            justify-content: space-between;
+        .modal input[type="number"] {
             width: 100%;
+            padding: 10px;
+            font-size: 1.1rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            text-align: center;
+            transition: border-color 0.3s;
         }
 
-        .filtro-avanzado input {
-            padding: 8px;
-            font-size: 14px;
-            width: 20%;
+        .modal input[type="number"]:focus {
+            border-color: #3b82f6;
+            outline: none;
         }
+
+        .modal button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 0;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s;
+        }
+
+        .modal button:hover {
+            background-color: #2563eb;
+        }
+
+        .modal .close-btn {
+            background-color: #ef4444;
+            margin-top: 10px;
+        }
+
+        .modal .close-btn:hover {
+            background-color: #b91c1c;
+        }
+
     </style>
 </head>
 
 <body>
 
-<header>Gestión de Clientes</header>
+    <header>Gestión de Clientes</header>
 
-<div class="container">
-    <button onclick="location.href='menu.html'">Menú</button>
-    <div>
-        <input type="text" id="cliente-id" placeholder="ID del Cliente" onkeydown="navegarCampos(event)">
-        <input type="text" id="cliente-nombre" placeholder="Nombre del Cliente" onkeydown="navegarCampos(event)">
-        <input type="email" id="cliente-correo" placeholder="Correo del Cliente" onkeydown="navegarCampos(event)">
-        <input type="tel" id="cliente-telefono" placeholder="Teléfono del Cliente" onkeydown="navegarCampos(event)">
-        <input type="text" id="cliente-producto" placeholder="Producto Comprado" onkeydown="navegarCampos(event)">
-        <input type="number" id="cliente-puntos" placeholder="Puntos" onkeydown="navegarCampos(event)">
-        <button onclick="agregarCliente()">Agregar Cliente</button>
+    <div class="container">
+        <div class="form-group">
+            <input type="text" id="cliente-id" placeholder="ID del Cliente" />
+            <input type="email" id="cliente-correo" placeholder="Correo del Cliente" />
+            <input type="tel" id="cliente-telefono" placeholder="Celular del Cliente" />
+        </div>
+        <button id="btn-agregar">Agregar / Actualizar Cliente</button>
+
+        <div id="filtro-container" style="margin-top: 15px;">
+            <input type="text" id="filtro-id" placeholder="Filtrar por ID" />
+            <input type="email" id="filtro-correo" placeholder="Filtrar por correo" />
+            <input type="tel" id="filtro-telefono" placeholder="Filtrar por celular" />
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Correo</th>
+                    <th>Celular</th>
+                    <th>Puntos</th>
+                    <th>Fecha Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="clientes-table"></tbody>
+        </table>
     </div>
 
-    <!-- Filtro avanzado -->
-    <div class="filtro-avanzado">
-        <input type="text" id="filtro-id" placeholder="Filtrar por ID" oninput="filtrarClientes()">
-        <input type="text" id="filtro-nombre" placeholder="Filtrar por nombre" oninput="filtrarClientes()">
-        <input type="email" id="filtro-correo" placeholder="Filtrar por correo" oninput="filtrarClientes()">
-        <input type="tel" id="filtro-telefono" placeholder="Filtrar por teléfono" oninput="filtrarClientes()">
+    <!-- Modal para quitar puntos -->
+    <div class="modal" id="modal-puntos">
+        <h3>Quitar Puntos</h3>
+        <input type="number" id="input-puntos-quitar" min="1" placeholder="Cantidad de puntos a quitar" />
+        <button id="btn-quitar-puntos">Quitar puntos</button>
+        <button class="close-btn" id="btn-cerrar-modal">Cancelar</button>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Teléfono</th>
-                <th>Producto</th>
-                <th>Puntos</th>
-                <th>Fecha de Registro</th>
-                <th>Historial de Compras</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="clientes-table"></tbody>
-    </table>
+    <script>
+        const clientesLSKey = 'clientes';
+        let clientes = JSON.parse(localStorage.getItem(clientesLSKey)) || [];
+        let clienteSeleccionado = null;
 
-    <div class="sumar-puntos">
-        <label for="puntos-sumar">Puntos a sumar:</label>
-        <input type="number" id="puntos-sumar" placeholder="Ingrese puntos">
-        <button onclick="sumarPuntos()">Sumar Puntos</button>
-    </div>
-
-</div>
-
-<!-- Casilla de conversión de dólares a puntos -->
-<div class="conversion">
-    <label for="dolares">Dólares:</label>
-    <input type="number" id="dolares" placeholder="Ingrese dólares" oninput="calcularConversion()">
-    <p id="puntos-equivalentes">Puntos equivalentes: 0</p>
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        cargarClientes();
-    });
-
-    function agregarCliente() {
-        let id = document.getElementById("cliente-id").value.trim();
-        let nombre = document.getElementById("cliente-nombre").value.trim();
-        let correo = document.getElementById("cliente-correo").value.trim();
-        let telefono = document.getElementById("cliente-telefono").value.trim();
-        let producto = document.getElementById("cliente-producto").value.trim();
-        let puntos = document.getElementById("cliente-puntos").value.trim();
-        let fecha = new Date().toLocaleDateString();
-
-        if (!id || !nombre || !correo || !telefono || !producto || !puntos) {
-            alert("Todos los campos son obligatorios.");
-            return;
+        // Guardar clientes a localStorage
+        function guardarClientes() {
+            localStorage.setItem(clientesLSKey, JSON.stringify(clientes));
         }
 
-        // Verificar si el cliente ya está registrado
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        let clienteExistente = clientes.find(cliente => cliente.id === id);
+        // Limpiar inputs
+        function limpiarFormulario() {
+            document.getElementById('cliente-id').value = '';
+            document.getElementById('cliente-correo').value = '';
+            document.getElementById('cliente-telefono').value = '';
+        }
 
-        if (clienteExistente) {
-            // Si ya está registrado, preguntar si quiere actualizarlo o sumar puntos
-            let sumarPuntos = confirm(`El cliente con ID ${id} ya está registrado. ¿Deseas sumar puntos adicionales?`);
-            if (sumarPuntos) {
-                // Mostrar la casilla de sumar puntos
-                document.querySelector(".sumar-puntos").style.display = "block";
-                document.getElementById("cliente-id").disabled = true;
-                return; // Detener el proceso de agregar para sumar puntos
-            } else {
-                let actualizar = confirm(`El cliente con ID ${id} ya está registrado. ¿Deseas actualizar su información?`);
-                if (actualizar) {
-                    // Actualizar la información del cliente
-                    clienteExistente.nombre = nombre;
+        // Renderizar tabla según clientes y filtro
+        function renderClientes() {
+            let filtroId = document.getElementById('filtro-id').value.toLowerCase();
+            let filtroCorreo = document.getElementById('filtro-correo').value.toLowerCase();
+            let filtroTelefono = document.getElementById('filtro-telefono').value.toLowerCase();
+
+            const tbody = document.getElementById('clientes-table');
+            tbody.innerHTML = '';
+
+            clientes
+                .filter(c =>
+                    c.id.toLowerCase().includes(filtroId) &&
+                    c.correo.toLowerCase().includes(filtroCorreo) &&
+                    c.telefono.toLowerCase().includes(filtroTelefono)
+                )
+                .forEach(cliente => {
+                    const tr = document.createElement('tr');
+
+                    tr.innerHTML = `
+                        <td>${cliente.id}</td>
+                        <td>${cliente.correo}</td>
+                        <td>${cliente.telefono}</td>
+                        <td>${cliente.puntos}</td>
+                        <td>${cliente.fecha}</td>
+                        <td class="actions">
+                            <button class="editar-btn">Editar</button>
+                            <button class="quitar-puntos-btn">Quitar Puntos</button>
+                            <button class="delete delete-btn">Eliminar</button>
+                        </td>
+                    `;
+
+                    // Editar
+                    tr.querySelector('.editar-btn').onclick = () => {
+                        clienteSeleccionado = cliente;
+                        document.getElementById('cliente-id').value = cliente.id;
+                        document.getElementById('cliente-correo').value = cliente.correo;
+                        document.getElementById('cliente-telefono').value = cliente.telefono;
+                        document.getElementById('cliente-id').disabled = true;
+                    };
+
+                    // Quitar puntos
+                    tr.querySelector('.quitar-puntos-btn').onclick = () => {
+                        clienteSeleccionado = cliente;
+                        document.getElementById('input-puntos-quitar').value = '';
+                        abrirModal();
+                    };
+
+                    // Eliminar cliente
+                    tr.querySelector('.delete-btn').onclick = () => {
+                        if (confirm(`¿Eliminar cliente ${cliente.id}?`)) {
+                            clientes = clientes.filter(c => c.id !== cliente.id);
+                            guardarClientes();
+                            renderClientes();
+                            if (clienteSeleccionado && clienteSeleccionado.id === cliente.id) {
+                                clienteSeleccionado = null;
+                                limpiarFormulario();
+                                document.getElementById('cliente-id').disabled = false;
+                            }
+                        }
+                    };
+
+                    tbody.appendChild(tr);
+                });
+        }
+
+        // Agregar o actualizar cliente
+        function agregarActualizarCliente() {
+            const id = document.getElementById('cliente-id').value.trim();
+            const correo = document.getElementById('cliente-correo').value.trim();
+            const telefono = document.getElementById('cliente-telefono').value.trim();
+
+            if (!id || !correo || !telefono) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+
+            // Validar email básico
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(correo)) {
+                alert('Ingrese un correo válido.');
+                return;
+            }
+
+            // Validar teléfono básico solo números y mínimo 7 dígitos
+            if (!/^\d{7,}$/.test(telefono)) {
+                alert('Ingrese un número de celular válido (solo dígitos, mínimo 7).');
+                return;
+            }
+
+            const fechaActual = new Date().toLocaleDateString();
+
+            let clienteExistente = clientes.find(c => c.id === id);
+
+            if (clienteExistente) {
+                if (confirm(`El cliente con ID ${id} ya existe. ¿Deseas actualizar su correo y celular?`)) {
                     clienteExistente.correo = correo;
                     clienteExistente.telefono = telefono;
-                    clienteExistente.producto = producto;
-                    clienteExistente.puntos = puntos;
-                    clienteExistente.fecha = fecha;
-
-                    // Guardar los cambios
-                    localStorage.setItem("clientes", JSON.stringify(clientes));
-                    cargarClientes();
-                    limpiarFormulario();
-                    alert("Cliente actualizado correctamente.");
+                    guardarClientes();
+                    alert('Cliente actualizado.');
                 }
+            } else {
+                let nuevoCliente = {
+                    id,
+                    correo,
+                    telefono,
+                    puntos: 0,
+                    fecha: fechaActual
+                };
+                clientes.push(nuevoCliente);
+                guardarClientes();
+                alert('Cliente agregado con éxito.');
             }
-        } else {
-            // Si no está registrado, agregar un nuevo cliente
-            let cliente = { id, nombre, correo, telefono, producto, puntos, fecha, historial: [] };
-            clientes.push(cliente);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
-
             limpiarFormulario();
-            cargarClientes();
-        }
-    }
-
-    function cargarClientes() {
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        let tbody = document.getElementById("clientes-table");
-        tbody.innerHTML = "";
-
-        clientes.forEach(cliente => {
-            let fila = `<tr>
-                <td>${cliente.id}</td>
-                <td>${cliente.nombre}</td>
-                <td>${cliente.correo}</td>
-                <td>${cliente.telefono}</td>
-                <td>${cliente.producto}</td>
-                <td>${cliente.puntos}</td>
-                <td>${cliente.fecha}</td>
-                <td><button onclick="verHistorial('${cliente.id}')">Ver Historial</button></td>
-                <td>
-                    <button onclick="editarCliente('${cliente.id}')">Editar</button>
-                    <button onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
-                </td>
-            </tr>`;
-            tbody.innerHTML += fila;
-        });
-    }
-
-    function editarCliente(id) {
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        let cliente = clientes.find(cliente => cliente.id === id);
-        document.getElementById("cliente-id").value = cliente.id;
-        document.getElementById("cliente-nombre").value = cliente.nombre;
-        document.getElementById("cliente-correo").value = cliente.correo;
-        document.getElementById("cliente-telefono").value = cliente.telefono;
-        document.getElementById("cliente-producto").value = cliente.producto;
-        document.getElementById("cliente-puntos").value = cliente.puntos;
-    }
-
-    function eliminarCliente(id) {
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        clientes = clientes.filter(cliente => cliente.id !== id);
-        localStorage.setItem("clientes", JSON.stringify(clientes));
-        cargarClientes();
-    }
-
-    function verHistorial(id) {
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        let cliente = clientes.find(cliente => cliente.id === id);
-        alert(`Historial de compras de ${cliente.nombre}: \n${cliente.historial.join("\n")}`);
-    }
-
-    function sumarPuntos() {
-        let id = document.getElementById("cliente-id").value.trim();
-        let puntosSumar = document.getElementById("puntos-sumar").value.trim();
-        if (!puntosSumar || isNaN(puntosSumar) || puntosSumar <= 0) {
-            alert("Por favor ingresa un valor válido para los puntos.");
-            return;
+            document.getElementById('cliente-id').disabled = false;
+            clienteSeleccionado = null;
+            renderClientes();
         }
 
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        let cliente = clientes.find(cliente => cliente.id === id);
-        if (cliente) {
-            cliente.puntos = parseInt(cliente.puntos) + parseInt(puntosSumar);
-            cliente.historial.push(`+${puntosSumar} puntos`);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
-            cargarClientes();
-            document.querySelector(".sumar-puntos").style.display = "none"; 
+        // Modal manejo
+        const modal = document.getElementById('modal-puntos');
+        const inputQuitar = document.getElementById('input-puntos-quitar');
+
+        function abrirModal() {
+            modal.classList.add('active');
+            inputQuitar.focus();
+        }
+
+        function cerrarModal() {
+            modal.classList.remove('active');
+            clienteSeleccionado = null;
             limpiarFormulario();
-        } else {
-            alert("El cliente no existe.");
+            document.getElementById('cliente-id').disabled = false;
         }
-    }
 
-    function navegarCampos(event) {
-        if (event.key === "Enter") {
-            const nextInput = document.querySelector("input:focus + input");
-            if (nextInput) nextInput.focus();
-        }
-    }
+        // Quitar puntos
+        document.getElementById('btn-quitar-puntos').onclick = () => {
+            const quitar = parseInt(inputQuitar.value);
 
-    function filtrarClientes() {
-        let filtroId = document.getElementById("filtro-id").value.toLowerCase();
-        let filtroNombre = document.getElementById("filtro-nombre").value.toLowerCase();
-        let filtroCorreo = document.getElementById("filtro-correo").value.toLowerCase();
-        let filtroTelefono = document.getElementById("filtro-telefono").value.toLowerCase();
-        let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-        let tbody = document.getElementById("clientes-table");
-        tbody.innerHTML = "";
-
-        clientes.forEach(cliente => {
-            if (cliente.id.toLowerCase().includes(filtroId) &&
-                cliente.nombre.toLowerCase().includes(filtroNombre) &&
-                cliente.correo.toLowerCase().includes(filtroCorreo) &&
-                cliente.telefono.toLowerCase().includes(filtroTelefono)) {
-                
-                let fila = `<tr>
-                    <td>${cliente.id}</td>
-                    <td>${cliente.nombre}</td>
-                    <td>${cliente.correo}</td>
-                    <td>${cliente.telefono}</td>
-                    <td>${cliente.producto}</td>
-                    <td>${cliente.puntos}</td>
-                    <td>${cliente.fecha}</td>
-                    <td><button onclick="verHistorial('${cliente.id}')">Ver Historial</button></td>
-                    <td>
-                        <button onclick="editarCliente('${cliente.id}')">Editar</button>
-                        <button onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
-                    </td>
-                </tr>`;
-                tbody.innerHTML += fila;
+            if (!clienteSeleccionado) {
+                alert('Selecciona un cliente primero.');
+                cerrarModal();
+                return;
             }
+
+            if (isNaN(quitar) || quitar <= 0) {
+                alert('Ingresa un número válido de puntos a quitar.');
+                return;
+            }
+
+            if (quitar > clienteSeleccionado.puntos) {
+                alert(`El cliente solo tiene ${clienteSeleccionado.puntos} puntos.`);
+                return;
+            }
+
+            clienteSeleccionado.puntos -= quitar;
+            guardarClientes();
+            renderClientes();
+            cerrarModal();
+            alert(`Se quitaron ${quitar} puntos al cliente ${clienteSeleccionado.id}.`);
+        };
+
+        document.getElementById('btn-cerrar-modal').onclick = cerrarModal;
+
+        // Botones
+        document.getElementById('btn-agregar').onclick = agregarActualizarCliente;
+
+        // Filtros
+        ['filtro-id', 'filtro-correo', 'filtro-telefono'].forEach(id => {
+            document.getElementById(id).addEventListener('input', renderClientes);
         });
-    }
 
-    function calcularConversion() {
-        let dolares = document.getElementById("dolares").value;
-        let puntosEquivalentes = dolares * 5; // Ejemplo: 1 dólar = 5 puntos
-        document.getElementById("puntos-equivalentes").textContent = `Puntos equivalentes: ${puntosEquivalentes}`;
-    }
-
-    function limpiarFormulario() {
-        document.getElementById("cliente-id").value = "";
-        document.getElementById("cliente-nombre").value = "";
-        document.getElementById("cliente-correo").value = "";
-        document.getElementById("cliente-telefono").value = "";
-        document.getElementById("cliente-producto").value = "";
-        document.getElementById("cliente-puntos").value = "";
-    }
-</script>
-
+        // Inicializar tabla
+        renderClientes();
+    </script>
 </body>
 
 </html>
