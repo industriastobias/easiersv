@@ -6,167 +6,224 @@
     <title>Gestión de Inventario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap');
 
         :root {
-            --paper: #f2eee2;
-            --ink: #2a2a2a;
-            --line: #c8c0a6;
-            --tape-1: #d6a1c9;
-            --tape-2: #a1c9d6;
-            --tape-3: #c9d6a1;
-            --stamp: #b33a3a;
+            --bg: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --accent: #00ff88;
+            --success: #00ff88;
+            --danger: #ff3b30;
+            --radius: 12px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Courier Prime', monospace;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background: var(--paper);
-            background-image:
-                repeating-linear-gradient(var(--line) 0 1px, transparent 1px 100%),
-                repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 100%);
-            background-size: 30px 30px;
-            color: var(--ink);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 2rem;
+            padding: 3rem 5vw;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Partículas flotantes */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
         }
 
         h1 {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 200;
             text-align: center;
-            margin-bottom: 2rem;
-            letter-spacing: 2px;
-            color: var(--stamp);
+            margin-bottom: 3rem;
+            letter-spacing: 4px;
+            color: var(--accent);
             text-transform: uppercase;
+            text-shadow: 0 0 10px var(--accent);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: var(--paper);
-            border: 2px dashed var(--line);
-            padding: 2rem;
-            position: relative;
-        }
-
-        .container::before,
-        .container::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 30px;
-            background: var(--tape-1);
-            opacity: .7;
-            transform: rotate(-3deg);
-        }
-
-        .container::before {
-            top: -15px;
-            left: 30px;
-        }
-
-        .container::after {
-            bottom: -15px;
-            right: 30px;
-            background: var(--tape-2);
-        }
-
-        .search-block {
+        .toolbar {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 1.5rem;
             align-items: flex-end;
+            margin-bottom: 2.5rem;
+        }
+
+        .toolbar > div {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
         }
 
         label {
-            font-weight: 700;
-            font-size: .9rem;
-            color: var(--ink);
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 1px;
         }
 
         input, select {
-            padding: .5rem .7rem;
-            border: 2px solid var(--line);
-            border-radius: 0;
-            background: transparent;
-            color: var(--ink);
-            font-size: .95rem;
+            padding: .7rem .9rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--glass);
+            color: var(--text);
+            font-size: .9rem;
+            transition: border-color .3s, box-shadow .3s;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: var(--stamp);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.35);
         }
 
-        button.stamp {
-            padding: .4rem .8rem;
-            border: 3px solid var(--stamp);
-            background: transparent;
-            color: var(--stamp);
-            font-weight: 700;
+        button {
+            padding: .7rem 1.2rem;
+            border: 1px solid var(--accent);
+            border-radius: var(--radius);
+            font-weight: 600;
             font-size: .85rem;
-            text-transform: uppercase;
             cursor: pointer;
-            transition: all .2s ease;
-            position: relative;
+            transition: all .3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
         }
 
-        button.stamp:hover {
-            background: var(--stamp);
-            color: var(--paper);
-            transform: rotate(-2deg) scale(1.05);
+        button.primary {
+            background: transparent;
+            color: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.25);
+        }
+
+        button.primary:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--muted);
+            border-color: var(--muted);
+        }
+
+        button.secondary:hover {
+            background: var(--muted);
+            color: var(--bg);
+        }
+
+        button.danger {
+            background: transparent;
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        button.danger:hover {
+            background: var(--danger);
+            color: var(--bg);
+        }
+
+        .table-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(6px);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        thead {
-            background: var(--line);
+            font-size: .9rem;
         }
 
         th, td {
-            padding: .6rem .8rem;
-            border: 1px solid var(--line);
+            padding: .8rem 1rem;
             text-align: left;
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            font-weight: 700;
+            background: rgba(0, 255, 136, 0.08);
+            font-weight: 600;
+            color: var(--accent);
             letter-spacing: 1px;
         }
 
-        tbody tr:nth-child(odd) {
-            background: rgba(200, 192, 166, 0.15);
+        tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.1);
         }
 
-        .no-results,
-        .result-message,
-        .confirmation-message {
-            font-weight: 700;
-            text-align: center;
-            margin-top: 1rem;
+        .highlight {
+            background: rgba(0, 255, 136, 0.12) !important;
+            color: var(--accent);
+            font-weight: 600;
         }
 
         .no-results {
-            color: var(--stamp);
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-weight: 600;
         }
 
-        .result-message {
-            color: var(--ink);
+        .total-box {
+            margin-top: 2.5rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
 
-        .confirmation-message {
-            color: var(--stamp);
+        .total-box h2 {
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: .5rem;
+            letter-spacing: 2px;
+        }
+
+        .total-box p {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            text-shadow: 0 0 10px var(--accent);
         }
 
         .modal {
@@ -177,43 +234,45 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
         }
 
         .modal-content {
-            background: var(--paper);
-            border: 3px solid var(--stamp);
+            background: var(--glass);
             margin: 10% auto;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
+            padding: 2.5rem;
+            max-width: 450px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             position: relative;
-            box-shadow: 0 0 0 10px var(--paper), 0 0 0 13px var(--stamp);
         }
 
         .close {
             position: absolute;
-            top: .5rem;
-            right: .7rem;
+            top: 1rem;
+            right: 1rem;
             font-size: 1.5rem;
-            color: var(--stamp);
             cursor: pointer;
+            color: var(--muted);
         }
 
-        .highlight {
-            background: var(--tape-3) !important;
-            color: var(--ink);
-            font-weight: 700;
+        .confirmation-message {
+            margin-top: 1rem;
+            font-weight: 600;
+            color: var(--success);
+            display: none;
         }
 
         /* Scroll personalizado */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--stamp);
-            border: 2px solid var(--paper);
+            background: var(--accent);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -221,39 +280,43 @@
 
     <h1>Gestión de Inventario</h1>
 
-    <div class="container">
-        <div class="search-block">
-            <div>
-                <label for="searchCategory">Filtrar por categoría:</label>
-                <select id="searchCategory">
-                    <option value="">Todas las categorías</option>
-                    <option value="Aritos">Aritos</option>
-                    <option value="Billeteras">Billeteras</option>
-                    <option value="Carteras">Carteras</option>
-                    <option value="Chokers">Chokers</option>
-                    <option value="Collares">Collares</option>
-                    <option value="Lentes de sol">Lentes de sol</option>
-                    <option value="Pulseras">Pulseras</option>
-                    <option value="Relojes">Relojes</option>
-                    <option value="Anillos">Anillos</option>
-                    <option value="Accesorios para el cabello">Accesorios para el cabello</option>
-                    <option value="otros">Otros</option>
-                </select>
-            </div>
-            <div>
-                <label for="searchCode">Buscar por código:</label>
-                <input type="text" id="searchCode">
-            </div>
-            <button class="stamp" onclick="openSoldModal()">Registrar Venta</button>
+    <div class="toolbar">
+        <div>
+            <label for="searchCategory">Categoría</label>
+            <select id="searchCategory">
+                <option value="">Todas</option>
+                <option value="Aritos">Aritos</option>
+                <option value="Billeteras">Billeteras</option>
+                <option value="Carteras">Carteras</option>
+                <option value="Chokers">Chokers</option>
+                <option value="Collares">Collares</option>
+                <option value="Lentes de sol">Lentes de sol</option>
+                <option value="Pulseras">Pulseras</option>
+                <option value="Relojes">Relojes</option>
+                <option value="Anillos">Anillos</option>
+                <option value="Accesorios para el cabello">Accesorios para el cabello</option>
+                <option value="otros">Otros</option>
+            </select>
         </div>
-
-        <div style="display:flex; gap:1rem; align-items:center; flex-wrap: wrap;">
-            <label for="goToRow">Ir a fila:</label>
-            <input type="number" id="goToRow" min="1" style="width:80px;">
-            <button class="stamp" onclick="goToRow()">Ir</button>
-            <button class="stamp" onclick="clearFilters()" style="margin-left:auto;">Limpiar filtros</button>
+        <div>
+            <label for="searchCode">Código</label>
+            <input type="text" id="searchCode" placeholder="Ej: COL001">
         </div>
+        <button class="primary" onclick="openSoldModal()">
+            <i class="fa-solid fa-plus"></i> Registrar Venta
+        </button>
+    </div>
 
+    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+        <label for="goToRow">Ir a fila</label>
+        <input type="number" id="goToRow" min="1" style="width: 80px;">
+        <button class="secondary" onclick="goToRow()">Ir</button>
+        <button class="secondary" onclick="clearFilters()" style="margin-left: auto;">
+            <i class="fa-solid fa-eraser"></i> Limpiar filtros
+        </button>
+    </div>
+
+    <div class="table-card">
         <table>
             <thead>
                 <tr>
@@ -263,28 +326,31 @@
                     <th>Código de Barras</th>
                     <th>Precio</th>
                     <th>Descuento (%)</th>
-                    <th>Precio con Descuento</th>
+                    <th>Precio c/Descuento</th>
                     <th>Descripción</th>
                     <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
+                    <th>Stock</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList"></tbody>
         </table>
-
-        <div id="noResultsMessage" class="no-results">No se encontraron productos.</div>
-        <div id="resultMessage" class="result-message"></div>
+        <div id="noResultsMessage" class="no-results" style="display: none;">No se encontraron productos.</div>
     </div>
 
-    <!-- Modal registrar venta -->
+    <div class="total-box">
+        <h2>Total en USD</h2>
+        <p id="totalAmount">$0.00</p>
+    </div>
+
+    <!-- Modal venta -->
     <div id="soldModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeSoldModal()">&times;</span>
             <h2>Registrar Venta</h2>
-            <label for="soldQuantity">Cantidad vendida:</label>
+            <label for="soldQuantity">Cantidad vendida</label>
             <input type="number" id="soldQuantity" min="1">
-            <button class="stamp" onclick="processSale()">Registrar</button>
+            <button class="primary" onclick="processSale()">Registrar</button>
             <div id="confirmationMessage" class="confirmation-message">¡Venta registrada!</div>
         </div>
     </div>
@@ -294,6 +360,15 @@
         /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentSoldIndex = -1;
+
+        function calculateTotal() {
+            const total = inventory.reduce((sum, item) => {
+                const price = parseFloat(item.price) || 0;
+                const quantity = parseFloat(item.quantity) || 0;
+                return sum + price * quantity;
+            }, 0);
+            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+        }
 
         function loadInventory(filteredInventory = inventory) {
             const list = document.getElementById('inventoryList');
@@ -311,13 +386,13 @@
                             <td>${item.name}</td>
                             <td>${item.code}</td>
                             <td>${item.barcode}</td>
-                            <td>${item.price}</td>
-                            <td>${item.discount}</td>
-                            <td>${priceWithDiscount.toFixed(2)}</td>
+                            <td>$${item.price}</td>
+                            <td>${item.discount}%</td>
+                            <td>$${priceWithDiscount.toFixed(2)}</td>
                             <td>${item.description}</td>
                             <td>${item.category}</td>
                             <td>${item.quantity}</td>
-                            <td><button class="stamp" onclick="markSold(${index})">Vender</button></td>
+                            <td><button class="primary" onclick="markSold(${index})">Vender</button></td>
                         </tr>
                     `;
                 }).join('');
@@ -383,7 +458,7 @@
         function goToRow() {
             const row = parseInt(document.getElementById('goToRow').value);
             const rows = document.querySelectorAll('#inventoryList tr');
-            document.querySelectorAll('.highlight').forEach(r => r.classList.remove('highlight'));
+            rows.forEach(r => r.classList.remove('highlight'));
             if (row >= 1 && row <= rows.length) {
                 rows[row - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 rows[row - 1].classList.add('highlight');
@@ -404,6 +479,7 @@
         document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
 
         loadInventory();
+        calculateTotal();
 
         function debounce(func, delay) {
             let timer;
