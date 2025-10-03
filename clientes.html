@@ -4,237 +4,249 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gestión Moderna de Clientes</title>
+  <title>Gestión de Clientes Minimalista 2025</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-    * {
+
+    /* Reset y base */
+    *, *::before, *::after {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      background: #f4f7fa;
+      background-color: #fafafa;
       font-family: 'Inter', sans-serif;
-      color: #334155;
+      color: #222;
       display: flex;
       justify-content: center;
+      padding: 24px 12px;
       min-height: 100vh;
-      padding: 30px 15px;
     }
 
-    .app-container {
-      background: white;
+    .container {
+      background: #fff;
       width: 100%;
-      max-width: 1100px;
-      border-radius: 12px;
-      box-shadow: 0 12px 25px rgba(50, 100, 150, 0.1);
+      max-width: 700px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.05);
+      padding: 30px 32px;
       display: flex;
       flex-direction: column;
-      padding: 30px 40px;
-      gap: 25px;
+      gap: 28px;
     }
 
     header {
       font-weight: 700;
       font-size: 2rem;
-      color: #2563eb;
-      text-align: center;
-      margin-bottom: 10px;
+      color: #121212;
       user-select: none;
+      text-align: center;
+      letter-spacing: -0.025em;
     }
 
-    /* FORMULARIO */
+    /* Formulario minimal */
     form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px 24px;
       align-items: end;
     }
 
-    form > * {
-      flex-grow: 1;
-      min-width: 220px;
-    }
-
     label {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-bottom: 5px;
       display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 6px;
       user-select: none;
     }
 
     input[type="text"],
     input[type="email"],
-    input[type="tel"],
-    input[type="number"] {
+    input[type="tel"] {
       width: 100%;
       padding: 12px 14px;
       font-size: 1rem;
-      border: 2px solid #cbd5e1;
+      border: 1.8px solid #ddd;
       border-radius: 10px;
-      transition: border-color 0.3s;
+      background-color: #f9f9f9;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      color: #121212;
+      font-weight: 500;
+      font-family: inherit;
     }
 
     input[type="text"]:focus,
     input[type="email"]:focus,
-    input[type="tel"]:focus,
-    input[type="number"]:focus {
-      border-color: #2563eb;
+    input[type="tel"]:focus {
+      border-color: #4f46e5;
       outline: none;
-      box-shadow: 0 0 6px #93c5fdaa;
+      box-shadow: 0 0 10px rgb(79 70 229 / 0.3);
+      background-color: #fff;
     }
 
     button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 14px 25px;
+      grid-column: 1 / -1;
+      padding: 14px 20px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
+      background-color: #4f46e5;
+      border: none;
       border-radius: 12px;
+      color: white;
       cursor: pointer;
       user-select: none;
-      align-self: flex-end;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s ease;
+      letter-spacing: 0.015em;
     }
 
-    button:hover:not(:disabled) {
-      background: #1e40af;
+    button:hover {
+      background-color: #3730a3;
     }
 
-    button:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    /* FILTROS */
+    /* Filtros */
     .filters {
       display: flex;
-      gap: 15px;
+      gap: 16px;
       flex-wrap: wrap;
       justify-content: flex-start;
     }
 
     .filters input {
-      width: 200px;
+      flex: 1 1 200px;
       padding: 10px 14px;
       font-size: 1rem;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 10px;
-      transition: border-color 0.3s;
+      border: 1.5px solid #ddd;
+      border-radius: 12px;
+      background-color: #fff;
+      transition: border-color 0.3s ease, box-shadow 0.25s ease;
+      font-weight: 500;
+      font-family: inherit;
+      color: #121212;
+    }
+
+    .filters input::placeholder {
+      color: #999;
     }
 
     .filters input:focus {
-      border-color: #2563eb;
+      border-color: #4f46e5;
       outline: none;
-      box-shadow: 0 0 8px #93c5fdaa;
+      box-shadow: 0 0 12px rgb(79 70 229 / 0.25);
+      background-color: #fefefe;
     }
 
-    /* TABLA MODERNA */
+    /* Tabla minimalista */
     table {
-      width: 100%;
       border-collapse: separate;
-      border-spacing: 0 12px;
-      font-size: 0.95rem;
-      color: #475569;
+      border-spacing: 0 14px;
+      width: 100%;
+      font-size: 0.9rem;
+      color: #444;
+      font-weight: 500;
+      table-layout: fixed;
     }
 
     thead tr {
-      background: #e0e7ff;
-      border-radius: 12px 12px 0 0;
-      box-shadow: inset 0 -2px 0 #2563eb;
+      background: none;
     }
 
     thead th {
-      padding: 14px 18px;
-      font-weight: 700;
       text-align: left;
+      font-weight: 700;
+      color: #555;
+      padding-bottom: 6px;
+      letter-spacing: 0.02em;
       user-select: none;
     }
 
     tbody tr {
-      background: white;
-      box-shadow: 0 4px 14px rgb(38 57 77 / 0.06);
-      border-radius: 12px;
-      transition: background-color 0.25s;
+      background: #fff;
+      box-shadow: 0 4px 15px rgb(0 0 0 / 0.04);
+      border-radius: 14px;
+      transition: background-color 0.2s ease;
+      display: table-row;
     }
 
     tbody tr:hover {
-      background-color: #f0f4ff;
+      background-color: #f3f4ff;
     }
 
     tbody td {
-      padding: 16px 18px;
+      padding: 12px 18px;
       vertical-align: middle;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     tbody td.actions {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       justify-content: flex-start;
     }
 
-    /* BOTONES DE ACCIÓN */
+    /* Botones icono minimal */
     tbody button {
       border: none;
-      border-radius: 8px;
       cursor: pointer;
-      padding: 7px 15px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: white;
-      user-select: none;
-      transition: background-color 0.25s;
+      border-radius: 10px;
+      height: 32px;
+      width: 32px;
+      font-size: 1.2rem;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      user-select: none;
+      transition: background-color 0.3s ease;
+      color: white;
+      line-height: 1;
+      padding: 0;
     }
 
     .editar-btn {
-      background-color: #6366f1;
+      background-color: #64748b;
     }
 
     .editar-btn:hover {
-      background-color: #4f46e5;
+      background-color: #475569;
     }
 
     .sumar-btn {
-      background-color: #22c55e;
+      background-color: #10b981;
     }
 
     .sumar-btn:hover {
-      background-color: #16a34a;
+      background-color: #059669;
     }
 
     .quitar-btn {
-      background-color: #f43f5e;
-    }
-
-    .quitar-btn:hover {
-      background-color: #be123c;
-    }
-
-    .eliminar-btn {
       background-color: #ef4444;
     }
 
-    .eliminar-btn:hover {
-      background-color: #b91c1c;
+    .quitar-btn:hover {
+      background-color: #dc2626;
     }
 
-    /* MODAL */
+    .eliminar-btn {
+      background-color: #6b7280;
+    }
+
+    .eliminar-btn:hover {
+      background-color: #4b5563;
+    }
+
+    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(18, 18, 18, 0.45);
       display: none;
-      justify-content: center;
       align-items: center;
-      z-index: 9999;
-      user-select:none;
+      justify-content: center;
+      z-index: 10000;
+      user-select: none;
     }
 
     .modal-overlay.active {
@@ -243,161 +255,173 @@
 
     .modal-content {
       background: white;
-      border-radius: 16px;
-      padding: 30px 35px;
-      width: 360px;
-      max-width: 95vw;
-      box-shadow: 0 12px 28px rgba(38, 57, 77, 0.2);
+      border-radius: 18px;
+      box-shadow: 0 16px 32px rgb(0 0 0 / 0.1);
+      padding: 28px 36px;
+      min-width: 320px;
+      max-width: 85vw;
       display: flex;
       flex-direction: column;
       gap: 18px;
+      font-weight: 600;
+      color: #222;
+      font-family: 'Inter', sans-serif;
     }
 
     .modal-content h2 {
-      margin: 0;
+      margin: 0 0 6px 0;
       font-weight: 700;
-      font-size: 1.4rem;
-      color: #2563eb;
-      user-select:none;
+      font-size: 1.3rem;
+      color: #444;
+      user-select: none;
     }
 
     .modal-content label {
       font-weight: 600;
       font-size: 1rem;
-      margin-bottom: 6px;
-      color: #475569;
-      display: block;
+      color: #666;
+      margin-bottom: 4px;
     }
 
     .modal-content input[type="number"] {
-      width: 100%;
-      padding: 12px 15px;
+      padding: 14px 16px;
       font-size: 1.1rem;
-      border-radius: 10px;
-      border: 2px solid #cbd5e1;
-      transition: border-color 0.3s;
-      user-select:text;
+      border-radius: 14px;
+      border: 1.8px solid #ddd;
+      color: #222;
+      font-weight: 600;
+      transition: border-color 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      user-select: text;
     }
 
     .modal-content input[type="number"]:focus {
-      border-color: #2563eb;
+      border-color: #4f46e5;
       outline: none;
-      box-shadow: 0 0 10px #93c5fdaa;
+      box-shadow: 0 0 10px rgb(79 70 229 / 0.3);
+      background-color: #fff;
     }
 
     .modal-actions {
       display: flex;
-      gap: 12px;
       justify-content: flex-end;
-      margin-top: 10px;
+      gap: 18px;
+      margin-top: 12px;
     }
 
     .modal-actions button {
-      flex: 1 1 auto;
-      font-weight: 700;
-      border-radius: 12px;
-      padding: 12px 0;
-      font-size: 1.05rem;
+      cursor: pointer;
       user-select: none;
+      padding: 12px 24px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      transition: background-color 0.25s ease;
+      color: white;
+      min-width: 100px;
+      letter-spacing: 0.02em;
     }
 
     .btn-cancel {
-      background-color: #94a3b8;
-      color: white;
-      transition: background-color 0.3s;
+      background: #999;
     }
 
     .btn-cancel:hover {
-      background-color: #64748b;
+      background-color: #666;
     }
 
-    /* Notificación */
+    .sumar-btn-modal {
+      background: #10b981;
+    }
+
+    .sumar-btn-modal:hover {
+      background-color: #059669;
+    }
+
+    .quitar-btn-modal {
+      background: #ef4444;
+    }
+
+    .quitar-btn-modal:hover {
+      background-color: #dc2626;
+    }
+
+    /* Notificación simple */
     #notification {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      background: #2563eb;
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 12px;
+      padding: 14px 24px;
+      background-color: #4f46e5;
+      color: white;
       font-weight: 600;
-      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.6);
+      border-radius: 16px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s, transform 0.4s;
+      font-size: 1rem;
+      box-shadow: 0 6px 18px rgb(79 70 229 / 0.6);
+      user-select: none;
       transform: translateY(20px);
-      user-select:none;
-      z-index: 10000;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      z-index: 11000;
     }
 
     #notification.show {
       opacity: 1;
-      pointer-events: auto;
       transform: translateY(0);
-    }
-
-    /* Iconos simples para botones */
-    svg {
-      width: 18px;
-      height: 18px;
-      fill: currentColor;
-      user-select:none;
+      pointer-events: auto;
     }
 
     /* Responsive */
-    @media (max-width: 650px) {
-      form,
-      .filters {
-        justify-content: center;
+    @media (max-width: 480px) {
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
       }
 
-      form > * {
-        min-width: 90%;
+      .filters {
+        flex-direction: column;
       }
 
       .filters input {
-        width: 90%;
+        width: 100%;
       }
 
       tbody td.actions {
-        flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="app-container" role="main" aria-label="Gestión de Clientes">
+  <main class="container" role="main" aria-label="Gestión de Clientes">
     <header>Gestión de Clientes</header>
 
-    <!-- Formulario para añadir/editar -->
-    <form id="form-cliente" novalidate>
+    <form id="form-cliente" novalidate autocomplete="off">
       <div>
         <label for="cliente-id">ID del Cliente</label>
-        <input type="text" id="cliente-id" name="cliente-id" placeholder="Ej: 1234" autocomplete="off" required aria-describedby="idHelp" />
+        <input type="text" id="cliente-id" name="cliente-id" placeholder="Ej: 1234" aria-describedby="idHelp" required autocomplete="off" />
       </div>
       <div>
         <label for="cliente-correo">Correo del Cliente</label>
-        <input type="email" id="cliente-correo" name="cliente-correo" placeholder="correo@ejemplo.com" autocomplete="off" required aria-describedby="emailHelp" />
+        <input type="email" id="cliente-correo" name="cliente-correo" placeholder="correo@ejemplo.com" aria-describedby="emailHelp" required />
       </div>
       <div>
         <label for="cliente-telefono">Celular del Cliente</label>
-        <input type="tel" id="cliente-telefono" name="cliente-telefono" placeholder="Ej: 987654321" autocomplete="off" required aria-describedby="telHelp" />
+        <input type="tel" id="cliente-telefono" name="cliente-telefono" placeholder="Ej: 987654321" aria-describedby="telHelp" required />
       </div>
-      <div style="flex-grow: 0;">
-        <button type="submit" id="btn-guardar">Agregar Cliente</button>
-      </div>
+      <button type="submit" id="btn-guardar">Agregar Cliente</button>
     </form>
 
-    <!-- Filtros -->
-    <section aria-label="Filtros rápidos para clientes" class="filters" role="search">
-      <input type="text" id="filtro-id" placeholder="Filtrar por ID" autocomplete="off" aria-label="Filtrar por ID" />
-      <input type="email" id="filtro-correo" placeholder="Filtrar por correo" autocomplete="off" aria-label="Filtrar por correo electrónico" />
-      <input type="tel" id="filtro-telefono" placeholder="Filtrar por celular" autocomplete="off" aria-label="Filtrar por teléfono" />
+    <section class="filters" aria-label="Filtros para clientes" role="search">
+      <input type="text" id="filtro-id" placeholder="Filtrar por ID" aria-label="Filtrar por ID" autocomplete="off" />
+      <input type="email" id="filtro-correo" placeholder="Filtrar por correo" aria-label="Filtrar por correo electrónico" autocomplete="off" />
+      <input type="tel" id="filtro-telefono" placeholder="Filtrar por celular" aria-label="Filtrar por teléfono" autocomplete="off" />
     </section>
 
-    <!-- Tabla clientes -->
     <section aria-label="Lista de clientes registrados" tabindex="0">
       <table role="grid" aria-describedby="tableDescription" aria-live="polite">
         <caption id="tableDescription" class="visually-hidden">Tabla con la lista de clientes y sus detalles</caption>
@@ -408,7 +432,7 @@
             <th role="columnheader" scope="col">Celular</th>
             <th role="columnheader" scope="col">Puntos</th>
             <th role="columnheader" scope="col">Fecha Registro</th>
-            <th role="columnheader" scope="col" style="min-width: 170px;">Acciones</th>
+            <th role="columnheader" scope="col" style="min-width: 140px;">Acciones</th>
           </tr>
         </thead>
         <tbody id="clientes-table" role="rowgroup"></tbody>
@@ -421,13 +445,13 @@
     <div class="modal-content">
       <h2 id="modal-title">Modificar Puntos del Cliente</h2>
       <label for="input-puntos">Cantidad de puntos</label>
-      <input type="number" id="input-puntos" min="1" aria-describedby="pointsDesc" />
-      <p id="pointsDesc" style="font-size:0.9rem;color:#64748b;margin-top:-10px;margin-bottom:10px;">
+      <input type="number" id="input-puntos" min="1" aria-describedby="pointsDesc" autocomplete="off" />
+      <p id="pointsDesc" style="font-size:0.85rem;color:#666;margin-top:-8px;margin-bottom:8px;">
         Ingresa la cantidad para sumar o quitar puntos.
       </p>
       <div class="modal-actions">
-        <button id="btn-sumar" class="sumar-btn" aria-label="Sumar puntos al cliente">Sumar puntos</button>
-        <button id="btn-quitar" class="quitar-btn" aria-label="Quitar puntos al cliente">Quitar puntos</button>
+        <button id="btn-sumar" class="sumar-btn-modal" aria-label="Sumar puntos al cliente">Sumar</button>
+        <button id="btn-quitar" class="quitar-btn-modal" aria-label="Quitar puntos al cliente">Quitar</button>
         <button id="btn-cerrar" class="btn-cancel" aria-label="Cerrar ventana modificar puntos">Cancelar</button>
       </div>
     </div>
@@ -442,7 +466,7 @@
       let clientes = JSON.parse(localStorage.getItem(clientesKey)) || [];
       let clienteEditando = null;
 
-      // Elementos DOM
+      // DOM Elements
       const form = document.getElementById('form-cliente');
       const inputId = document.getElementById('cliente-id');
       const inputCorreo = document.getElementById('cliente-correo');
@@ -456,14 +480,13 @@
       const tbody = document.getElementById('clientes-table');
       const notification = document.getElementById('notification');
 
-      // Modal puntos
       const modal = document.getElementById('modal-overlay');
       const inputPuntos = document.getElementById('input-puntos');
       const btnSumar = document.getElementById('btn-sumar');
       const btnQuitar = document.getElementById('btn-quitar');
       const btnCerrar = document.getElementById('btn-cerrar');
 
-      // Funciones Helper
+      // Helper functions
       const saveClientes = () => localStorage.setItem(clientesKey, JSON.stringify(clientes));
 
       const notify = (msg) => {
@@ -472,18 +495,21 @@
         setTimeout(() => notification.classList.remove('show'), 3000);
       };
 
-      // Validaciones básicas
       const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       const validarTelefono = (tel) => /^\d{7,15}$/.test(tel);
       const validarId = (id) => /^[a-zA-Z0-9\-]{1,20}$/.test(id);
 
-      // Limpiar formulario
       const limpiarFormulario = () => {
         form.reset();
         inputId.disabled = false;
         clienteEditando = null;
         btnGuardar.textContent = 'Agregar Cliente';
       };
+
+      function formatearFecha(date) {
+        const d = new Date(date);
+        return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
 
       // Render tabla
       function renderTable() {
@@ -492,45 +518,40 @@
         const filTelefono = filtroTelefono.value.trim().toLowerCase();
 
         tbody.innerHTML = '';
+
         const clientesFiltrados = clientes.filter(c =>
           c.id.toLowerCase().includes(filId) &&
           c.correo.toLowerCase().includes(filCorreo) &&
           c.telefono.toLowerCase().includes(filTelefono));
 
         if (clientesFiltrados.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">No hay clientes que coincidan</td></tr>`;
-        } else {
-          clientesFiltrados.forEach(c => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${c.id}</td>
-              <td>${c.correo}</td>
-              <td>${c.telefono}</td>
-              <td>${c.puntos}</td>
-              <td>${c.fecha}</td>
-              <td class="actions" aria-label="Acciones para el cliente ${c.id}">
-                <button class="editar-btn" title="Editar cliente" aria-label="Editar cliente ${c.id}" data-id="${c.id}">
-                  ✏️
-                </button>
-                <button class="sumar-btn" title="Sumar puntos" aria-label="Sumar puntos al cliente ${c.id}" data-id="${c.id}">
-                  ➕
-                </button>
-                <button class="quitar-btn" title="Quitar puntos" aria-label="Quitar puntos al cliente ${c.id}" data-id="${c.id}">
-                  ➖
-                </button>
-                <button class="eliminar-btn" title="Eliminar cliente" aria-label="Eliminar cliente ${c.id}" data-id="${c.id}">
-                  🗑️
-                </button>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:20px;">No hay clientes que coincidan</td></tr>`;
+          return;
         }
+
+        clientesFiltrados.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+              <td title="${c.id}">${c.id}</td>
+              <td title="${c.correo}">${c.correo}</td>
+              <td title="${c.telefono}">${c.telefono}</td>
+              <td>${c.puntos}</td>
+              <td>${formatearFecha(c.fecha)}</td>
+              <td class="actions" aria-label="Acciones para cliente ${c.id}">
+                <button class="editar-btn" title="Editar cliente" aria-label="Editar cliente ${c.id}" data-id="${c.id}">✏️</button>
+                <button class="sumar-btn" title="Sumar puntos" aria-label="Sumar puntos al cliente ${c.id}" data-id="${c.id}">➕</button>
+                <button class="quitar-btn" title="Quitar puntos" aria-label="Quitar puntos al cliente ${c.id}" data-id="${c.id}">➖</button>
+                <button class="eliminar-btn" title="Eliminar cliente" aria-label="Eliminar cliente ${c.id}" data-id="${c.id}">🗑️</button>
+              </td>
+              `;
+          tbody.appendChild(tr);
+        });
       }
 
-      // Añadir o editar cliente
-      form.addEventListener('submit', e => {
+      // Agregar o editar cliente
+      form.addEventListener('submit', (e) => {
         e.preventDefault();
+
         const id = inputId.value.trim();
         const correo = inputCorreo.value.trim();
         const telefono = inputTelefono.value.trim();
@@ -549,7 +570,6 @@
         }
 
         if (clienteEditando) {
-          // Actualizar cliente existente
           const cliente = clientes.find(c => c.id === clienteEditando);
           if (cliente) {
             cliente.correo = correo;
@@ -558,13 +578,11 @@
             notify(`Cliente ${id} actualizado.`);
           }
         } else {
-          // Verificar si existe ID duplicado
           if (clientes.some(c => c.id === id)) {
             alert('Ya existe un cliente con ese ID.');
             return;
           }
-          // Crear cliente nuevo
-          clientes.push({ id, correo, telefono, puntos: 0, fecha: new Date().toLocaleDateString() });
+          clientes.push({ id, correo, telefono, puntos: 0, fecha: new Date().toISOString() });
           saveClientes();
           notify(`Cliente ${id} agregado.`);
         }
@@ -573,8 +591,8 @@
         renderTable();
       });
 
-      // Manejo de clicks en las acciones de la tabla
-      tbody.addEventListener('click', e => {
+      // Click en acción de tabla
+      tbody.addEventListener('click', (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
         const id = btn.dataset.id;
@@ -590,7 +608,7 @@
           inputTelefono.value = cliente.telefono;
           inputId.disabled = true;
           btnGuardar.textContent = 'Actualizar Cliente';
-          window.scroll(0, 0);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (btn.classList.contains('eliminar-btn')) {
           if (confirm(`¿Eliminar cliente ${id}? Esta acción no se puede deshacer.`)) {
             clientes = clientes.filter(c => c.id !== id);
@@ -604,7 +622,7 @@
         }
       });
 
-      // Abrir modal para modificar puntos
+      // Modal manejo
       function abrirModal(cliente, esSumar) {
         modal.dataset.currentClient = cliente.id;
         modal.dataset.action = esSumar ? 'sumar' : 'quitar';
@@ -613,7 +631,6 @@
         inputPuntos.focus();
       }
 
-      // Cerrar modal y limpiar estado
       function cerrarModal() {
         modal.classList.remove('active');
         delete modal.dataset.currentClient;
@@ -622,7 +639,7 @@
 
       btnCerrar.onclick = cerrarModal;
 
-      // Procesar suma o resta de puntos desde modal
+      // Procesar suma o resta puntos
       function procesarPuntos(esSumar) {
         const cantidad = parseInt(inputPuntos.value);
         if (isNaN(cantidad) || cantidad < 1) {
@@ -655,12 +672,12 @@
       btnSumar.onclick = () => procesarPuntos(true);
       btnQuitar.onclick = () => procesarPuntos(false);
 
-      // Filtros
+      // Aplicar filtros en tiempo real
       [filtroId, filtroCorreo, filtroTelefono].forEach(input => {
         input.addEventListener('input', renderTable);
       });
 
-      // Inicializar
+      // Inicializar tabla
       renderTable();
     })();
   </script>
