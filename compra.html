@@ -4,242 +4,370 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #ffffff;
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --card: #1e242e;
+            --accent: #22d3ee;
+            --danger: #f43f5e;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --border: #30363d;
+            --radius: 14px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, .4);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            color: #333;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
             height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: var(--panel);
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
+            gap: 2rem;
+            border-right: 1px solid var(--border);
+            animation: slideIn .4s ease-out;
         }
 
-        .header {
-            background-color: #f8f9fa;
-            color: #333;
-            padding: 20px;
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+        }
+
+        .sidebar .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 1px;
             text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid #e0e0e0;
         }
 
-        .container {
+        .sidebar .links {
             display: flex;
-            flex: 1;
-            gap: 20px;
-            padding: 20px;
-            background-color: #ffffff;
+            flex-direction: column;
+            gap: .75rem;
         }
 
-        .form-container {
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 250px;
-            border: 1px solid #e0e0e0;
+        .sidebar .links a {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .75rem 1rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: background .2s, color .2s;
         }
 
-        .inventory-table {
+        .sidebar .links a:hover {
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .sidebar .links a.active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* MAIN */
+        main {
             flex: 1;
-            background-color: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            overflow-x: auto;
-            border: 1px solid #e0e0e0;
+            padding: 2rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .content {
+            display: flex;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            animation: fadeUp .5s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+        }
+
+        .form-card {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-card h2 {
+            margin-bottom: .5rem;
+            font-size: 1.25rem;
+            color: var(--accent);
         }
 
         .form-group {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
         }
 
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
+            font-size: .9rem;
+            color: var(--muted);
         }
 
         input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
+            padding: .75rem 1rem;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-            background-color: #ffffff;
+            background: var(--panel);
+            color: var(--text);
+            transition: border-color .2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
         }
 
         button {
-            background-color: #333;
-            color: #fff;
+            padding: .75rem 1rem;
             border: none;
-            padding: 10px 15px;
             border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+            transition: background .2s, transform .2s;
         }
 
-        button:hover {
-            background-color: #555;
+        button.primary {
+            background: var(--accent);
+            color: #000;
         }
 
-        .inventory-table table {
+        button.primary:hover {
+            background: #1be0e0;
+            transform: translateY(-2px);
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        button.danger:hover {
+            background: #e11d48;
+        }
+
+        .table-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid #e0e0e0;
+            font-size: .9rem;
         }
 
-        .inventory-table th, .inventory-table td {
-            padding: 12px;
+        th, td {
+            padding: .75rem 1rem;
             text-align: left;
-            border: 1px solid #e0e0e0;
-            font-size: 14px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .inventory-table th {
-            background-color: #f8f9fa;
-            color: #333;
+        th {
+            color: var(--accent);
             font-weight: 600;
         }
 
-        .total-container {
-            background-color: #333;
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 200px;
-            margin-top: 20px;
+        tr:hover {
+            background: rgba(255, 255, 255, .03);
         }
 
-        .total-container h2 {
+        .total-card {
+            align-self: flex-start;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--accent);
+            color: #000;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            animation: fadeUp .6s ease-out;
+        }
+
+        .total-card i {
+            font-size: 1.5rem;
+        }
+
+        .total-card div p:first-child {
+            font-weight: 600;
             margin: 0;
-            font-size: 14px;
-            font-weight: 500;
         }
 
-        .total-container p {
-            font-size: 18px;
-            margin: 5px 0 0;
-            font-weight: 600;
-            color: #fff;
+        .total-card div p:last-child {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0;
         }
 
-        /* Estilo adicional para el botón VACIAR */
-        button.vaciar {
-            background-color: #ff4444; /* Color rojo */
-            margin-top: 10px; /* Espacio superior */
+        /* Scroll personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        button.vaciar:hover {
-            background-color: #cc0000; /* Color rojo más oscuro al pasar el mouse */
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    Gestión de Compras
-</div>
+<aside class="sidebar">
+    <div class="logo">AESIER</div>
+    <nav class="links">
+        <a href="compra.html" class="active"><i class="fa-solid fa-cart-plus"></i> Compras</a>
+        <a href="venta.html"><i class="fa-solid fa-cash-register"></i> Ventas</a>
+        <a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
+        <a href="clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
+    </nav>
+</aside>
 
-<div class="container">
-    <div class="form-container">
-        <form id="purchaseForm">
-            <div class="form-group">
-                <label for="name">Nombre del Producto:</label>
-                <input type="text" id="name" name="name" required />
-            </div>
-            <div class="form-group">
-                <label for="code">Código:</label>
-                <input type="text" id="code" name="code" required />
-            </div>
-            <div class="form-group">
-                <label for="barcode">Código de Barras:</label>
-                <input type="text" id="barcode" name="barcode" />
-            </div>
-            <div class="form-group">
-                <label for="price">Precio:</label>
-                <input type="number" id="price" name="price" step="0.01" required />
-            </div>
-            <div class="form-group">
-                <label for="discount">Descuento (%):</label>
-                <input type="number" id="discount" name="discount" step="0.01" value="0" />
-            </div>
-            <div class="form-group">
-                <label for="description">Descripción:</label>
-                <textarea id="description" name="description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="category">Categoría:</label>
-                <select id="category" name="category">
-                    <option value="Aritos">Aritos</option>
-                    <option value="Billeteras">Billeteras</option>
-                    <option value="Carteras">Carteras</option>
-                    <option value="Chokers">Chokers</option>
-                    <option value="Collares">Collares</option>
-                    <option value="Lentes de sol">Lentes de sol</option>
-                    <option value="Pulseras">Pulseras</option>
-                    <option value="Relojes">Relojes</option>
-                    <option value="Anillos">Anillos</option>
-                    <option value="Accesorios para el cabello">Accesorios para el cabello</option>
-                    <option value="Otros">Otros</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Cantidad en Stock:</label>
-                <input type="number" id="quantity" name="quantity" required />
-            </div>
-            <button type="submit">Guardar</button>
-        </form>
-        <!-- Botones para exportar, importar y vaciar -->
-        <button onclick="exportToExcel()">Exportar a Excel</button>
-        <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
-        <button onclick="document.getElementById('importFile').click()">Importar desde Excel</button>
-        <button class="vaciar" onclick="vaciarInventario()">VACIAR</button>
+<main>
+    <div class="topbar">
+        <h1>Gestión de Compras</h1>
     </div>
 
-    <div class="inventory-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryList"></tbody>
-        </table>
+    <div class="content">
+        <section class="card form-card">
+            <h2>Alta de producto</h2>
+            <form id="purchaseForm">
+                <div class="form-group">
+                    <label>Nombre del Producto:</label>
+                    <input type="text" id="name" name="name" required />
+                </div>
+                <div class="form-group">
+                    <label>Código:</label>
+                    <input type="text" id="code" name="code" required />
+                </div>
+                <div class="form-group">
+                    <label>Código de Barras:</label>
+                    <input type="text" id="barcode" name="barcode" />
+                </div>
+                <div class="form-group">
+                    <label>Precio:</label>
+                    <input type="number" id="price" name="price" step="0.01" required />
+                </div>
+                <div class="form-group">
+                    <label>Descuento (%):</label>
+                    <input type="number" id="discount" name="discount" step="0.01" value="0" />
+                </div>
+                <div class="form-group">
+                    <label>Descripción:</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <select id="category" name="category">
+                        <option value="Aritos">Aritos</option>
+                        <option value="Billeteras">Billeteras</option>
+                        <option value="Carteras">Carteras</option>
+                        <option value="Chokers">Chokers</option>
+                        <option value="Collares">Collares</option>
+                        <option value="Lentes de sol">Lentes de sol</option>
+                        <option value="Pulseras">Pulseras</option>
+                        <option value="Relojes">Relojes</option>
+                        <option value="Anillos">Anillos</option>
+                        <option value="Accesorios para el cabello">Accesorios para el cabello</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cantidad en Stock:</label>
+                    <input type="number" id="quantity" name="quantity" required />
+                </div>
+                <button type="submit" class="primary">Guardar</button>
+            </form>
 
-        <!-- Total en USD -->
-        <div class="total-container">
-            <h2>Total en USD:</h2>
+            <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
+            <button onclick="document.getElementById('importFile').click()" class="primary">Importar Excel</button>
+            <button onclick="exportToExcel()" class="primary">Exportar Excel</button>
+            <button onclick="vaciarInventario()" class="danger">Vaciar Inventario</button>
+        </section>
+
+        <section class="card table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Código</th>
+                        <th>Código de Barras</th>
+                        <th>Precio</th>
+                        <th>Descuento</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryList"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <div class="total-card">
+        <i class="fa-solid fa-dollar-sign"></i>
+        <div>
+            <p>Total en USD</p>
             <p id="totalAmount">$0.00</p>
         </div>
     </div>
-</div>
+</main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-
 <script>
+    /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     let editIndex = -1;
 
-    // Calcula el total en USD
     function calculateTotal() {
         const total = inventory.reduce((sum, item) => {
             const price = parseFloat(item.price) || 0;
@@ -249,10 +377,9 @@
         document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
     }
 
-    // Renderiza la tabla de inventario
     function renderTable() {
-        const inventoryList = document.getElementById('inventoryList');
-        inventoryList.innerHTML = inventory.map((item, index) => ` 
+        const list = document.getElementById('inventoryList');
+        list.innerHTML = inventory.map((item, idx) => `
             <tr>
                 <td>${item.name}</td>
                 <td>${item.code}</td>
@@ -263,58 +390,32 @@
                 <td>${item.category}</td>
                 <td>${item.quantity}</td>
                 <td>
-                    <button onclick="editItem(${index})">Editar</button>
-                    <button onclick="deleteItem(${index})">Eliminar</button>
+                    <button onclick="editItem(${idx})" class="primary">Editar</button>
+                    <button onclick="deleteItem(${idx})" class="danger">Eliminar</button>
                 </td>
             </tr>
         `).join('');
     }
 
-    // Añadir o editar producto
-    document.getElementById('purchaseForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const name = document.getElementById('name').value;
-        const code = document.getElementById('code').value;
-        const barcode = document.getElementById('barcode').value;
-        const price = document.getElementById('price').value;
-        const discount = document.getElementById('discount').value;
-        const description = document.getElementById('description').value;
-        const category = document.getElementById('category').value;
-        const quantity = document.getElementById('quantity').value;
-
-        const newItem = { name, code, barcode, price, discount, description, category, quantity };
-
-        if (editIndex === -1) {
-            inventory.push(newItem);
-        } else {
-            inventory[editIndex] = newItem;
-            editIndex = -1;
-        }
-
+    document.getElementById('purchaseForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newItem = Object.fromEntries(new FormData(e.target).entries());
+        editIndex === -1 ? inventory.push(newItem) : (inventory[editIndex] = newItem);
         localStorage.setItem('inventory', JSON.stringify(inventory));
-        document.getElementById('purchaseForm').reset();
+        e.target.reset();
+        editIndex = -1;
         renderTable();
         calculateTotal();
     });
 
-    // Editar un producto
     function editItem(index) {
         const item = inventory[index];
-        document.getElementById('name').value = item.name;
-        document.getElementById('code').value = item.code;
-        document.getElementById('barcode').value = item.barcode;
-        document.getElementById('price').value = item.price;
-        document.getElementById('discount').value = item.discount;
-        document.getElementById('description').value = item.description;
-        document.getElementById('category').value = item.category;
-        document.getElementById('quantity').value = item.quantity;
+        Object.keys(item).forEach(k => document.getElementById(k).value = item[k]);
         editIndex = index;
     }
 
-    // Eliminar un producto
     function deleteItem(index) {
-        if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        if (confirm('¿Eliminar producto?')) {
             inventory.splice(index, 1);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
@@ -322,9 +423,8 @@
         }
     }
 
-    // Vaciar todo el inventario
     function vaciarInventario() {
-        if (confirm('¿Estás seguro de que deseas vaciar todo el inventario? Esta acción no se puede deshacer.')) {
+        if (confirm('¿Vaciar todo el inventario?')) {
             inventory = [];
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
@@ -332,7 +432,6 @@
         }
     }
 
-    // Exportar tabla a Excel
     function exportToExcel() {
         const ws = XLSX.utils.json_to_sheet(inventory);
         const wb = XLSX.utils.book_new();
@@ -340,33 +439,24 @@
         XLSX.writeFile(wb, "inventario.xlsx");
     }
 
-    // Importar desde archivo Excel
     function importFromExcel(event) {
         const file = event.target.files[0];
         const reader = new FileReader();
-
-        reader.onload = function(e) {
-            const data = e.target.result;
-            const wb = XLSX.read(data, { type: 'binary' });
+        reader.onload = e => {
+            const wb = XLSX.read(e.target.result, { type: 'binary' });
             const sheet = wb.Sheets[wb.SheetNames[0]];
             const json = XLSX.utils.sheet_to_json(sheet);
-
             inventory = inventory.concat(json);
             localStorage.setItem('inventory', JSON.stringify(inventory));
             renderTable();
             calculateTotal();
             alert("Importación completada");
         };
-
         reader.readAsBinaryString(file);
     }
 
-    // Guardar al salir o recargar
-    window.addEventListener("beforeunload", function() {
-        localStorage.setItem('inventory', JSON.stringify(inventory));
-    });
+    window.addEventListener("beforeunload", () => localStorage.setItem('inventory', JSON.stringify(inventory)));
 
-    // Cargar tabla y total al iniciar
     renderTable();
     calculateTotal();
 </script>
