@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gestión de Clientes</title>
+  <title>Clientes — Split View</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -15,7 +15,6 @@
       --muted: #6b7280;
       --border: #e5e7eb;
       --radius: 12px;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -25,37 +24,39 @@
       font-family: 'Inter', sans-serif;
     }
 
+    html, body {
+      height: 100%;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
-      padding: 2rem 1rem;
-      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
     }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
+    .split {
+      display: flex;
+      height: 100%;
+    }
+
+    .left, .right {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .left {
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 600;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
     }
 
     label {
@@ -69,7 +70,6 @@
       padding: 0.75rem 1rem;
       border: 1px solid var(--border);
       border-radius: 8px;
-      transition: border-color 0.2s;
     }
 
     input:focus {
@@ -83,22 +83,12 @@
       border-radius: 8px;
       font-weight: 500;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-primary {
       background: var(--primary);
       color: #fff;
     }
 
-    .btn-primary:hover {
+    button:hover {
       background: var(--primary-hover);
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
     }
 
     table {
@@ -108,7 +98,7 @@
     }
 
     th, td {
-      padding: 1rem;
+      padding: 0.75rem 1rem;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
@@ -118,25 +108,18 @@
       font-weight: 600;
     }
 
-    tr:hover {
-      background: #f9fafb;
-    }
-
     .actions {
       display: flex;
       gap: 0.5rem;
     }
 
     .actions button {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 0;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 1rem;
+      color: var(--text);
     }
 
     .actions button:hover {
@@ -168,7 +151,6 @@
       border-radius: var(--radius);
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
     }
 
     .modal-actions {
@@ -186,7 +168,6 @@
       color: #fff;
       padding: 1rem 1.5rem;
       border-radius: 8px;
-      box-shadow: var(--shadow);
       opacity: 0;
       transform: translateY(10px);
       transition: all 0.3s;
@@ -197,41 +178,43 @@
       opacity: 1;
       transform: none;
     }
+
+    @media (max-width: 768px) {
+      .split {
+        flex-direction: column;
+      }
+      .left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Gestión de Clientes</h1>
-
-    <div class="card">
+  <div class="split">
+    <div class="left">
+      <h1>Agregar Cliente</h1>
       <form id="form-cliente">
-        <div class="form-grid">
-          <div>
-            <label for="cliente-id">ID del Cliente</label>
-            <input id="cliente-id" placeholder="Ej: ABC123" required />
-          </div>
-          <div>
-            <label for="cliente-correo">Correo Electrónico</label>
-            <input id="cliente-correo" type="email" placeholder="correo@ejemplo.com" required />
-          </div>
-          <div>
-            <label for="cliente-telefono">Celular</label>
-            <input id="cliente-telefono" type="tel" placeholder="777123456" required />
-          </div>
-          <div style="display:flex;align-items:flex-end;">
-            <button id="btn-guardar" class="btn-primary">Agregar Cliente</button>
-          </div>
-        </div>
+        <label for="cliente-id">ID del Cliente</label>
+        <input id="cliente-id" placeholder="Ej: ABC123" required />
+
+        <label for="cliente-correo">Correo Electrónico</label>
+        <input id="cliente-correo" type="email" placeholder="correo@ejemplo.com" required />
+
+        <label for="cliente-telefono">Celular</label>
+        <input id="cliente-telefono" type="tel" placeholder="777123456" required />
+
+        <button id="btn-guardar" class="btn-primary">Agregar Cliente</button>
       </form>
     </div>
 
-    <div class="card">
-      <div class="filters">
-        <input id="filtro-id" placeholder="Filtrar por ID" />
-        <input id="filtro-correo" type="email" placeholder="Filtrar por Correo" />
-        <input id="filtro-telefono" type="tel" placeholder="Filtrar por Celular" />
+    <div class="right">
+      <h1>Listado de Clientes</h1>
+      <div class="filters" style="display:flex;gap:1rem;margin-bottom:1rem;">
+        <input id="filtro-id" placeholder="Filtrar ID" />
+        <input id="filtro-correo" type="email" placeholder="Filtrar Correo" />
+        <input id="filtro-telefono" type="tel" placeholder="Filtrar Celular" />
       </div>
-
       <table>
         <thead>
           <tr>
@@ -252,10 +235,10 @@
   <div class="modal" id="modal-overlay">
     <div class="modal-content">
       <h2 style="margin-bottom:1rem;">Modificar Puntos</h2>
-      <input id="input-puntos" type="number" min="1" placeholder="Cantidad de puntos" />
+      <input id="input-puntos" type="number" min="1" placeholder="Cantidad" />
       <div class="modal-actions">
         <button id="btn-sumar" class="btn-primary">Sumar</button>
-        <button id="btn-quitar" class="btn-primary" style="background:#f59e0b;">Quitar</button>
+        <button id="btn-quitar" style="background:#f59e0b;">Quitar</button>
         <button id="btn-cerrar" style="background:var(--border);color:var(--text);">Cancelar</button>
       </div>
     </div>
