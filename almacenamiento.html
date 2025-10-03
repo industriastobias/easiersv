@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,105 +6,108 @@
     <title>Gestión de Inventario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&family=Space+Mono:wght@400;700&display=swap');
 
         :root {
-            --bg: #0d0d0d;
-            --surface: #141414;
-            --border: #22d3ee;
-            --text: #e5e5e5;
-            --muted: #737373;
-            --accent: #22d3ee;
-            --success: #10b981;
-            --danger: #ef4444;
-            --radius: 6px;
-            --shadow: 0 0 12px rgba(34, 211, 238, 0.25);
+            --bg: linear-gradient(135deg, #0f1115 0%, #1a1d23 100%);
+            --surface: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f0f0f0;
+            --muted: #8a8f98;
+            --accent: #00e5ff;
+            --success: #00ffaa;
+            --danger: #ff3b30;
+            --radius: 14px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Share Tech Mono', monospace;
         }
 
         body {
             background: var(--bg);
+            background-attachment: fixed;
             color: var(--text);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            padding: 3rem 4vw;
-            background-image:
-                repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(34, 211, 238, 0.05) 20px),
-                repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(34, 211, 238, 0.05) 20px);
+            padding: 3rem 5vw;
+            line-height: 1.5;
         }
 
         h1 {
-            font-size: 2rem;
-            font-weight: 400;
+            font-size: 2.5rem;
+            font-weight: 200;
             text-align: center;
-            margin-bottom: 2.5rem;
-            letter-spacing: 2px;
+            margin-bottom: 3rem;
+            letter-spacing: 4px;
             color: var(--accent);
-            text-shadow: 0 0 8px var(--accent);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--accent);
         }
 
         .toolbar {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1.5rem;
             align-items: flex-end;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
 
         .toolbar > div {
             display: flex;
             flex-direction: column;
-            gap: .4rem;
+            gap: .5rem;
         }
 
         label {
             font-size: .8rem;
+            font-weight: 600;
             color: var(--muted);
+            letter-spacing: 1px;
         }
 
         input, select {
-            padding: .6rem .8rem;
+            padding: .7rem .9rem;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             background: var(--surface);
             color: var(--text);
-            transition: border-color .2s, box-shadow .2s;
+            font-size: .9rem;
+            transition: border-color .3s, box-shadow .3s;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: var(--shadow);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
         }
 
         button {
-            padding: .6rem 1rem;
-            border: 1px solid var(--border);
+            padding: .7rem 1.2rem;
+            border: 1px solid var(--accent);
             border-radius: var(--radius);
             font-weight: 600;
             font-size: .85rem;
             cursor: pointer;
-            transition: all .2s ease;
+            transition: all .3s ease;
             display: inline-flex;
             align-items: center;
-            gap: .4rem;
+            gap: .5rem;
         }
 
         button.primary {
             background: transparent;
             color: var(--accent);
-            border-color: var(--accent);
-            box-shadow: var(--shadow);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
         }
 
         button.primary:hover {
             background: var(--accent);
             color: var(--bg);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
         }
 
         button.secondary {
@@ -135,6 +138,7 @@
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow);
+            backdrop-filter: blur(6px);
         }
 
         table {
@@ -144,25 +148,26 @@
         }
 
         th, td {
-            padding: .75rem 1rem;
+            padding: .8rem 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
 
         th {
-            background: rgba(34, 211, 238, 0.1);
+            background: rgba(0, 229, 255, 0.08);
             font-weight: 600;
             color: var(--accent);
             letter-spacing: 1px;
+            font-family: 'Space Mono', monospace;
         }
 
         tr:hover {
-            background: rgba(34, 211, 238, 0.05);
-            box-shadow: inset 0 0 10px rgba(34, 211, 238, 0.1);
+            background: rgba(0, 229, 255, 0.05);
+            box-shadow: inset 0 0 12px rgba(0, 229, 255, 0.1);
         }
 
         .highlight {
-            background: rgba(34, 211, 238, 0.15) !important;
+            background: rgba(0, 229, 255, 0.12) !important;
             color: var(--accent);
             font-weight: 600;
         }
@@ -177,24 +182,28 @@
         .total-box {
             margin-top: 2.5rem;
             text-align: center;
-            padding: 1.5rem;
+            padding: 2rem;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
 
         .total-box h2 {
             font-size: 1rem;
             color: var(--muted);
             margin-bottom: .5rem;
+            letter-spacing: 2px;
         }
 
         .total-box p {
-            font-size: 1.75rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--accent);
-            text-shadow: 0 0 8px var(--accent);
+            font-family: 'Space Mono', monospace;
+            text-shadow: 0 0 10px var(--accent);
         }
 
         .modal {
@@ -205,15 +214,15 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
         }
 
         .modal-content {
             background: var(--surface);
             margin: 10% auto;
-            padding: 2rem;
-            max-width: 420px;
+            padding: 2.5rem;
+            max-width: 450px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
