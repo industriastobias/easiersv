@@ -7,28 +7,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --accent: #00f2fe;
-            --danger: #ff084a;
-            --success: #00ff87;
-            --bg-start: #0f0c29;
-            --bg-mid: #302b63;
-            --bg-end: #24243e;
+            --bg: #fdf8f4;
+            --card: #ffffff;
+            --lavanda: #c7b8ea;
+            --menta: #a8e6cf;
+            --coral: #ffb8b1;
+            --text: #3d3d3d;
+            --muted: #7a7a7a;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Poppins', system-ui, sans-serif;
         }
 
         body {
-            background: linear-gradient(-45deg, var(--bg-start), var(--bg-mid), var(--bg-end));
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: #fff;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -36,18 +34,12 @@
             padding: 2rem;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
+            font-size: 2.2rem;
+            font-weight: 600;
             margin-bottom: 2rem;
-            letter-spacing: -1px;
-            text-shadow: 0 0 10px var(--accent);
+            letter-spacing: -0.5px;
+            color: var(--lavanda);
         }
 
         .container {
@@ -58,104 +50,115 @@
             gap: 2rem;
         }
 
-        .glass {
-            background: var(--glass);
-            backdrop-filter: blur(12px) saturate(180%);
-            -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
+        .bubble {
+            background: var(--card);
+            border-radius: 24px;
             padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            box-shadow: var(--shadow);
+            transition: transform .3s ease;
+        }
+
+        .bubble:hover {
+            transform: translateY(-4px);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
+            gap: 1.2rem;
         }
 
         label {
-            font-size: 0.85rem;
-            color: var(--accent);
+            font-size: 0.9rem;
+            color: var(--muted);
             margin-bottom: .25rem;
         }
 
         input, select, textarea {
             width: 100%;
             padding: .75rem 1rem;
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            color: #fff;
-            transition: border-color .3s;
+            border: 1px solid transparent;
+            border-radius: 16px;
+            background: #f5f5f5;
+            color: var(--text);
+            transition: background .3s, border-color .3s;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--accent);
+            background: #ffffff;
+            border-color: var(--lavanda);
         }
 
         button {
             padding: .75rem 1.5rem;
             border: none;
-            border-radius: 12px;
-            font-weight: 700;
+            border-radius: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: all .3s ease;
         }
 
-        button.primary {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 10px var(--accent);
-        }
-
-        button.primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px var(--accent);
-        }
-
-        button.danger {
-            background: var(--danger);
+        button.lavanda {
+            background: var(--lavanda);
             color: #fff;
-            box-shadow: 0 0 10px var(--danger);
+            box-shadow: 0 4px 14px rgba(199, 184, 234, 0.4);
         }
 
-        button.danger:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px var(--danger);
+        button.lavanda:hover {
+            transform: scale(1.05);
+        }
+
+        button.menta {
+            background: var(--menta);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(168, 230, 207, 0.4);
+        }
+
+        button.menta:hover {
+            transform: scale(1.05);
+        }
+
+        button.coral {
+            background: var(--coral);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(255, 184, 177, 0.4);
+        }
+
+        button.coral:hover {
+            transform: scale(1.05);
         }
 
         .table-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 1.5rem;
         }
 
         .card-item {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
+            background: var(--card);
             border-radius: 20px;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: .5rem;
+            box-shadow: var(--shadow);
             transition: transform .3s, box-shadow .3s;
         }
 
         .card-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
         }
 
         .card-item h3 {
             font-size: 1.1rem;
-            color: var(--accent);
+            color: var(--lavanda);
         }
 
         .card-item p {
             font-size: .9rem;
-            color: #ddd;
+            color: var(--muted);
         }
 
         .card-item .actions {
@@ -167,30 +170,23 @@
         .total-box {
             align-self: center;
             padding: 1.5rem 3rem;
-            background: var(--glass);
-            border: 1px solid var(--accent);
+            background: var(--card);
             border-radius: 20px;
+            box-shadow: var(--shadow);
             text-align: center;
-            box-shadow: 0 0 20px var(--accent);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px var(--accent); }
-            50% { box-shadow: 0 0 30px var(--accent); }
-            100% { box-shadow: 0 0 10px var(--accent); }
         }
 
         .total-box h2 {
             font-size: 1rem;
-            color: var(--accent);
+            color: var(--lavanda);
             margin: 0;
         }
 
         .total-box p {
             font-size: 2rem;
-            font-weight: 800;
+            font-weight: 700;
             margin: 0;
+            color: var(--menta);
         }
 
         /* Scroll personalizado */
@@ -199,7 +195,7 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--accent);
+            background: var(--lavanda);
             border-radius: 4px;
         }
     </style>
@@ -210,7 +206,7 @@
 
     <div class="container">
         <!-- Formulario -->
-        <div class="glass">
+        <div class="bubble">
             <form id="purchaseForm" class="form-grid">
                 <div>
                     <label>Nombre del Producto:</label>
@@ -256,21 +252,21 @@
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
-                <div style="grid-column: 1 / -1; display: flex; gap: 1rem;">
-                    <button type="submit" class="primary">Guardar</button>
+                <div style="grid-column: 1 / -1; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button type="submit" class="lavanda">Guardar</button>
                     <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
-                    <button type="button" class="primary" onclick="document.getElementById('importFile').click()">Importar Excel</button>
-                    <button type="button" class="primary" onclick="exportToExcel()">Exportar Excel</button>
-                    <button type="button" class="danger" onclick="vaciarInventario()">Vaciar Inventario</button>
+                    <button type="button" class="menta" onclick="document.getElementById('importFile').click()">Importar Excel</button>
+                    <button type="button" class="menta" onclick="exportToExcel()">Exportar Excel</button>
+                    <button type="button" class="coral" onclick="vaciarInventario()">Vaciar Inventario</button>
                 </div>
             </form>
         </div>
 
-        <!-- Tabla convertida en tarjetas -->
+        <!-- Tarjetas de productos -->
         <div class="table-cards" id="inventoryList"></div>
     </div>
 
-    <!-- Total animado -->
+    <!-- Total -->
     <div class="total-box">
         <h2>Total en USD</h2>
         <p id="totalAmount">$0.00</p>
@@ -304,8 +300,8 @@
                     <p><strong>Categoría:</strong> ${item.category}</p>
                     <p><strong>Stock:</strong> ${item.quantity}</p>
                     <div class="actions">
-                        <button onclick="editItem(${idx})" class="primary">Editar</button>
-                        <button onclick="deleteItem(${idx})" class="danger">Eliminar</button>
+                        <button onclick="editItem(${idx})" class="lavanda">Editar</button>
+                        <button onclick="deleteItem(${idx})" class="coral">Eliminar</button>
                     </div>
                 </div>
             `).join('');
