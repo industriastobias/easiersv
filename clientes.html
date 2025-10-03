@@ -4,61 +4,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gestión de Clientes Minimalista 2025</title>
+  <title>Gestión Clientes - Pantalla Completa</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-    /* Reset y base */
+    /* Reset global */
     *, *::before, *::after {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
-      background-color: #fafafa;
       font-family: 'Inter', sans-serif;
+      background: #fafafa;
       color: #222;
-      display: flex;
-      justify-content: center;
-      padding: 24px 12px;
-      min-height: 100vh;
+      overflow: hidden;
     }
 
-    .container {
-      background: #fff;
-      width: 100%;
-      max-width: 700px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgb(0 0 0 / 0.05);
-      padding: 30px 32px;
+    body {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      grid-template-rows: 1fr;
+      height: 100vh;
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    /* Panel izquierdo: formulario y filtros */
+    .sidebar {
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 2rem;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem 1.5rem 2rem 2rem;
+      box-shadow: 0 10px 30px rgb(0 0 0 / 0.06);
+      overflow-y: auto;
     }
 
-    header {
+    .sidebar header {
+      font-size: 1.8rem;
       font-weight: 700;
-      font-size: 2rem;
-      color: #121212;
+      color: #4f46e5;
       user-select: none;
-      text-align: center;
-      letter-spacing: -0.025em;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid #dbeafe;
     }
 
-    /* Formulario minimal */
+    /* Formulario */
     form {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px 24px;
-      align-items: end;
+      gap: 1.2rem;
+      margin-top: 1rem;
     }
 
     label {
-      display: block;
+      font-size: 0.9rem;
       font-weight: 600;
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 6px;
+      color: #555;
       user-select: none;
     }
 
@@ -66,14 +70,14 @@
     input[type="email"],
     input[type="tel"] {
       width: 100%;
-      padding: 12px 14px;
-      font-size: 1rem;
+      padding: 10px 14px;
+      border-radius: 12px;
       border: 1.8px solid #ddd;
-      border-radius: 10px;
-      background-color: #f9f9f9;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
-      color: #121212;
+      font-size: 1rem;
       font-weight: 500;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background: #f9f9f9;
+      color: #222;
       font-family: inherit;
     }
 
@@ -86,44 +90,41 @@
       background-color: #fff;
     }
 
-    button {
-      grid-column: 1 / -1;
-      padding: 14px 20px;
-      font-size: 1rem;
-      font-weight: 700;
-      background-color: #4f46e5;
-      border: none;
-      border-radius: 12px;
+    button[type="submit"] {
+      background: #4f46e5;
       color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 0;
       cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1rem;
       user-select: none;
       transition: background-color 0.3s ease;
-      letter-spacing: 0.015em;
+      margin-top: 1rem;
     }
 
-    button:hover {
-      background-color: #3730a3;
+    button[type="submit"]:hover {
+      background: #3730a3;
     }
 
     /* Filtros */
     .filters {
       display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      justify-content: flex-start;
+      flex-direction: column;
+      gap: 1rem;
     }
 
     .filters input {
-      flex: 1 1 200px;
       padding: 10px 14px;
-      font-size: 1rem;
-      border: 1.5px solid #ddd;
       border-radius: 12px;
-      background-color: #fff;
-      transition: border-color 0.3s ease, box-shadow 0.25s ease;
+      border: 1.8px solid #ddd;
+      font-size: 1rem;
       font-weight: 500;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
       font-family: inherit;
-      color: #121212;
+      color: #222;
+      background: #fafafa;
     }
 
     .filters input::placeholder {
@@ -133,52 +134,69 @@
     .filters input:focus {
       border-color: #4f46e5;
       outline: none;
-      box-shadow: 0 0 12px rgb(79 70 229 / 0.25);
-      background-color: #fefefe;
+      box-shadow: 0 0 10px rgb(79 70 229 / 0.35);
+      background-color: #fff;
     }
 
-    /* Tabla minimalista */
+    /* Panel derecho: tabla */
+    .main-content {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 12px 30px rgb(0 0 0 / 0.06);
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+    }
+
+    .main-content header {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #4f46e5;
+      user-select: none;
+      border-bottom: 2px solid #dbeafe;
+      padding-bottom: 0.5rem;
+    }
+
     table {
-      border-collapse: separate;
-      border-spacing: 0 14px;
       width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 16px;
       font-size: 0.9rem;
-      color: #444;
       font-weight: 500;
+      color: #444;
       table-layout: fixed;
     }
 
-    thead tr {
-      background: none;
-    }
-
     thead th {
+      padding: 12px 16px;
       text-align: left;
       font-weight: 700;
       color: #555;
-      padding-bottom: 6px;
-      letter-spacing: 0.02em;
+      border-bottom: 2px solid #dbeafe;
       user-select: none;
     }
 
     tbody tr {
-      background: #fff;
-      box-shadow: 0 4px 15px rgb(0 0 0 / 0.04);
-      border-radius: 14px;
-      transition: background-color 0.2s ease;
+      background: #fefefe;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgb(0 0 0 / 0.04);
+      transition: background-color 0.25s ease;
       display: table-row;
     }
 
     tbody tr:hover {
-      background-color: #f3f4ff;
+      background-color: #eef2ff;
     }
 
     tbody td {
-      padding: 12px 18px;
+      padding: 14px 16px;
       vertical-align: middle;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     tbody td.actions {
@@ -187,64 +205,39 @@
       justify-content: flex-start;
     }
 
-    /* Botones icono minimal */
     tbody button {
       border: none;
-      cursor: pointer;
-      border-radius: 10px;
-      height: 32px;
-      width: 32px;
+      border-radius: 12px;
+      width: 36px;
+      height: 36px;
       font-size: 1.2rem;
+      cursor: pointer;
+      color: white;
+      user-select: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      user-select: none;
-      transition: background-color 0.3s ease;
-      color: white;
-      line-height: 1;
+      transition: background-color 0.25s ease;
       padding: 0;
     }
 
-    .editar-btn {
-      background-color: #64748b;
-    }
+    .editar-btn { background-color: #64748b; }
+    .editar-btn:hover { background-color: #475569; }
+    .sumar-btn { background-color: #10b981; }
+    .sumar-btn:hover { background-color: #059669; }
+    .quitar-btn { background-color: #ef4444; }
+    .quitar-btn:hover { background-color: #dc2626; }
+    .eliminar-btn { background-color: #6b7280; }
+    .eliminar-btn:hover { background-color: #4b5563; }
 
-    .editar-btn:hover {
-      background-color: #475569;
-    }
-
-    .sumar-btn {
-      background-color: #10b981;
-    }
-
-    .sumar-btn:hover {
-      background-color: #059669;
-    }
-
-    .quitar-btn {
-      background-color: #ef4444;
-    }
-
-    .quitar-btn:hover {
-      background-color: #dc2626;
-    }
-
-    .eliminar-btn {
-      background-color: #6b7280;
-    }
-
-    .eliminar-btn:hover {
-      background-color: #4b5563;
-    }
-
-    /* Modal */
+    /* Modal styling */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(18, 18, 18, 0.45);
+      background: rgba(12, 12, 12, 0.56);
       display: none;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       z-index: 10000;
       user-select: none;
     }
@@ -255,23 +248,22 @@
 
     .modal-content {
       background: white;
-      border-radius: 18px;
-      box-shadow: 0 16px 32px rgb(0 0 0 / 0.1);
-      padding: 28px 36px;
+      border-radius: 20px;
+      padding: 32px 40px;
       min-width: 320px;
-      max-width: 85vw;
+      max-width: 90vw;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
+      font-family: 'Inter', sans-serif;
       font-weight: 600;
       color: #222;
-      font-family: 'Inter', sans-serif;
     }
 
     .modal-content h2 {
-      margin: 0 0 6px 0;
+      margin: 0;
       font-weight: 700;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: #444;
       user-select: none;
     }
@@ -280,14 +272,14 @@
       font-weight: 600;
       font-size: 1rem;
       color: #666;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
 
     .modal-content input[type="number"] {
       padding: 14px 16px;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       border-radius: 14px;
-      border: 1.8px solid #ddd;
+      border: 2px solid #ddd;
       color: #222;
       font-weight: 600;
       transition: border-color 0.3s ease;
@@ -298,7 +290,7 @@
     .modal-content input[type="number"]:focus {
       border-color: #4f46e5;
       outline: none;
-      box-shadow: 0 0 10px rgb(79 70 229 / 0.3);
+      box-shadow: 0 0 12px rgb(79 70 229 / 0.35);
       background-color: #fff;
     }
 
@@ -312,14 +304,14 @@
     .modal-actions button {
       cursor: pointer;
       user-select: none;
-      padding: 12px 24px;
+      padding: 14px 28px;
       border-radius: 16px;
       font-weight: 700;
       font-size: 1rem;
       border: none;
       transition: background-color 0.25s ease;
       color: white;
-      min-width: 100px;
+      min-width: 110px;
       letter-spacing: 0.02em;
     }
 
@@ -347,12 +339,12 @@
       background-color: #dc2626;
     }
 
-    /* Notificación simple */
+    /* Notification */
     #notification {
       position: fixed;
       bottom: 30px;
       right: 30px;
-      padding: 14px 24px;
+      padding: 14px 28px;
       background-color: #4f46e5;
       color: white;
       font-weight: 600;
@@ -374,30 +366,30 @@
     }
 
     /* Responsive */
-    @media (max-width: 480px) {
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
+    @media (max-width: 900px) {
+      body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        padding: 1rem;
+        height: auto;
       }
 
-      .filters {
-        flex-direction: column;
+      .sidebar {
+        height: auto;
+        max-height: none;
+        padding: 1.5rem 1.25rem;
       }
 
-      .filters input {
-        width: 100%;
-      }
-
-      tbody td.actions {
-        gap: 8px;
+      .main-content {
+        padding: 1rem 1.25rem 2rem 1.25rem;
+        min-height: 400px;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="container" role="main" aria-label="Gestión de Clientes">
+  <aside class="sidebar" aria-label="Panel de gestión de clientes">
     <header>Gestión de Clientes</header>
 
     <form id="form-cliente" novalidate autocomplete="off">
@@ -421,26 +413,27 @@
       <input type="email" id="filtro-correo" placeholder="Filtrar por correo" aria-label="Filtrar por correo electrónico" autocomplete="off" />
       <input type="tel" id="filtro-telefono" placeholder="Filtrar por celular" aria-label="Filtrar por teléfono" autocomplete="off" />
     </section>
+  </aside>
 
-    <section aria-label="Lista de clientes registrados" tabindex="0">
-      <table role="grid" aria-describedby="tableDescription" aria-live="polite">
-        <caption id="tableDescription" class="visually-hidden">Tabla con la lista de clientes y sus detalles</caption>
-        <thead>
-          <tr role="row">
-            <th role="columnheader" scope="col">ID</th>
-            <th role="columnheader" scope="col">Correo</th>
-            <th role="columnheader" scope="col">Celular</th>
-            <th role="columnheader" scope="col">Puntos</th>
-            <th role="columnheader" scope="col">Fecha Registro</th>
-            <th role="columnheader" scope="col" style="min-width: 140px;">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="clientes-table" role="rowgroup"></tbody>
-      </table>
-    </section>
-  </main>
+  <section class="main-content" aria-label="Tabla con clientes registrados" tabindex="0">
+    <header>Lista de Clientes</header>
+    <table role="grid" aria-describedby="tableDescription" aria-live="polite">
+      <caption id="tableDescription" class="visually-hidden">Tabla con la lista de clientes y sus detalles</caption>
+      <thead>
+        <tr role="row">
+          <th role="columnheader" scope="col">ID</th>
+          <th role="columnheader" scope="col">Correo</th>
+          <th role="columnheader" scope="col">Celular</th>
+          <th role="columnheader" scope="col">Puntos</th>
+          <th role="columnheader" scope="col">Fecha Registro</th>
+          <th role="columnheader" scope="col" style="min-width: 140px;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="clientes-table" role="rowgroup"></tbody>
+    </table>
+  </section>
 
-  <!-- Modal puntos -->
+  <!-- Modal para modificar puntos -->
   <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
     <div class="modal-content">
       <h2 id="modal-title">Modificar Puntos del Cliente</h2>
