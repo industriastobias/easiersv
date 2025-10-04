@@ -228,14 +228,17 @@
 
     /* ---------- FACTURA ---------- */
     function abrirFactura(){
-      document.querySelectorAll('.factCheck').forEach(c=>c.style.display='block');
+      const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
+      if(seleccionados.length === 0){
+        alert('Por favor selecciona al menos un producto para facturar.');
+        return;
+      }
       document.getElementById('facturaModal').style.display='flex';
       document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
       actualizarTablaTicket();
     }
     function cerrarFactura(){
       document.getElementById('facturaModal').style.display='none';
-      document.querySelectorAll('.factCheck').forEach(c=>c.style.display='none');
     }
     function actualizarTablaTicket(){
       const checks=[...document.querySelectorAll('.factCheck:checked')];
@@ -253,7 +256,6 @@
       document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
       document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
     }
-    document.addEventListener('change',e=>{if(e.target.classList.contains('factCheck')) actualizarTablaTicket();});
 
     function imprimirTicket(){
       const cont=document.querySelector('.ticket-preview').innerHTML;
@@ -270,9 +272,11 @@
       ventana.print();
       ventana.close();
     }
+
     function descargarPDF(){
+      const cont=document.querySelector('.ticket-preview');
       const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:[80,120+document.querySelectorAll('#fBody tr').length*4]});
+      const doc=new jsPDF({unit:'mm',format:[80,120+cont.querySelectorAll('tr').length*4]});
       doc.setFontSize(10); let y=4;
       function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=4;}
       center('EASIERSV'); doc.setFontSize(8);
@@ -282,7 +286,7 @@
       doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=4;
       doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=3;
       doc.line(2,y,78,y); y+=2;
-      const filas=[...document.querySelectorAll('#fBody tr')];
+      const filas=cont.querySelectorAll('tbody tr');
       filas.forEach(fr=>{
         const c=fr.cells;
         doc.text(c[0].textContent,2,y);doc.text(c[1].textContent,45,y);doc.text(c[2].textContent,55,y);doc.text(c[3].textContent,68,y,'right');y+=4;
