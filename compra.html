@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
     <style>
         :root {
-            --bg: #f0f4f8;
-            --card: #ffffff;
-            --lavanda: #a0c4ff;
-            --menta: #8ac6d1;
-            --coral: #9ab7d3;
-            --text: #2d3748;
-            --muted: #718096;
-            --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            --bg: #f8f9fa; /* blanco grisáceo */
+            --card: #ffffff; /* blanco puro */
+            --lavanda: #243b55; /* azul marino oscuro para títulos y botones principales */
+            --menta: #4a6572; /* gris azulado medio para botones secundarios */
+            --coral: #6c757d; /* gris oscuro para botones de alerta */
+            --text: #212529; /* texto casi negro */
+            --muted: #6c757d; /* texto secundario gris */
+            --shadow: 0 8px 24px rgba(33, 37, 41, 0.1); /* sombra negra muy sutil */
         }
 
         * {
@@ -79,7 +79,7 @@
             padding: .75rem 1rem;
             border: 1px solid transparent;
             border-radius: 16px;
-            background: #f5f5f5;
+            background: #e9ecef;
             color: var(--text);
             transition: background .3s, border-color .3s;
         }
@@ -102,7 +102,7 @@
         button.lavanda {
             background: var(--lavanda);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(160, 196, 255, 0.4);
+            box-shadow: 0 4px 14px rgba(36, 59, 85, 0.4);
         }
 
         button.lavanda:hover {
@@ -112,7 +112,7 @@
         button.menta {
             background: var(--menta);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(138, 198, 209, 0.4);
+            box-shadow: 0 4px 14px rgba(74, 101, 114, 0.4);
         }
 
         button.menta:hover {
@@ -122,7 +122,7 @@
         button.coral {
             background: var(--coral);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(154, 183, 211, 0.4);
+            box-shadow: 0 4px 14px rgba(108, 117, 125, 0.4);
         }
 
         button.coral:hover {
@@ -148,7 +148,7 @@
 
         .card-item:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 30px rgba(33, 37, 41, 0.15);
         }
 
         .card-item h3 {
