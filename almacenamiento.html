@@ -9,13 +9,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
 
         :root {
-            --paper: #f2eee2;
-            --ink: #2a2a2a;
-            --line: #c8c0a6;
-            --tape-1: #d6a1c9;
-            --tape-2: #a1c9d6;
-            --tape-3: #c9d6a1;
-            --stamp: #b33a3a;
+            --bg: #f5f7fa;
+            --text: #1f2937;
+            --border: #d1d5db;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --highlight: #f3f4f6;
+            --white: #ffffff;
+            --danger: #dc2626;
         }
 
         * {
@@ -26,12 +27,8 @@
         }
 
         body {
-            background: var(--paper);
-            background-image:
-                repeating-linear-gradient(var(--line) 0 1px, transparent 1px 100%),
-                repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 100%);
-            background-size: 30px 30px;
-            color: var(--ink);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             padding: 2rem;
         }
@@ -41,40 +38,19 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 2rem;
-            letter-spacing: 2px;
-            color: var(--stamp);
+            letter-spacing: 1px;
+            color: var(--text);
             text-transform: uppercase;
         }
 
         .container {
             max-width: 1200px;
             margin: auto;
-            background: var(--paper);
-            border: 2px dashed var(--line);
+            background: var(--white);
+            border: 1px solid var(--border);
             padding: 2rem;
-            position: relative;
-        }
-
-        .container::before,
-        .container::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 30px;
-            background: var(--tape-1);
-            opacity: .7;
-            transform: rotate(-3deg);
-        }
-
-        .container::before {
-            top: -15px;
-            left: 30px;
-        }
-
-        .container::after {
-            bottom: -15px;
-            right: 30px;
-            background: var(--tape-2);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .search-block {
@@ -88,40 +64,38 @@
         label {
             font-weight: 700;
             font-size: .9rem;
-            color: var(--ink);
+            color: var(--text);
         }
 
         input, select {
             padding: .5rem .7rem;
-            border: 2px solid var(--line);
-            border-radius: 0;
-            background: transparent;
-            color: var(--ink);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--white);
+            color: var(--text);
             font-size: .95rem;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: var(--stamp);
+            border-color: var(--accent);
         }
 
         button.stamp {
-            padding: .4rem .8rem;
-            border: 3px solid var(--stamp);
-            background: transparent;
-            color: var(--stamp);
+            padding: .5rem 1rem;
+            border: 1px solid var(--accent);
+            background: var(--accent);
+            color: var(--white);
             font-weight: 700;
             font-size: .85rem;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all .2s ease;
-            position: relative;
+            border-radius: 4px;
+            transition: background .2s ease;
         }
 
         button.stamp:hover {
-            background: var(--stamp);
-            color: var(--paper);
-            transform: rotate(-2deg) scale(1.05);
+            background: var(--accent-hover);
         }
 
         table {
@@ -131,22 +105,22 @@
         }
 
         thead {
-            background: var(--line);
+            background: var(--highlight);
         }
 
         th, td {
             padding: .6rem .8rem;
-            border: 1px solid var(--line);
+            border: 1px solid var(--border);
             text-align: left;
         }
 
         th {
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         tbody tr:nth-child(odd) {
-            background: rgba(200, 192, 166, 0.15);
+            background: var(--highlight);
         }
 
         .no-results,
@@ -158,15 +132,15 @@
         }
 
         .no-results {
-            color: var(--stamp);
+            color: var(--danger);
         }
 
         .result-message {
-            color: var(--ink);
+            color: var(--text);
         }
 
         .confirmation-message {
-            color: var(--stamp);
+            color: var(--accent);
         }
 
         .modal {
@@ -177,18 +151,18 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .modal-content {
-            background: var(--paper);
-            border: 3px solid var(--stamp);
+            background: var(--white);
+            border: 1px solid var(--border);
             margin: 10% auto;
             padding: 2rem;
             width: 90%;
             max-width: 400px;
-            position: relative;
-            box-shadow: 0 0 0 10px var(--paper), 0 0 0 13px var(--stamp);
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
         .close {
@@ -196,24 +170,23 @@
             top: .5rem;
             right: .7rem;
             font-size: 1.5rem;
-            color: var(--stamp);
+            color: var(--text);
             cursor: pointer;
         }
 
         .highlight {
-            background: var(--tape-3) !important;
-            color: var(--ink);
+            background: var(--accent) !important;
+            color: var(--white);
             font-weight: 700;
         }
 
-        /* Scroll personalizado */
         ::-webkit-scrollbar {
             width: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--stamp);
-            border: 2px solid var(--paper);
+            background: var(--accent);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -289,7 +262,7 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
     <script>
         /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
