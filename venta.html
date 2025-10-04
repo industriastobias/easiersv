@@ -5,210 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos Vendidos</title>
     <style>
-        /* ---------- TRANSICIÓN SUAVE ---------- */
-        html{animation:fadeIn .4s ease-in-out;}
-        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-
-        /* ---------- COLORES NEUTROS Y ALTO CONTRASTE ---------- */
-        :root{
-          --bg:#fafafa;          /* blanco roto */
-          --card:#ffffff;
-          --text:#000000;        /* negro puro */
-          --accent:#2563eb;      /* azul profesional */
-          --danger:#dc2626;
-          --sidebar:#111827;     /* sidebar oscuro */
-          --sidebar-text:#ffffff;
-          --radius:12px;
-          --shadow:0 4px 16px rgba(0,0,0,.06);
-        }
-        [data-theme="dark"]{
-          --bg:#121212;
-          --card:#1e1e1e;
-          --text:#ffffff;
-          --accent:#3b82f6;
-          --danger:#ef4444;
-          --sidebar:#000000;
-          --sidebar-text:#ffffff;
-        }
-
-        /* ---------- BASE ---------- */
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
-        body{
-          height:100vh;
-          display:flex;
-          background:var(--bg);
-          color:var(--text);
-          overflow:hidden;
-        }
-
-        /* ---------- SIDEBAR ---------- */
-        .sidebar{
-          width:220px;
-          background:var(--sidebar);
-          color:var(--sidebar-text);
-          padding:32px 20px;
-          display:flex;
-          flex-direction:column;
-          gap:24px;
-        }
-        .sidebar h2{font-size:1.1rem;font-weight:600;}
-        .sidebar a{
-          color:var(--sidebar-text);
-          text-decoration:none;
-          font-size:.875rem;
-          padding:10px 14px;
-          border-radius:var(--radius);
-          transition:.2s;
-        }
-        .sidebar a:hover{background:#ffffff22;}
-
-        /* ---------- MAIN ---------- */
-        .main{
-          flex:1;
-          padding:40px;
-          overflow-y:auto;
-          display:flex;
-          flex-direction:column;
-          gap:24px;
-        }
-        .header{
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-        }
-        .header h1{font-size:2rem;font-weight:700;}
-        .total-box{
-          background:var(--card);
-          padding:12px 20px;
-          border-radius:var(--radius);
-          box-shadow:var(--shadow);
-          font-size:1.1rem;
-          font-weight:600;
-          color:var(--text);
-        }
-        .theme-toggle{
-          cursor:pointer;
-          font-size:1.4rem;
-          padding:8px;
-          border-radius:50%;
-          transition:.2s;
-        }
-        .theme-toggle:hover{background:#00000011;}
-
-        /* ---------- CONTROLES ---------- */
-        .controls{
-          display:flex;
-          gap:12px;
-          flex-wrap:wrap;
-        }
-        .controls input,
-        .controls select,
-        .controls button{
-          padding:10px 14px;
-          border:none;
-          border-radius:var(--radius);
-          background:var(--card);
-          color:var(--text);
-          box-shadow:var(--shadow);
-          font-size:.875rem;
-        }
-        .controls button{
-          background:var(--accent);
-          color:#fff;
-          cursor:pointer;
-          font-weight:600;
-        }
-        .controls button:hover{opacity:.9;}
-
-        /* ---------- CARDS ---------- */
-        .cards-grid{
-          display:grid;
-          grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-          gap:20px;
-        }
-        .card{
-          background:var(--card);
-          border-radius:var(--radius);
-          padding:24px;
-          box-shadow:var(--shadow);
-          display:flex;
-          flex-direction:column;
-          gap:12px;
-          transition:.3s;
-          position:relative;
-        }
-        .card:hover{transform:translateY(-4px);}
-        .card-header{
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-        }
-        .card-title{font-size:1.1rem;font-weight:600;color:var(--text);}
-        .card-code{font-size:.75rem;color:var(--text);}
-        .card-price{font-size:1.5rem;font-weight:700;color:var(--accent);}
-        .card-footer{
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          margin-top:auto;
-        }
-        .card-total{font-weight:600;color:var(--text);}
-        .card-delete{
-          background:var(--danger);
-          color:#fff;
-          border:none;
-          padding:6px 12px;
-          border-radius:8px;
-          font-size:.75rem;
-          cursor:pointer;
-        }
-
-        /* ---------- PAGINACIÓN ---------- */
-        .pagination{
-          display:flex;
-          justify-content:center;
-          gap:12px;
-          margin-top:auto;
-        }
-        .pagination button{
-          padding:8px 16px;
-          border:none;
-          border-radius:var(--radius);
-          background:var(--card);
-          color:var(--text);
-          box-shadow:var(--shadow);
-          cursor:pointer;
-          font-weight:600;
-        }
-        .pagination button:hover{background:var(--accent);color:#fff;}
-
+        html{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        :root{--bg:#fafafa;--card:#fff;--text:#000;--accent:#2563eb;--danger:#dc2626;--sidebar:#111827;--sidebar-text:#fff;--radius:12px;--shadow:0 4px 16px rgba(0,0,0,.06)}
+        [data-theme="dark"]{--bg:#121212;--card:#1e1e1e;--text:#fff;--accent:#3b82f6;--danger:#ef4444;--sidebar:#000;--sidebar-text:#fff}
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+        body{height:100vh;display:flex;background:var(--bg);color:var(--text);overflow:hidden}
+        .sidebar{width:220px;background:var(--sidebar);color:var(--sidebar-text);padding:32px 20px;display:flex;flex-direction:column;gap:24px}
+        .sidebar h2{font-size:1.1rem;font-weight:600}
+        .sidebar a{color:var(--sidebar-text);text-decoration:none;font-size:.875rem;padding:10px 14px;border-radius:var(--radius);transition:.2s}
+        .sidebar a:hover{background:#ffffff22}
+        .main{flex:1;padding:40px;overflow-y:auto;display:flex;flex-direction:column;gap:24px}
+        .header{display:flex;justify-content:space-between;align-items:center}
+        .header h1{font-size:2rem;font-weight:700}
+        .total-box{background:var(--card);padding:12px 20px;border-radius:var(--radius);box-shadow:var(--shadow);font-size:1.1rem;font-weight:600;color:var(--text)}
+        .theme-toggle{cursor:pointer;font-size:1.4rem;padding:8px;border-radius:50%;transition:.2s}
+        .theme-toggle:hover{background:#00000011}
+        .controls{display:flex;gap:12px;flex-wrap:wrap}
+        .controls input,.controls select,.controls button{padding:10px 14px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);font-size:.875rem}
+        .controls button{background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
+        .controls button:hover{opacity:.9}
+        .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+        .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;transition:.3s;position:relative}
+        .card:hover{transform:translateY(-4px)}
+        .card-header{display:flex;justify-content:space-between;align-items:center}
+        .card-title{font-size:1.1rem;font-weight:600;color:var(--text)}
+        .card-code{font-size:.75rem;color:var(--text)}
+        .card-price{font-size:1.5rem;font-weight:700;color:var(--accent)}
+        .card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+        .card-total{font-weight:600;color:var(--text)}
+        .card-delete{background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:.75rem;cursor:pointer}
+        .pagination{display:flex;justify-content:center;gap:12px;margin-top:auto}
+        .pagination button{padding:8px 16px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);cursor:pointer;font-weight:600}
+        .pagination button:hover{background:var(--accent);color:#fff}
         /* ---------- MODAL FACTURA ---------- */
-        #facturaModal{
-          position:fixed;inset:0;background:rgba(0,0,0,.45);
-          display:none;align-items:center;justify-content:center;
-          z-index:999;
-        }
-        .factura-card{
-          width:90vw;max-width:420px;background:var(--card);
-          border-radius:var(--radius);box-shadow:var(--shadow);
-          padding:24px;display:flex;flex-direction:column;gap:14px;
-          max-height:90vh;overflow:auto;
-        }
+        #facturaModal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999}
+        .factura-card{width:90vw;max-width:420px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
         .factura-card h2{margin-bottom:6px;font-size:1.2rem}
         .factura-card label{font-size:.8rem}
-        .factura-card input{
-          padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;
-          background:transparent;color:var(--text);
-        }
-        .ticket-preview{
-          background:#fff;color:#000;font-family:'Courier New',Courier,monospace;
-          font-size:11px;line-height:1.3;padding:6px 4px;border:1px dashed #000;
-          width:80mm;margin:0 auto;
-        }
-        .ticket-preview table{width:100%;border-collapse:collapse}
-        .ticket-preview th,.ticket-preview td{padding:2px 0}
-        .ticket-preview .num{text-align:right}
-        .ticket-preview .total{font-weight:700;font-size:12px;text-align:right}
+        .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
+        .ticket-preview{background:#fff;color:#000;font-family:'Courier New',Courier,monospace;font-size:10px;line-height:1.2;padding:6px 4px;border:1px dashed #999;width:80mm;margin:0 auto;box-sizing:border-box}
+        .ticket-preview *{margin:0;padding:0}
+        .ticket-preview header,.ticket-preview footer{text-align:center;font-size:10px}
+        .ticket-preview .line{border-top:1px dashed #000;margin:4px 0}
+        .ticket-preview table{width:100%;border-collapse:collapse;font-size:10px}
+        .ticket-preview th,.ticket-preview td{padding:1px 0;white-space:nowrap}
+        .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:45%}
+        .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:15%}
+        .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:20%}
+        .ticket-preview th:nth-child(4),.ticket-preview td:nth-child(4){text-align:right;width:20%}
+        .ticket-preview .total{font-weight:700;font-size:11px;text-align:right;margin-top:4px}
         .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
         .modal-buttons button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
         .btn-print{background:#16a34a;color:#fff}
@@ -244,7 +89,6 @@
       </select>
       <button onclick="generateDocx()">📄 Exportar DOCX</button>
       <button onclick="exportExcel()">📊 Exportar Excel</button>
-      <!-- ✅ NUEVO BOTÓN -->
       <button onclick="abrirFactura()">🧾 Generar Factura</button>
     </div>
 
@@ -257,31 +101,49 @@
     </div>
   </main>
 
-  <!-- ========== MODAL FACTURA – TICKET 80 mm ========== -->
+  <!-- Modal Factura -->
   <div id="facturaModal" onclick="if(event.target===this) cerrarFactura()">
     <div class="factura-card" onclick="event.stopPropagation()">
       <h2>Factura – Ticket</h2>
-
       <label>Factura N°</label>
-      <input id="fNum" value="00015">
-
+      <input id="fNum" value="00015" oninput="actualizarTablaTicket()">
       <label>Fecha</label>
       <input id="fFecha" readonly>
-
       <label>Cliente</label>
-      <input id="fCliente" value="Consumidor Final">
+      <input id="fCliente" value="Consumidor Final" oninput="actualizarTablaTicket()">
 
       <div class="ticket-preview">
-        <div style="text-align:center;font-size:12px;font-weight:700">EASIERSV</div>
-        <div style="text-align:center;font-size:10px">San Salvador, El Salvador<br>industriastobias@gmail.com<br>IG: @Easiersv</div>
-        <div style="border-top:1px dashed #000;margin:4px 0"></div>
+        <header>
+          <div style="font-size:11px;font-weight:700">EASIERSV</div>
+          <div>San Salvador, El Salvador</div>
+          <div>industriastobias@gmail.com</div>
+          <div>IG: @Easiersv</div>
+        </header>
+        <div class="line"></div>
+        <div style="font-size:10px">
+          <div>Factura N°: <span id="fNumTxt">00015</span></div>
+          <div>Fecha: <span id="fFechaTxt"></span></div>
+          <div>Cliente: <span id="fClienteTxt">Consumidor Final</span></div>
+        </div>
+        <div class="line"></div>
         <table>
-          <thead><tr><th>Producto</th><th class="num">Cant</th><th class="num">P/U</th><th class="num">Total</th></tr></thead>
+          <thead><tr>
+            <th>Producto</th>
+            <th>Cant</th>
+            <th>P/U</th>
+            <th>Total</th>
+          </tr></thead>
           <tbody id="fBody"></tbody>
         </table>
-        <div style="border-top:1px dashed #000;margin:4px 0"></div>
+        <div class="line"></div>
         <div class="total">TOTAL: $<span id="fTotal">0.00</span></div>
-        <div style="text-align:center;font-size:9px;margin-top:6px">¡Gracias por su compra!<br>No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.</div>
+        <footer>
+          <div>¡Gracias por su compra!</div>
+          <div style="font-size:8px;margin-top:4px">
+            No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.
+            Se aceptará dentro de los 15 días posteriores a la fecha de compra.
+          </div>
+        </footer>
       </div>
 
       <div class="modal-buttons">
@@ -292,12 +154,9 @@
     </div>
   </div>
 
-  <!-- jsPDF 29 kB -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    /* =========================================================
-       LÓGICA ORIGINAL (SIN TOCAR)
-    ========================================================= */
+    /* ---------- LÓGICA ORIGINAL ---------- */
     let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
     let currentPage = 1;
     let rowsPerPage = 10;
@@ -331,8 +190,7 @@
             <div class="card-total">Total: $${item.total.toFixed(2)}</div>
             <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
           </div>
-          <!-- Check oculto por defecto -->
-          <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
+          <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;display:none;">
         </div>
       `).join('');
     }
@@ -368,13 +226,9 @@
 
     loadSoldInventory();
 
-    /* =========================================================
-       NUEVA LÓGICA FACTURA – TICKET
-    ========================================================= */
+    /* ---------- FACTURA ---------- */
     function abrirFactura(){
-      // mostrar checks
       document.querySelectorAll('.factCheck').forEach(c=>c.style.display='block');
-      // abrir modal
       document.getElementById('facturaModal').style.display='flex';
       document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
       actualizarTablaTicket();
@@ -391,13 +245,14 @@
         const idx=+ch.value;
         const p=soldInventory[idx];
         const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${p.name}</td><td class="num">${p.quantity}</td><td class="num">${p.price}</td><td class="num">${p.total.toFixed(2)}</td>`;
+        tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>${p.price}</td><td>${p.total.toFixed(2)}</td>`;
         body.appendChild(tr);
         sum+=p.total;
       });
       document.getElementById('fTotal').textContent=sum.toFixed(2);
+      document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
+      document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
     }
-    // cada vez que cambian los checks
     document.addEventListener('change',e=>{if(e.target.classList.contains('factCheck')) actualizarTablaTicket();});
 
     function imprimirTicket(){
@@ -405,10 +260,10 @@
       const ventana=window.open('','','width=80,height=500');
       ventana.document.write(`
         <html><head><title>Ticket</title>
-        <style>body{font-family:'Courier New',monospace;font-size:11px;margin:0;padding:4px;width:80mm}
-        table{width:100%;border-collapse:none}
-        .num{text-align:right}
-        .total{font-weight:700;font-size:12px;text-align:right}</style>
+        <style>body{font-family:'Courier New',monospace;font-size:10px;margin:0;padding:4px;width:80mm}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:1px 0;white-space:nowrap}
+        .total{font-weight:700;font-size:11px;text-align:right}</style>
         </head><body>${cont}</body></html>`);
       ventana.document.close();
       ventana.focus();
@@ -417,46 +272,26 @@
     }
     function descargarPDF(){
       const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:[80,297]});
-      doc.setFontSize(10);
-      let y=4;
-      function center(txt){
-        const w=doc.getTextWidth(txt);
-        doc.text((80-w)/2,y,txt); y+=4;
-      }
-      center('EASIERSV');
-      doc.setFontSize(8);
-      center('San Salvador, El Salvador');
-      center('industriastobias@gmail.com');
-      center('IG: @Easiersv');
+      const doc=new jsPDF({unit:'mm',format:[80,120+document.querySelectorAll('#fBody tr').length*4]});
+      doc.setFontSize(10); let y=4;
+      function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=4;}
+      center('EASIERSV'); doc.setFontSize(8);
+      center('San Salvador, El Salvador'); center('industriastobias@gmail.com'); center('IG: @Easiersv');
       y+=2; doc.line(2,y,78,y); y+=2;
-
-      doc.setFontSize(9);
-      doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y);
-      y+=4;
-      doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y);
-      y+=4;
-      doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y);
-      y+=3; doc.line(2,y,78,y); y+=3;
-
+      doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y); y+=4;
+      doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=4;
+      doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=3;
+      doc.line(2,y,78,y); y+=2;
       const filas=[...document.querySelectorAll('#fBody tr')];
       filas.forEach(fr=>{
         const c=fr.cells;
-        doc.text(c[0].textContent,2,y);
-        doc.text(c[1].textContent,45,y);
-        doc.text(c[2].textContent,55,y);
-        doc.text(c[3].textContent,68,y,'right');
-        y+=4;
+        doc.text(c[0].textContent,2,y);doc.text(c[1].textContent,45,y);doc.text(c[2].textContent,55,y);doc.text(c[3].textContent,68,y,'right');y+=4;
       });
       y+=1; doc.line(2,y,78,y); y+=2;
-      doc.setFontSize(11);
-      doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
-      y+=6;
-      doc.setFontSize(8);
+      doc.setFontSize(11); doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
+      y+=6; doc.setFontSize(8);
       const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
-      const split=doc.splitTextToSize(msg,76);
-      split.forEach(l=>{center(l);y+=3;});
-
+      const split=doc.splitTextToSize(msg,76); split.forEach(l=>{center(l);y+=3;});
       doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
     }
   </script>
