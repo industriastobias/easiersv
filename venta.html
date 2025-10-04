@@ -37,23 +37,41 @@
         .pagination{display:flex;justify-content:center;gap:12px;margin-top:auto}
         .pagination button{padding:8px 16px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);cursor:pointer;font-weight:600}
         .pagination button:hover{background:var(--accent);color:#fff}
-        /* ---------- MODAL FACTURA ---------- */
+
+        /* ---------- MODAL FACTURA MEJORADO ---------- */
         #facturaModal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999}
         .factura-card{width:90vw;max-width:420px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
         .factura-card h2{margin-bottom:6px;font-size:1.2rem}
         .factura-card label{font-size:.8rem}
         .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
-        .ticket-preview{background:#fff;color:#000;font-family:'Courier New',Courier,monospace;font-size:10px;line-height:1.2;padding:6px 4px;border:1px dashed #999;width:80mm;margin:0 auto;box-sizing:border-box}
+
+        /* ---------- TICKET ---------- */
+        .ticket-preview {
+            background:#fff;
+            color:#000;
+            font-family:'Courier New',Courier,monospace;
+            font-size:11px;
+            line-height:1.4;
+            padding:8px 6px;
+            border:1px dashed #999;
+            width:100%;
+            max-width:360px;
+            margin:0 auto;
+            box-sizing:border-box;
+            word-wrap: break-word;
+        }
         .ticket-preview *{margin:0;padding:0}
-        .ticket-preview header,.ticket-preview footer{text-align:center;font-size:10px}
-        .ticket-preview .line{border-top:1px dashed #000;margin:4px 0}
-        .ticket-preview table{width:100%;border-collapse:collapse;font-size:10px}
-        .ticket-preview th,.ticket-preview td{padding:1px 0;white-space:nowrap}
-        .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:45%}
-        .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:15%}
-        .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:20%}
-        .ticket-preview th:nth-child(4),.ticket-preview td:nth-child(4){text-align:right;width:20%}
-        .ticket-preview .total{font-weight:700;font-size:11px;text-align:right;margin-top:4px}
+        .ticket-preview header,
+        .ticket-preview footer{text-align:center;font-size:11px}
+        .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
+        .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout: fixed}
+        .ticket-preview th, .ticket-preview td{padding:2px 4px;white-space:normal;word-wrap: break-word}
+        .ticket-preview th:first-child, .ticket-preview td:first-child{text-align:left;width:45%}
+        .ticket-preview th:nth-child(2), .ticket-preview td:nth-child(2){text-align:center;width:15%}
+        .ticket-preview th:nth-child(3), .ticket-preview td:nth-child(3){text-align:right;width:20%}
+        .ticket-preview th:nth-child(4), .ticket-preview td:nth-child(4){text-align:right;width:20%}
+        .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px}
+
         .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
         .modal-buttons button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
         .btn-print{background:#16a34a;color:#fff}
@@ -114,13 +132,13 @@
 
       <div class="ticket-preview">
         <header>
-          <div style="font-size:11px;font-weight:700">EASIERSV</div>
+          <div style="font-size:12px;font-weight:700">EASIERSV</div>
           <div>San Salvador, El Salvador</div>
           <div>industriastobias@gmail.com</div>
           <div>IG: @Easiersv</div>
         </header>
         <div class="line"></div>
-        <div style="font-size:10px">
+        <div style="font-size:11px">
           <div>Factura N°: <span id="fNumTxt">00015</span></div>
           <div>Fecha: <span id="fFechaTxt"></span></div>
           <div>Cliente: <span id="fClienteTxt">Consumidor Final</span></div>
@@ -139,7 +157,7 @@
         <div class="total">TOTAL: $<span id="fTotal">0.00</span></div>
         <footer>
           <div>¡Gracias por su compra!</div>
-          <div style="font-size:8px;margin-top:4px">
+          <div style="font-size:9px;margin-top:4px">
             No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.
             Se aceptará dentro de los 15 días posteriores a la fecha de compra.
           </div>
@@ -156,7 +174,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    /* ---------- LÓGICA ORIGINAL ---------- */
     let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
     let currentPage = 1;
     let rowsPerPage = 10;
@@ -190,7 +207,6 @@
             <div class="card-total">Total: $${item.total.toFixed(2)}</div>
             <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
           </div>
-          <!-- ✅ Check-box siempre visible -->
           <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
         </div>
       `).join('');
@@ -227,7 +243,6 @@
 
     loadSoldInventory();
 
-    /* ---------- FACTURA ---------- */
     function abrirFactura(){
       const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
       if(seleccionados.length === 0){
@@ -238,9 +253,8 @@
       document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
       actualizarTablaTicket();
     }
-    function cerrarFactura(){
-      document.getElementById('facturaModal').style.display='none';
-    }
+    function cerrarFactura(){ document.getElementById('facturaModal').style.display='none'; }
+
     function actualizarTablaTicket(){
       const checks=[...document.querySelectorAll('.factCheck:checked')];
       const body=document.getElementById('fBody'); body.innerHTML='';
@@ -256,6 +270,7 @@
       document.getElementById('fTotal').textContent=sum.toFixed(2);
       document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
       document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
+      document.getElementById('fFechaTxt').textContent=document.getElementById('fFecha').value;
     }
 
     function imprimirTicket(){
@@ -263,10 +278,12 @@
       const ventana=window.open('','','width=80,height=500');
       ventana.document.write(`
         <html><head><title>Ticket</title>
-        <style>body{font-family:'Courier New',monospace;font-size:10px;margin:0;padding:4px;width:80mm}
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:1px 0;white-space:nowrap}
-        .total{font-weight:700;font-size:11px;text-align:right}</style>
+        <style>
+          body{font-family:'Courier New',monospace;font-size:11px;margin:0;padding:6px;width:360px}
+          table{width:100%;border-collapse:collapse}
+          th,td{padding:2px 4px;white-space:normal;word-wrap:break-word}
+          .total{font-weight:700;font-size:12px;text-align:right}
+        </style>
         </head><body>${cont}</body></html>`);
       ventana.document.close();
       ventana.focus();
@@ -277,23 +294,27 @@
     function descargarPDF(){
       const cont=document.querySelector('.ticket-preview');
       const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:[80,120+cont.querySelectorAll('tr').length*4]});
-      doc.setFontSize(10); let y=4;
-      function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=4;}
+      const doc=new jsPDF({unit:'mm',format:[80,120+cont.querySelectorAll('tr').length*6]});
+      doc.setFontSize(11); let y=6;
+      function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=6;}
       center('EASIERSV'); doc.setFontSize(8);
       center('San Salvador, El Salvador'); center('industriastobias@gmail.com'); center('IG: @Easiersv');
-      y+=2; doc.line(2,y,78,y); y+=2;
-      doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y); y+=4;
-      doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=4;
-      doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=3;
-      doc.line(2,y,78,y); y+=2;
+      y+=2; doc.line(2,y,78,y); y+=4;
+      doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y); y+=6;
+      doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=6;
+      doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=4;
+      doc.line(2,y,78,y); y+=4;
       const filas=cont.querySelectorAll('tbody tr');
       filas.forEach(fr=>{
         const c=fr.cells;
-        doc.text(c[0].textContent,2,y);doc.text(c[1].textContent,45,y);doc.text(c[2].textContent,55,y);doc.text(c[3].textContent,68,y,'right');y+=4;
+        doc.text(c[0].textContent,2,y);
+        doc.text(c[1].textContent,45,y);
+        doc.text(c[2].textContent,55,y);
+        doc.text(c[3].textContent,68,y,'right');
+        y+=6;
       });
-      y+=1; doc.line(2,y,78,y); y+=2;
-      doc.setFontSize(11); doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
+      y+=2; doc.line(2,y,78,y); y+=4;
+      doc.setFontSize(12); doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
       y+=6; doc.setFontSize(8);
       const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
       const split=doc.splitTextToSize(msg,76); split.forEach(l=>{center(l);y+=3;});
