@@ -45,33 +45,53 @@
         .factura-card label{font-size:.8rem}
         .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
 
-        /* ---------- TICKET ---------- */
+        /* ---------- TICKET MEJORADO ---------- */
         .ticket-preview {
-            background:#fff;
-            color:#000;
-            font-family:'Courier New',Courier,monospace;
-            font-size:11px;
-            line-height:1.4;
-            padding:8px 6px;
-            border:1px dashed #999;
-            width:100%;
-            max-width:360px;
-            margin:0 auto;
-            box-sizing:border-box;
-            word-wrap: break-word;
+            background: #fff;
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.2;
+            padding: 10px;
+            border: 1px dashed #000;
+            width: 100%;
+            max-width: 360px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            white-space: nowrap;
         }
-        .ticket-preview *{margin:0;padding:0}
+        .ticket-preview * { margin: 0; padding: 0; }
         .ticket-preview header,
-        .ticket-preview footer{text-align:center;font-size:11px}
-        .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
-        .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout: fixed}
-        .ticket-preview th, .ticket-preview td{padding:2px 4px;white-space:normal;word-wrap: break-word}
-        .ticket-preview th:first-child, .ticket-preview td:first-child{text-align:left;width:45%}
-        .ticket-preview th:nth-child(2), .ticket-preview td:nth-child(2){text-align:center;width:15%}
-        .ticket-preview th:nth-child(3), .ticket-preview td:nth-child(3){text-align:right;width:20%}
-        .ticket-preview th:nth-child(4), .ticket-preview td:nth-child(4){text-align:right;width:20%}
-        .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px}
-
+        .ticket-preview footer { text-align: center; }
+        .ticket-preview .line { border-top: 1px dashed #000; margin: 6px 0; }
+        .ticket-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            margin-top: 4px;
+        }
+        .ticket-preview th, .ticket-preview td {
+            padding: 3px 4px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ticket-preview th {
+            font-weight: bold;
+            border-bottom: 1px dashed #000;
+        }
+        .ticket-preview .text-right { text-align: right; }
+        .ticket-preview .text-center { text-align: center; }
+        .ticket-preview .total {
+            font-weight: 700;
+            font-size: 13px;
+            text-align: right;
+            margin-top: 6px;
+            border-top: 1px dashed #000;
+            padding-top: 4px;
+        }
+        .ticket-preview .small { font-size: 10px; color: #555; margin-top: 4px; }
         .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
         .modal-buttons button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
         .btn-print{background:#16a34a;color:#fff}
@@ -274,17 +294,26 @@
     }
 
     function imprimirTicket(){
-      const cont=document.querySelector('.ticket-preview').innerHTML;
-      const ventana=window.open('','','width=80,height=500');
+      const cont = document.querySelector('.ticket-preview').cloneNode(true);
+      const estilo = document.createElement('style');
+      estilo.textContent = `
+        body { font-family: 'Courier New', monospace; margin: 0; padding: 10px; width: 360px; }
+        table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        th, td { padding: 3px 4px; text-align: left; white-space: nowrap; }
+        .total { font-weight: 700; font-size: 13px; text-align: right; }
+        .line { border-top: 1px dashed #000; margin: 6px 0; }
+      `;
+      const ventana = window.open('', '', 'width=360,height=600');
       ventana.document.write(`
-        <html><head><title>Ticket</title>
-        <style>
-          body{font-family:'Courier New',monospace;font-size:11px;margin:0;padding:6px;width:360px}
-          table{width:100%;border-collapse:collapse}
-          th,td{padding:2px 4px;white-space:normal;word-wrap:break-word}
-          .total{font-weight:700;font-size:12px;text-align:right}
-        </style>
-        </head><body>${cont}</body></html>`);
+        <html>
+          <head>
+            <title>Imprimir Ticket</title>
+          </head>
+          <body>
+            ${cont.innerHTML}
+          </body>
+        </html>`);
+      ventana.document.head.appendChild(estilo);
       ventana.document.close();
       ventana.focus();
       ventana.print();
