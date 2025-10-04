@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Descuentos - Nueva UI</title>
+  <title>Descuentos - Todos los Productos</title>
   <style>
     :root {
       --primary: #0077ff;
@@ -91,7 +91,7 @@
 </head>
 <body>
 
-<div class="header">Gestión de Descuentos</div>
+<div class="header">Asignar Descuentos - Todos los Productos</div>
 
 <div class="container">
   <div class="controls">
@@ -128,19 +128,18 @@
   const searchInput = document.getElementById('searchInput');
   const lineInfo = document.getElementById('lineInfo');
 
-  function loadDiscountedProducts() {
+  function loadAllProducts() {
     const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    const filtered = inventory.filter(item => item.discount > 0);
-
     const search = searchInput.value.toLowerCase();
-    const filteredSearch = filtered.filter((item, idx) =>
+
+    const filtered = inventory.filter((item, idx) =>
       item.name.toLowerCase().includes(search) ||
       item.code.toLowerCase().includes(search) ||
       item.category.toLowerCase().includes(search)
     );
 
     tbody.innerHTML = '';
-    filteredSearch.forEach((item, idx) => {
+    filtered.forEach((item, idx) => {
       const row = document.createElement('tr');
       row.dataset.line = idx + 1;
       row.innerHTML = `
@@ -148,8 +147,8 @@
         <td>${item.name}</td>
         <td>${item.code}</td>
         <td>$${item.price}</td>
-        <td>${item.discount}%</td>
-        <td>$${(item.price - (item.price * item.discount / 100)).toFixed(2)}</td>
+        <td><input type="number" value="${item.discount || 0}" min="0" max="100" onchange="updateDiscount('${item.code}', this.value)" /></td>
+        <td>$${(item.price - (item.price * (item.discount || 0) / 100)).toFixed(2)}</td>
         <td>${item.category}</td>
         <td>${item.quantity}</td>
         <td><button onclick="removeDiscount('${item.code}')">Quitar Descuento</button></td>
@@ -157,11 +156,21 @@
       tbody.appendChild(row);
     });
 
-    if (filteredSearch.length === 0) {
-      lineInfo.textContent = 'No se encontraron productos con descuento.';
-    } else {
-      lineInfo.textContent = `Mostrando ${filteredSearch.length} productos con descuento.`;
+    lineInfo.textContent = `Mostrando ${filtered.length} productos.`;
+  }
+
+  function updateDiscount(code, value) {
+    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    const item = inventory.find(i => i.code === code);
+    if (item) {
+      item.discount = parseFloat(value) || 0;
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+      loadAllProducts();
     }
+  }
+
+  function removeDiscount(code) {
+    updateDiscount(code, 0);
   }
 
   function goToLine() {
@@ -178,34 +187,24 @@
     }
   }
 
-  function removeDiscount(code) {
-    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    const item = inventory.find(i => i.code === code);
-    if (item) {
-      item.discount = 0;
-      localStorage.setItem('inventory', JSON.stringify(inventory));
-      loadDiscountedProducts();
-    }
-  }
-
   function applyGlobalDiscount() {
     const discount = parseFloat(document.getElementById('globalDiscount').value);
     if (isNaN(discount) || discount < 0 || discount > 100) return alert('Descuento inválido');
-    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     inventory.forEach(item => item.discount = discount);
     localStorage.setItem('inventory', JSON.stringify(inventory));
-    loadDiscountedProducts();
+    loadAllProducts();
   }
 
   function removeGlobalDiscount() {
-    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     inventory.forEach(item => item.discount = 0);
     localStorage.setItem('inventory', JSON.stringify(inventory));
-    loadDiscountedProducts();
+    loadAllProducts();
   }
 
-  searchInput.addEventListener('input', loadDiscountedProducts);
-  document.addEventListener('DOMContentLoaded', loadDiscountedProducts);
+  searchInput.addEventListener('input', loadAllProducts);
+  document.addEventListener('DOMContentLoaded', loadAllProducts);
 </script>
 
 </body>
