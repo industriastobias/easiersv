@@ -216,6 +216,34 @@
         </div>
     </div>
 
+    <!-- Botón hamburguesa -->
+    <button id="toggleSide" style="position:fixed;top:14px;left:14px;z-index:999;background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:4px;font-size:18px;cursor:pointer;">☰</button>
+
+    <style>
+    /* clase que oculta el sidebar */
+    body.sidebar-collapsed .sidebar { margin-left:-240px; }
+    body.sidebar-collapsed .main { margin-left:0; }
+    .sidebar, .main { transition:margin-left .3s; }
+    .main { margin-left:240px; }
+    </style>
+
+    <script>
+    (()=>{
+      const body=document.body;
+      const btn=document.getElementById('toggleSide');
+      function sync(){
+         const collapsed=localStorage.getItem('sidebarCollapsed')==='true';
+         body.classList.toggle('sidebar-collapsed',collapsed);
+      }
+      btn.addEventListener('click',()=>{
+         const currently=!body.classList.contains('sidebar-collapsed');
+         body.classList.toggle('sidebar-collapsed',!currently);
+         localStorage.setItem('sidebarCollapsed',!currently);
+      });
+      sync();
+    })();
+    </script>
+
     <script>
         let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
         let currentPage = 1;
@@ -256,7 +284,6 @@
         }
 
         function generateDocx() {
-            // Tu función original sin cambios
             const date = new Date().toLocaleString();
             const zip = new PizZip();
             const doc = new window.docxtemplater(zip);
