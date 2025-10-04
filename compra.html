@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
     <style>
         :root {
-            --bg: #fdf8f4;
+            --bg: #f0f4f8;
             --card: #ffffff;
-            --lavanda: #c7b8ea;
-            --menta: #a8e6cf;
-            --coral: #ffb8b1;
-            --text: #3d3d3d;
-            --muted: #7a7a7a;
+            --lavanda: #a0c4ff;
+            --menta: #8ac6d1;
+            --coral: #9ab7d3;
+            --text: #2d3748;
+            --muted: #718096;
             --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
         }
 
@@ -102,7 +102,7 @@
         button.lavanda {
             background: var(--lavanda);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(199, 184, 234, 0.4);
+            box-shadow: 0 4px 14px rgba(160, 196, 255, 0.4);
         }
 
         button.lavanda:hover {
@@ -112,7 +112,7 @@
         button.menta {
             background: var(--menta);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(168, 230, 207, 0.4);
+            box-shadow: 0 4px 14px rgba(138, 198, 209, 0.4);
         }
 
         button.menta:hover {
@@ -122,7 +122,7 @@
         button.coral {
             background: var(--coral);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(255, 184, 177, 0.4);
+            box-shadow: 0 4px 14px rgba(154, 183, 211, 0.4);
         }
 
         button.coral:hover {
@@ -272,7 +272,7 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
     <script>
         /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
