@@ -58,11 +58,11 @@
     .ticket-preview .data-row{display:flex;justify-content:space-between;font-size:11px;margin:2px 0}
     .ticket-preview .data-row span:first-child{font-weight:600}
     .ticket-preview .product-list{border-top:1px solid #ccc;padding-top:6px}
-    .ticket-preview .product-item{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dashed #eee}
-    .ticket-preview .product-item .name{font-weight:600;flex:1}
-    .ticket-preview .product-item .qty{text-align:center;width:30px}
-    .ticket-preview .product-item .pu{text-align:right;width:50px}
-    .ticket-preview .product-item .total{text-align:right;width:60px;font-weight:600}
+    .ticket-preview .product-item{margin-bottom:8px}
+    .ticket-preview .product-name{font-weight:600;font-size:12px;margin-bottom:2px}
+    .ticket-preview .product-details{display:flex;justify-content:space-between;font-size:11px;color:#444;margin-top:2px}
+    .ticket-preview .product-details span{text-align:right}
+    .ticket-preview .product-details span:first-child{text-align:left}
     .ticket-preview .total-box{background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;text-align:right;font-size:14px;font-weight:700}
     .ticket-preview footer{text-align:center;font-size:10px;color:#555;margin-top:8px}
 
@@ -255,10 +255,12 @@
       const item=document.createElement('div');
       item.className='product-item';
       item.innerHTML=`
-        <span class="name">${p.name}</span>
-        <span class="qty">${p.quantity}</span>
-        <span class="pu">$${Number(p.price).toFixed(2)}</span>
-        <span class="total">$${Number(p.total).toFixed(2)}</span>
+        <div class="product-name">${p.name}</div>
+        <div class="product-details">
+          <span>Cantidad: ${p.quantity}</span>
+          <span>Precio: $${Number(p.price).toFixed(2)}</span>
+          <span>Total: $${Number(p.total).toFixed(2)}</span>
+        </div>
       `;
       body.appendChild(item);
       sum+=Number(p.total);
@@ -284,11 +286,11 @@
               .data-row{display:flex;justify-content:space-between;font-size:11px;margin:2px 0}
               .data-row span:first-child{font-weight:600}
               .product-list{border-top:1px solid #ccc;padding-top:6px}
-              .product-item{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dashed #eee}
-              .product-item .name{font-weight:600;flex:1}
-              .product-item .qty{text-align:center;width:30px}
-              .product-item .pu{text-align:right;width:50px}
-              .product-item .total{text-align:right;width:60px;font-weight:600}
+              .product-item{margin-bottom:8px}
+              .product-name{font-weight:600;font-size:12px;margin-bottom:2px}
+              .product-details{display:flex;justify-content:space-between;font-size:11px;color:#444;margin-top:2px}
+              .product-details span{text-align:right}
+              .product-details span:first-child{text-align:left}
               .total-box{background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;text-align:right;font-size:14px;font-weight:700}
               footer{text-align:center;font-size:10px;color:#555;margin-top:8px}
           </style>
@@ -304,7 +306,7 @@
 
   function descargarPDF(){
     const {jsPDF}=window.jspdf;
-    const doc=new jsPDF({unit:'mm',format:[80,170]});
+    const doc=new jsPDF({unit:'mm',format:[80,160]});
     let y=6;
     const margen=4;
     const ancho=80-margen*2;
@@ -317,43 +319,4 @@
     doc.text('San Salvador, El Salvador',margen+((ancho-doc.getTextWidth('San Salvador, El Salvador'))/2),y); y+=5;
     doc.text('industriastobias@gmail.com',margen+((ancho-doc.getTextWidth('industriastobias@gmail.com'))/2),y); y+=5;
     doc.text('IG: @Easiersv',margen+((ancho-doc.getTextWidth('IG: @Easiersv'))/2),y); y+=5;
-    doc.setDrawColor('#ccc'); doc.line(margen,y,80-margen,y); y+=5;
-
-    // Datos
-    doc.setFont(undefined,'bold'); doc.setTextColor('#000');
-    doc.text('Factura N°:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fNum').value,margen+22,y); y+=5;
-    doc.setFont(undefined,'bold'); doc.text('Fecha:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fFecha').value,margen+22,y); y+=5;
-    doc.setFont(undefined,'bold'); doc.text('Cliente:',margen,y); doc.setFont(undefined,'normal');
-    const cliente=doc.splitTextToSize(document.getElementById('fCliente').value,ancho-22);
-    doc.text(cliente,margen+22,y); y+=cliente.length*4; y+=3;
-    doc.line(margen,y,80-margen,y); y+=4;
-
-    // Productos
-    const filas=document.querySelectorAll('#fBody .product-item');
-    filas.forEach(fr=>{
-      const name=fr.querySelector('.name').textContent;
-      const qty=fr.querySelector('.qty').textContent;
-      const pu=fr.querySelector('.pu').textContent;
-      const total=fr.querySelector('.total').textContent;
-      const prod=doc.splitTextToSize(name,26);
-      doc.text(prod,margen,y); doc.text(qty,margen+28,y); doc.text(pu,margen+42,y); doc.text(total,margen+62,y,'right');
-      y+=prod.length*3+1;
-    });
-    y+=3; doc.line(margen,y,80-margen,y); y+=4;
-
-    // Total
-    doc.setFillColor('#f5f5f5'); doc.rect(margen,y-1,ancho,6,'F');
-    doc.setFontSize(14); doc.setFont(undefined,'bold');
-    doc.text('TOTAL:',margen+2,y+4); doc.text('$'+document.getElementById('fTotal').textContent,margen+62,y+4,'right'); y+=8;
-
-    // Footer
-    doc.setFontSize(10); doc.setFont(undefined,'normal');
-    const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
-    const split=doc.splitTextToSize(msg,ancho);
-    split.forEach(l=>{doc.text(l,margen,y);y+=3;});
-
-    doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
-  }
-</script>
-</body>
-</html>
+    doc.setDrawColor('#ccc'); doc.line(margen,y,80-marg
