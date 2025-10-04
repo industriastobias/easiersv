@@ -201,10 +201,10 @@
             <div class="card-title">${item.name}</div>
             <div class="card-code">${item.code}</div>
           </div>
-          <div class="card-price">$${item.price}</div>
+          <div class="card-price">$${Number(item.price).toFixed(2)}</div>
           <div>Cantidad vendida: ${item.quantity}</div>
           <div class="card-footer">
-            <div class="card-total">Total: $${item.total.toFixed(2)}</div>
+            <div class="card-total">Total: $${Number(item.total).toFixed(2)}</div>
             <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
           </div>
           <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
@@ -263,7 +263,7 @@
         const idx=+ch.value;
         const p=soldInventory[idx];
         const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>${p.price}</td><td>${p.total.toFixed(2)}</td>`;
+        tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>$${Number(p.price).toFixed(2)}</td><td>$${Number(p.total).toFixed(2)}</td>`;
         body.appendChild(tr);
         sum+=p.total;
       });
@@ -298,32 +298,52 @@
     }
 
     function descargarPDF(){
-      const cont=document.querySelector('.ticket-preview');
       const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:[80,120+cont.querySelectorAll('tr').length*6]});
-      doc.setFontSize(11); let y=6;
-      function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=6;}
-      center('EASIERSV'); doc.setFontSize(8);
-      center('San Salvador, El Salvador'); center('industriastobias@gmail.com'); center('IG: @Easiersv');
-      y+=2; doc.line(2,y,78,y); y+=4;
-      doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y); y+=6;
-      doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=6;
-      doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=4;
-      doc.line(2,y,78,y); y+=4;
-      const filas=cont.querySelectorAll('tbody tr');
+      const doc=new jsPDF({unit:'mm',format:[80,200]});
+      let y=6;
+      const margen=4;
+      const ancho=80-margen*2;
+
+      // Header
+      doc.setFontSize(14); doc.setFont(undefined,'bold');
+      doc.text('EASIERSV',margen+((ancho-doc.getTextWidth('EASIERSV'))/2),y); y+=8;
+      doc.setFontSize(10); doc.setFont(undefined,'normal');
+      doc.text('San Salvador, El Salvador',margen+((ancho-doc.getTextWidth('San Salvador, El Salvador'))/2),y); y+=5;
+      doc.text('industriastobias@gmail.com',margen+((ancho-doc.getTextWidth('industriastobias@gmail.com'))/2),y); y+=5;
+      doc.text('IG: @Easiersv',margen+((ancho-doc.getTextWidth('IG: @Easiersv'))/2),y); y+=5;
+      doc.line(margen,y,80-margen,y); y+=5;
+
+      // Datos
+      doc.setFont(undefined,'bold'); doc.text('Factura N°:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fNum').value,margen+22,y); y+=5;
+      doc.setFont(undefined,'bold'); doc.text('Fecha:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fFecha').value,margen+22,y); y+=5;
+      doc.setFont(undefined,'bold'); doc.text('Cliente:',margen,y); doc.setFont(undefined,'normal'); 
+      const cliente=doc.splitTextToSize(document.getElementById('fCliente').value,ancho-22);
+      doc.text(cliente,margen+22,y); y+=cliente.length*4; y+=3;
+      doc.line(margen,y,80-margen,y); y+=4;
+
+      // Tabla
+      doc.setFontSize(9); doc.setFont(undefined,'bold');
+      doc.text('Producto',margen,y); doc.text('Cant',margen+30,y); doc.text('P/U',margen+40,y); doc.text('Total',margen+60,y); y+=4;
+      doc.setFont(undefined,'normal');
+      const filas=document.querySelectorAll('#fBody tr');
       filas.forEach(fr=>{
         const c=fr.cells;
-        doc.text(c[0].textContent,2,y);
-        doc.text(c[1].textContent,45,y);
-        doc.text(c[2].textContent,55,y);
-        doc.text(c[3].textContent,68,y,'right');
-        y+=6;
+        const prod=doc.splitTextToSize(c[0].textContent,28);
+        doc.text(prod,margen,y); doc.text(c[1].textContent,margen+30,y); doc.text(c[2].textContent,margen+40,y); doc.text(c[3].textContent,margen+60,y,'right');
+        y+=prod.length*3+1;
       });
-      y+=2; doc.line(2,y,78,y); y+=4;
-      doc.setFontSize(12); doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
-      y+=6; doc.setFontSize(8);
+      y+=3; doc.line(margen,y,80-margen,y); y+=4;
+
+      // Total
+      doc.setFontSize(12); doc.setFont(undefined,'bold');
+      doc.text('TOTAL:',margen,y); doc.text('$'+document.getElementById('fTotal').textContent,margen+60,y,'right'); y+=8;
+
+      // Footer
+      doc.setFontSize(8); doc.setFont(undefined,'normal');
       const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
-      const split=doc.splitTextToSize(msg,76); split.forEach(l=>{center(l);y+=3;});
+      const split=doc.splitTextToSize(msg,ancho);
+      split.forEach(l=>{doc.text(l,margen,y);y+=3;});
+
       doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
     }
   </script>
