@@ -1,325 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos Vendidos</title>
-    <style>
-        html{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        :root{--bg:#fafafa;--card:#fff;--text:#000;--accent:#2563eb;--danger:#dc2626;--sidebar:#111827;--sidebar-text:#fff;--radius:12px;--shadow:0 4px 16px rgba(0,0,0,.06)}
-        [data-theme="dark"]{--bg:#121212;--card:#1e1e1e;--text:#fff;--accent:#3b82f6;--danger:#ef4444;--sidebar:#000;--sidebar-text:#fff}
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
-        body{height:100vh;display:flex;background:var(--bg);color:var(--text);overflow:hidden}
-        .sidebar{width:220px;background:var(--sidebar);color:var(--sidebar-text);padding:32px 20px;display:flex;flex-direction:column;gap:24px}
-        .sidebar h2{font-size:1.1rem;font-weight:600}
-        .sidebar a{color:var(--sidebar-text);text-decoration:none;font-size:.875rem;padding:10px 14px;border-radius:var(--radius);transition:.2s}
-        .sidebar a:hover{background:#ffffff22}
-        .main{flex:1;padding:40px;overflow-y:auto;display:flex;flex-direction:column;gap:24px}
-        .header{display:flex;justify-content:space-between;align-items:center}
-        .header h1{font-size:2rem;font-weight:700}
-        .total-box{background:var(--card);padding:12px 20px;border-radius:var(--radius);box-shadow:var(--shadow);font-size:1.1rem;font-weight:600;color:var(--text)}
-        .theme-toggle{cursor:pointer;font-size:1.4rem;padding:8px;border-radius:50%;transition:.2s}
-        .theme-toggle:hover{background:#00000011}
-        .controls{display:flex;gap:12px;flex-wrap:wrap}
-        .controls input,.controls select,.controls button{padding:10px 14px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);font-size:.875rem}
-        .controls button{background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
-        .controls button:hover{opacity:.9}
-        .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
-        .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;transition:.3s;position:relative}
-        .card:hover{transform:translateY(-4px)}
-        .card-header{display:flex;justify-content:space-between;align-items:center}
-        .card-title{font-size:1.1rem;font-weight:600;color:var(--text)}
-        .card-code{font-size:.75rem;color:var(--text)}
-        .card-price{font-size:1.5rem;font-weight:700;color:var(--accent)}
-        .card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
-        .card-total{font-weight:600;color:var(--text)}
-        .card-delete{background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:.75rem;cursor:pointer}
-        .pagination{display:flex;justify-content:center;gap:12px;margin-top:auto}
-        .pagination button{padding:8px 16px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);cursor:pointer;font-weight:600}
-        .pagination button:hover{background:var(--accent);color:#fff}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Productos Vendidos</title>
+<style>
+    html{animation:fadeIn .4s ease-in-out}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    :root{--bg:#fafafa;--card:#fff;--text:#000;--accent:#2563eb;--danger:#dc2626;--sidebar:#111827;--sidebar-text:#fff;--radius:12px;--shadow:0 4px 16px rgba(0,0,0,.06)}
+    [data-theme="dark"]{--bg:#121212;--card:#1e1e1e;--text:#fff;--accent:#3b82f6;--danger:#ef4444;--sidebar:#000;--sidebar-text:#fff}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+    body{height:100vh;display:flex;background:var(--bg);color:var(--text);overflow:hidden}
+    .sidebar{width:220px;background:var(--sidebar);color:var(--sidebar-text);padding:32px 20px;display:flex;flex-direction:column;gap:24px}
+    .sidebar h2{font-size:1.1rem;font-weight:600}
+    .sidebar a{color:var(--sidebar-text);text-decoration:none;font-size:.875rem;padding:10px 14px;border-radius:var(--radius);transition:.2s}
+    .sidebar a:hover{background:#ffffff22}
+    .main{flex:1;padding:40px;overflow-y:auto;display:flex;flex-direction:column;gap:24px}
+    .header{display:flex;justify-content:space-between;align-items:center}
+    .header h1{font-size:2rem;font-weight:700}
+    .total-box{background:var(--card);padding:12px 20px;border-radius:var(--radius);box-shadow:var(--shadow);font-size:1.1rem;font-weight:600;color:var(--text)}
+    .theme-toggle{cursor:pointer;font-size:1.4rem;padding:8px;border-radius:50%;transition:.2s}
+    .theme-toggle:hover{background:#00000011}
+    .controls{display:flex;gap:12px;flex-wrap:wrap}
+    .controls input,.controls select,.controls button{padding:10px 14px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);font-size:.875rem}
+    .controls button{background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
+    .controls button:hover{opacity:.9}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+    .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;transition:.3s;position:relative}
+    .card:hover{transform:translateY(-4px)}
+    .card-header{display:flex;justify-content:space-between;align-items:center}
+    .card-title{font-size:1.1rem;font-weight:600;color:var(--text)}
+    .card-code{font-size:.75rem;color:var(--text)}
+    .card-price{font-size:1.5rem;font-weight:700;color:var(--accent)}
+    .card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+    .card-total{font-weight:600;color:var(--text)}
+    .card-delete{background:var(--danger);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:.75rem;cursor:pointer}
+    .pagination{display:flex;justify-content:center;gap:12px;margin-top:auto}
+    .pagination button{padding:8px 16px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);cursor:pointer;font-weight:600}
+    .pagination button:hover{background:var(--accent);color:#fff}
 
-        /* ---------- MODAL FACTURA MEJORADO ---------- */
-        #facturaModal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999}
-        .factura-card{width:90vw;max-width:420px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
-        .factura-card h2{margin-bottom:6px;font-size:1.2rem}
-        .factura-card label{font-size:.8rem}
-        .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
+    /* ---------- MODAL FACTURA ---------- */
+    #facturaModal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999}
+    .factura-card{width:90vw;max-width:420px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
+    .factura-card h2{margin-bottom:6px;font-size:1.2rem}
+    .factura-card label{font-size:.8rem}
+    .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
 
-        /* ---------- TICKET ---------- */
-        .ticket-preview {
-            background:#fff;
-            color:#000;
-            font-family:'Courier New',Courier,monospace;
-            font-size:11px;
-            line-height:1.4;
-            padding:8px 6px;
-            border:1px dashed #999;
-            width:100%;
-            max-width:360px;
-            margin:0 auto;
-            box-sizing:border-box;
-            word-wrap: break-word;
-        }
-        .ticket-preview *{margin:0;padding:0}
-        .ticket-preview header,
-        .ticket-preview footer{text-align:center;font-size:11px}
-        .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
-        .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout: fixed}
-        .ticket-preview th, .ticket-preview td{padding:2px 4px;white-space:normal;word-wrap: break-word}
-        .ticket-preview th:first-child, .ticket-preview td:first-child{text-align:left;width:45%}
-        .ticket-preview th:nth-child(2), .ticket-preview td:nth-child(2){text-align:center;width:15%}
-        .ticket-preview th:nth-child(3), .ticket-preview td:nth-child(3){text-align:right;width:20%}
-        .ticket-preview th:nth-child(4), .ticket-preview td:nth-child(4){text-align:right;width:20%}
-        .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px}
+    /* ---------- TICKET ESTILO TIENDA ---------- */
+    .ticket-preview{
+        background:#fff;
+        color:#000;
+        font-family:'Courier New',Courier,monospace;
+        font-size:11px;
+        line-height:1.2;
+        padding:8px 6px;
+        border:1px dashed #999;
+        width:100%;
+        max-width:360px;
+        margin:0 auto;
+        box-sizing:border-box;
+        word-wrap: break-word;
+    }
+    .ticket-preview *{margin:0;padding:0}
+    .ticket-preview header,
+    .ticket-preview footer{text-align:center;font-size:11px}
+    .ticket-preview .line{border-top:1px dashed #000;margin:4px 0}
+    .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout: fixed}
+    .ticket-preview th, .ticket-preview td{padding:2px 2px;white-space:normal;word-wrap: break-word;}
+    .ticket-preview th:first-child, .ticket-preview td:first-child{text-align:left;width:45%}
+    .ticket-preview th:nth-child(2), .ticket-preview td:nth-child(2){text-align:center;width:15%}
+    .ticket-preview th:nth-child(3), .ticket-preview td:nth-child(3){text-align:right;width:20%}
+    .ticket-preview th:nth-child(4), .ticket-preview td:nth-child(4){text-align:right;width:20%}
+    .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:4px}
+    .ticket-preview footer div:last-child{line-height:1.1;font-size:9px;margin-top:2px}
 
-        .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-        .modal-buttons button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
-        .btn-print{background:#16a34a;color:#fff}
-        .btn-close{background:#6b7280;color:#fff}
-    </style>
+    .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+    .modal-buttons button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
+    .btn-print{background:#16a34a;color:#fff}
+    .btn-close{background:#6b7280;color:#fff}
+</style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <nav class="sidebar">
-    <h2>EASIERSV</h2>
-    <a href="menu.html">📋 Menú</a>
-    <a href="#">📦 Productos Vendidos</a>
-    <a href="#">📊 Estadísticas</a>
-    <a href="#">⚙️ Configuración</a>
-    <a href="index.html">🚪 Cerrar Sesión</a>
-  </nav>
+<!-- Sidebar -->
+<nav class="sidebar">
+  <h2>EASIERSV</h2>
+  <a href="menu.html">📋 Menú</a>
+  <a href="#">📦 Productos Vendidos</a>
+  <a href="#">📊 Estadísticas</a>
+  <a href="#">⚙️ Configuración</a>
+  <a href="index.html">🚪 Cerrar Sesión</a>
+</nav>
 
-  <!-- Contenido principal -->
-  <main class="main">
-    <header class="header">
-      <h1>Ventas Realizadas</h1>
-      <div class="total-box" id="totalUSD">Total vendido: $0.00 USD</div>
-      <span class="theme-toggle" onclick="toggleTheme()">🌗</span>
-    </header>
+<!-- Contenido principal -->
+<main class="main">
+<header class="header">
+  <h1>Ventas Realizadas</h1>
+  <div class="total-box" id="totalUSD">Total vendido: $0.00 USD</div>
+  <span class="theme-toggle" onclick="toggleTheme()">🌗</span>
+</header>
 
-    <div class="controls">
-      <input type="text" id="filterName" placeholder="Filtrar por nombre">
-      <input type="text" id="filterCode" placeholder="Filtrar por código">
-      <select id="rowsPerPage" onchange="loadSoldInventory()">
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-      </select>
-      <button onclick="generateDocx()">📄 Exportar DOCX</button>
-      <button onclick="exportExcel()">📊 Exportar Excel</button>
-      <button onclick="abrirFactura()">🧾 Generar Factura</button>
+<div class="controls">
+  <input type="text" id="filterName" placeholder="Filtrar por nombre">
+  <input type="text" id="filterCode" placeholder="Filtrar por código">
+  <select id="rowsPerPage" onchange="loadSoldInventory()">
+    <option value="10">10</option>
+    <option value="25">25</option>
+    <option value="50">50</option>
+  </select>
+  <button onclick="generateDocx()">📄 Exportar DOCX</button>
+  <button onclick="exportExcel()">📊 Exportar Excel</button>
+  <button onclick="abrirFactura()">🧾 Generar Factura</button>
+</div>
+
+<!-- Tarjetas -->
+<section class="cards-grid" id="soldInventoryList"></section>
+
+<div class="pagination">
+  <button onclick="prevPage()">← Anterior</button>
+  <button onclick="nextPage()">Siguiente →</button>
+</div>
+</main>
+
+<!-- Modal Factura -->
+<div id="facturaModal" onclick="if(event.target===this) cerrarFactura()">
+  <div class="factura-card" onclick="event.stopPropagation()">
+    <h2>Factura – Ticket</h2>
+    <label>Factura N°</label>
+    <input id="fNum" value="00015" oninput="actualizarTablaTicket()">
+    <label>Fecha</label>
+    <input id="fFecha" readonly>
+    <label>Cliente</label>
+    <input id="fCliente" value="Consumidor Final" oninput="actualizarTablaTicket()">
+
+    <div class="ticket-preview">
+      <header>
+        <div style="font-weight:700;font-size:12px;">EASIERSV</div>
+        <div>San Salvador, El Salvador</div>
+        <div>industriastobias@gmail.com</div>
+        <div>IG: @Easiersv</div>
+      </header>
+      <div class="line"></div>
+      <div style="font-size:11px">
+        <div>Factura N°: <span id="fNumTxt">00015</span></div>
+        <div>Fecha: <span id="fFechaTxt"></span></div>
+        <div>Cliente: <span id="fClienteTxt">Consumidor Final</span></div>
+      </div>
+      <div class="line"></div>
+      <table>
+        <thead><tr>
+          <th>Producto</th>
+          <th>Cant</th>
+          <th>P/U</th>
+          <th>Total</th>
+        </tr></thead>
+        <tbody id="fBody"></tbody>
+      </table>
+      <div class="line"></div>
+      <div class="total">TOTAL: $<span id="fTotal">0.00</span></div>
+      <footer>
+        <div>¡Gracias por su compra!</div>
+        <div>No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.</div>
+      </footer>
     </div>
 
-    <!-- Tarjetas -->
-    <section class="cards-grid" id="soldInventoryList"></section>
-
-    <div class="pagination">
-      <button onclick="prevPage()">← Anterior</button>
-      <button onclick="nextPage()">Siguiente →</button>
-    </div>
-  </main>
-
-  <!-- Modal Factura -->
-  <div id="facturaModal" onclick="if(event.target===this) cerrarFactura()">
-    <div class="factura-card" onclick="event.stopPropagation()">
-      <h2>Factura – Ticket</h2>
-      <label>Factura N°</label>
-      <input id="fNum" value="00015" oninput="actualizarTablaTicket()">
-      <label>Fecha</label>
-      <input id="fFecha" readonly>
-      <label>Cliente</label>
-      <input id="fCliente" value="Consumidor Final" oninput="actualizarTablaTicket()">
-
-      <div class="ticket-preview">
-        <header>
-          <div style="font-size:12px;font-weight:700">EASIERSV</div>
-          <div>San Salvador, El Salvador</div>
-          <div>industriastobias@gmail.com</div>
-          <div>IG: @Easiersv</div>
-        </header>
-        <div class="line"></div>
-        <div style="font-size:11px">
-          <div>Factura N°: <span id="fNumTxt">00015</span></div>
-          <div>Fecha: <span id="fFechaTxt"></span></div>
-          <div>Cliente: <span id="fClienteTxt">Consumidor Final</span></div>
-        </div>
-        <div class="line"></div>
-        <table>
-          <thead><tr>
-            <th>Producto</th>
-            <th>Cant</th>
-            <th>P/U</th>
-            <th>Total</th>
-          </tr></thead>
-          <tbody id="fBody"></tbody>
-        </table>
-        <div class="line"></div>
-        <div class="total">TOTAL: $<span id="fTotal">0.00</span></div>
-        <footer>
-          <div>¡Gracias por su compra!</div>
-          <div style="font-size:9px;margin-top:4px">
-            No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.
-            Se aceptará dentro de los 15 días posteriores a la fecha de compra.
-          </div>
-        </footer>
-      </div>
-
-      <div class="modal-buttons">
-        <button class="btn-close" onclick="cerrarFactura()">Cerrar</button>
-        <button class="btn-print" onclick="imprimirTicket()">Imprimir</button>
-        <button class="btn-print" style="background:#dc2626" onclick="descargarPDF()">PDF</button>
-      </div>
+    <div class="modal-buttons">
+      <button class="btn-close" onclick="cerrarFactura()">Cerrar</button>
+      <button class="btn-print" onclick="imprimirTicket()">Imprimir</button>
+      <button class="btn-print" style="background:#dc2626" onclick="descargarPDF()">PDF</button>
     </div>
   </div>
+</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
-    let currentPage = 1;
-    let rowsPerPage = 10;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
+let currentPage = 1;
+let rowsPerPage = 10;
 
-    function loadSoldInventory() {
-      const nameFilter = document.getElementById('filterName').value.toLowerCase();
-      const codeFilter = document.getElementById('filterCode').value.toLowerCase();
-      rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
+function loadSoldInventory() {
+  const nameFilter = document.getElementById('filterName').value.toLowerCase();
+  const codeFilter = document.getElementById('filterCode').value.toLowerCase();
+  rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
 
-      const filtered = soldInventory.filter(item =>
-        item.name.toLowerCase().includes(nameFilter) &&
-        item.code.toLowerCase().includes(codeFilter)
-      );
+  const filtered = soldInventory.filter(item =>
+    item.name.toLowerCase().includes(nameFilter) &&
+    item.code.toLowerCase().includes(codeFilter)
+  );
 
-      const total = filtered.reduce((sum, item) => sum + item.total, 0);
-      document.getElementById('totalUSD').textContent = `Total vendido: $${total.toFixed(2)} USD`;
+  const total = filtered.reduce((sum, item) => sum + item.total, 0);
+  document.getElementById('totalUSD').textContent = `Total vendido: $${total.toFixed(2)} USD`;
 
-      const start = (currentPage - 1) * rowsPerPage;
-      const paginated = filtered.slice(start, start + rowsPerPage);
+  const start = (currentPage - 1) * rowsPerPage;
+  const paginated = filtered.slice(start, start + rowsPerPage);
 
-      const container = document.getElementById('soldInventoryList');
-      container.innerHTML = paginated.map((item, i) => `
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">${item.name}</div>
-            <div class="card-code">${item.code}</div>
-          </div>
-          <div class="card-price">$${item.price}</div>
-          <div>Cantidad vendida: ${item.quantity}</div>
-          <div class="card-footer">
-            <div class="card-total">Total: $${item.total.toFixed(2)}</div>
-            <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
-          </div>
-          <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
-        </div>
-      `).join('');
-    }
+  const container = document.getElementById('soldInventoryList');
+  container.innerHTML = paginated.map((item, i) => `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">${item.name}</div>
+        <div class="card-code">${item.code}</div>
+      </div>
+      <div class="card-price">$${item.price}</div>
+      <div>Cantidad vendida: ${item.quantity}</div>
+      <div class="card-footer">
+        <div class="card-total">Total: $${item.total.toFixed(2)}</div>
+        <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
+      </div>
+      <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
+    </div>
+  `).join('');
+}
 
-    window.deleteSoldItem = function (index) {
-      soldInventory.splice(index, 1);
-      localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
-      loadSoldInventory();
-    };
+window.deleteSoldItem = function (index) {
+  soldInventory.splice(index, 1);
+  localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+  loadSoldInventory();
+};
 
-    function toggleTheme() {
-      const html = document.documentElement;
-      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    }
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
 
-    function prevPage() {
-      if (currentPage > 1) { currentPage--; loadSoldInventory(); }
-    }
+function prevPage() {
+  if (currentPage > 1) { currentPage--; loadSoldInventory(); }
+}
 
-    function nextPage() {
-      const filtered = soldInventory.filter(item =>
-        item.name.toLowerCase().includes(document.getElementById('filterName').value.toLowerCase()) &&
-        item.code.toLowerCase().includes(document.getElementById('filterCode').value.toLowerCase())
-      );
-      if (currentPage < Math.ceil(filtered.length / rowsPerPage)) { currentPage++; loadSoldInventory(); }
-    }
+function nextPage() {
+  const filtered = soldInventory.filter(item =>
+    item.name.toLowerCase().includes(document.getElementById('filterName').value.toLowerCase()) &&
+    item.code.toLowerCase().includes(document.getElementById('filterCode').value.toLowerCase())
+  );
+  if (currentPage < Math.ceil(filtered.length / rowsPerPage)) { currentPage++; loadSoldInventory(); }
+}
 
-    function generateDocx() { alert('Exportar DOCX (simulado)'); }
-    function exportExcel() { alert('Exportar Excel (simulado)'); }
+function generateDocx() { alert('Exportar DOCX (simulado)'); }
+function exportExcel() { alert('Exportar Excel (simulado)'); }
 
-    document.getElementById('filterName').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
-    document.getElementById('filterCode').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
+document.getElementById('filterName').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
+document.getElementById('filterCode').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
 
-    loadSoldInventory();
+loadSoldInventory();
 
-    function abrirFactura(){
-      const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
-      if(seleccionados.length === 0){
-        alert('Por favor selecciona al menos un producto para facturar.');
-        return;
-      }
-      document.getElementById('facturaModal').style.display='flex';
-      document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
-      actualizarTablaTicket();
-    }
-    function cerrarFactura(){ document.getElementById('facturaModal').style.display='none'; }
+/* ---------- FACTURA ---------- */
+function abrirFactura(){
+  const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
+  if(seleccionados.length === 0){ alert('Por favor selecciona al menos un producto para facturar.'); return; }
+  document.getElementById('facturaModal').style.display='flex';
+  document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
+  actualizarTablaTicket();
+}
+function cerrarFactura(){ document.getElementById('facturaModal').style.display='none'; }
+function actualizarTablaTicket(){
+  const checks=[...document.querySelectorAll('.factCheck:checked')];
+  const body=document.getElementById('fBody'); body.innerHTML='';
+  let sum=0;
+  checks.forEach(ch=>{
+    const idx=+ch.value;
+    const p=soldInventory[idx];
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>${p.price}</td><td>${p.total.toFixed(2)}</td>`;
+    body.appendChild(tr);
+    sum+=p.total;
+  });
+  document.getElementById('fTotal').textContent=sum.toFixed(2);
+  document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
+  document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
+}
 
-    function actualizarTablaTicket(){
-      const checks=[...document.querySelectorAll('.factCheck:checked')];
-      const body=document.getElementById('fBody'); body.innerHTML='';
-      let sum=0;
-      checks.forEach(ch=>{
-        const idx=+ch.value;
-        const p=soldInventory[idx];
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>${p.price}</td><td>${p.total.toFixed(2)}</td>`;
-        body.appendChild(tr);
-        sum+=p.total;
-      });
-      document.getElementById('fTotal').textContent=sum.toFixed(2);
-      document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
-      document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
-      document.getElementById('fFechaTxt').textContent=document.getElementById('fFecha').value;
-    }
+function imprimirTicket(){
+  const cont=document.querySelector('.ticket-preview').innerHTML;
+  const ventana=window.open('','','width=80,height=500');
+  ventana.document.write(`<html><head><title>Ticket</title>
+    <style>body{font-family:'Courier New',monospace;font-size:11px;margin:0;padding:4px;width:80mm} table{width:100%;border-collapse:collapse} th,td{padding:2px 0;white-space:normal}</style>
+  </head><body>${cont}</body></html>`);
+  ventana.document.close();
+  ventana.focus();
+  ventana.print();
+  ventana.close();
+}
 
-    function imprimirTicket(){
-      const cont=document.querySelector('.ticket-preview').innerHTML;
-      const ventana=window.open('','','width=80,height=500');
-      ventana.document.write(`
-        <html><head><title>Ticket</title>
-        <style>
-          body{font-family:'Courier New',monospace;font-size:11px;margin:0;padding:6px;width:360px}
-          table{width:100%;border-collapse:collapse}
-          th,td{padding:2px 4px;white-space:normal;word-wrap:break-word}
-          .total{font-weight:700;font-size:12px;text-align:right}
-        </style>
-        </head><body>${cont}</body></html>`);
-      ventana.document.close();
-      ventana.focus();
-      ventana.print();
-      ventana.close();
-    }
-
-    function descargarPDF(){
-      const cont=document.querySelector('.ticket-preview');
-      const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:[80,120+cont.querySelectorAll('tr').length*6]});
-      doc.setFontSize(11); let y=6;
-      function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=6;}
-      center('EASIERSV'); doc.setFontSize(8);
-      center('San Salvador, El Salvador'); center('industriastobias@gmail.com'); center('IG: @Easiersv');
-      y+=2; doc.line(2,y,78,y); y+=4;
-      doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y); y+=6;
-      doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=6;
-      doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=4;
-      doc.line(2,y,78,y); y+=4;
-      const filas=cont.querySelectorAll('tbody tr');
-      filas.forEach(fr=>{
-        const c=fr.cells;
-        doc.text(c[0].textContent,2,y);
-        doc.text(c[1].textContent,45,y);
-        doc.text(c[2].textContent,55,y);
-        doc.text(c[3].textContent,68,y,'right');
-        y+=6;
-      });
-      y+=2; doc.line(2,y,78,y); y+=4;
-      doc.setFontSize(12); doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
-      y+=6; doc.setFontSize(8);
-      const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
-      const split=doc.splitTextToSize(msg,76); split.forEach(l=>{center(l);y+=3;});
-      doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
-    }
-  </script>
+function descargarPDF(){
+  const cont=document.querySelector('.ticket-preview');
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:[80,120+cont.querySelectorAll('tr').length*6]});
+  doc.setFontSize(11); let y=4;
+  function center(txt){const w=doc.getTextWidth(txt);doc.text((80-w)/2,y,txt);y+=4;}
+  center('EASIERSV'); doc.setFontSize(9);
+  center('San Salvador, El Salvador'); center('industriastobias@gmail.com'); center('IG: @Easiersv');
+  y+=2; doc.line(2,y,78,y); y+=2;
+  doc.text(`Factura N°: ${document.getElementById('fNum').value}`,2,y); y+=4;
+  doc.text(`Fecha: ${document.getElementById('fFecha').value}`,2,y); y+=4;
+  doc.text(`Cliente: ${document.getElementById('fCliente').value}`,2,y); y+=3;
+  doc.line(2,y,78,y); y+=2;
+  const filas=cont.querySelectorAll('tbody tr');
+  filas.forEach(fr=>{
+    const c=fr.cells;
+    doc.text(c[0].textContent,2,y);
+    doc.text(c[1].textContent,45,y);
+    doc.text(c[2].textContent,55,y);
+    doc.text(c[3].textContent,68,y,'right');
+    y+=6;
+  });
+  y+=2; doc.line(2,y,78,y); y+=4;
+  doc.setFontSize(12); doc.text('TOTAL: $'+document.getElementById('fTotal').textContent,68,y,'right');
+  y+=6; doc.setFontSize(9);
+  const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
+  const split=doc.splitTextToSize(msg,76); split.forEach(l=>{doc.text(l,2,y);y+=3;});
+  doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
+}
+</script>
 </body>
 </html>
