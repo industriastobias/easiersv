@@ -1,187 +1,344 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Gastos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .form-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            max-width: 600px;
-            margin: 20px auto;
-        }
-        .form-container input {
-            padding: 10px;
-            margin: 5px;
-            width: 22%;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        .form-container button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            width: 100px;
-        }
-        .form-container button:hover {
-            background-color: #45a049;
-        }
-        .total {
-            font-weight: bold;
-            margin-top: 20px;
-            text-align: right;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contabilidad Personal</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --text: #222;
+      --primary: #4f46e5;
+      --danger: #e11d48;
+      --border: #ddd;
+    }
+
+    [data-theme="dark"] {
+      --bg: #111827;
+      --card: #1f2937;
+      --text: #f9fafb;
+      --border: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      transition: background .3s, color .3s;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header button {
+      background: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: .5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    input, select {
+      padding: .75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: .75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: .75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      text-align: right;
+    }
+
+    #chart {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-<body>
-    <h1>Control de Gastos</h1>
+<body data-theme="light">
 
-    <!-- Formulario para agregar gasto -->
-    <div class="form-container">
-        <input type="text" id="descripcion" placeholder="Descripción" required>
-        <input type="number" id="monto" placeholder="Monto" required>
-        <input type="date" id="fecha" required>
-        <input type="text" id="metodo" placeholder="Método de pago" required>
-        <button onclick="agregarGasto()">Agregar Gasto</button>
+<header>
+  <h1>Mi Contabilidad</h1>
+  <button onclick="toggleTheme()">🌙 Modo oscuro</button>
+</button>
+</header>
+
+<div class="container">
+
+  <!-- Formulario -->
+  <div class="card">
+    <h2>Agregar Gasto</h2>
+    <div class="form-grid">
+      <input type="text" id="descripcion" placeholder="Descripción" />
+      <input type="number" id="monto" placeholder="Monto" step="0.01" />
+      <input type="date" id="fecha" />
+      <select id="categoria">
+        <option value="">Categoría</option>
+        <option>Comida</option>
+        <option>Transporte</option>
+        <option>Servicios</option>
+        <option>Entretenimiento</option>
+        <option>Salud</option>
+        <option>Otros</option>
+      </select>
+      <select id="metodo">
+        <option value="">Método</option>
+        <option>Efectivo</option>
+        <option>Tarjeta</option>
+        <option>Transferencia</option>
+      </select>
     </div>
+    <button onclick="agregarGasto()">Agregar</button>
+  </div>
 
-    <!-- Tabla de gastos -->
-    <table id="tablaGastos">
-        <thead>
-            <tr>
-                <th>Descripción</th>
-                <th>Monto</th>
-                <th>Fecha</th>
-                <th>Método de Pago</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Los gastos se agregarán aquí -->
-        </tbody>
+  <!-- Filtros -->
+  <div class="card">
+    <h3>Filtrar</h3>
+    <div class="form-grid">
+      <input type="date" id="filtroFecha" onchange="filtrar()" />
+      <select id="filtroCategoria" onchange="filtrar()">
+        <option value="">Todas las categorías</option>
+        <option>Comida</option>
+        <option>Transporte</option>
+        <option>Servicios</option>
+        <option>Entretenimiento</option>
+        <option>Salud</option>
+        <option>Otros</option>
+      </select>
+      <select id="filtroMetodo" onchange="filtrar()">
+        <option value="">Todos los métodos</option>
+        <option>Efectivo</option>
+        <option>Tarjeta</option>
+        <option>Transferencia</option>
+      </select>
+      <button onclick="exportarCSV()">📥 Exportar CSV</button>
+    </div>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="card">
+    <h3>Gastos por mes</h3>
+    <canvas id="chart" height="200"></canvas>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card">
+    <h3>Registro</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Fecha</th>
+          <th>Categoría</th>
+          <th>Método</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tablaGastos"></tbody>
     </table>
+    <div class="total" id="totalGasto">Total: $0.00</div>
+  </div>
 
-    <!-- Resumen de gasto total -->
-    <div class="total" id="totalGasto">Total Gasto: $0.00</div>
+</div>
 
-    <script>
-        let totalGasto = 0;
+<script>
+  let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
-        // Cargar los gastos almacenados en localStorage cuando se carga la página
-        window.onload = function() {
-            if (localStorage.getItem("gastos")) {
-                const gastos = JSON.parse(localStorage.getItem("gastos"));
-                gastos.forEach(gasto => {
-                    totalGasto += gasto.monto;
-                    agregarFilaTabla(gasto);
-                });
-                document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
-            }
-        }
+  function toggleTheme() {
+    const current = document.body.getAttribute("data-theme");
+    const next = current === "light" ? "dark" : "light";
+    document.body.setAttribute("data-theme", next);
+  }
 
-        // Función para agregar un gasto a la tabla
-        function agregarGasto() {
-            // Obtener los valores del formulario
-            const descripcion = document.getElementById('descripcion').value;
-            const monto = parseFloat(document.getElementById('monto').value);
-            const fecha = document.getElementById('fecha').value;
-            const metodo = document.getElementById('metodo').value;
+  function agregarGasto() {
+    const descripcion = document.getElementById("descripcion").value.trim();
+    const monto = parseFloat(document.getElementById("monto").value);
+    const fecha = document.getElementById("fecha").value;
+    const categoria = document.getElementById("categoria").value;
+    const metodo = document.getElementById("metodo").value;
 
-            // Validar que los campos no estén vacíos
-            if (!descripcion || !monto || !fecha || !metodo) {
-                alert("Por favor, complete todos los campos.");
-                return;
-            }
+    if (!descripcion || !monto || !fecha || !categoria || !metodo) {
+      alert("Completa todos los campos");
+      return;
+    }
 
-            // Agregar el gasto al array
-            const gasto = { descripcion, monto, fecha, metodo };
-            totalGasto += monto;
+    gastos.push({ descripcion, monto, fecha, categoria, metodo });
+    localStorage.setItem("gastos", JSON.stringify(gastos));
+    renderTabla();
+    renderChart();
+    document.querySelectorAll("input,select").forEach(el => el.value = "");
+  }
 
-            // Agregar el gasto a la tabla
-            agregarFilaTabla(gasto);
+  function eliminarGasto(index) {
+    gastos.splice(index, 1);
+    localStorage.setItem("gastos", JSON.stringify(gastos));
+    renderTabla();
+    renderChart();
+  }
 
-            // Actualizar el total
-            document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
+  function filtrar() {
+    renderTabla();
+  }
 
-            // Almacenar los datos en localStorage
-            guardarGastos();
+  function renderTabla() {
+    const fechaF = document.getElementById("filtroFecha").value;
+    const catF = document.getElementById("filtroCategoria").value;
+    const metF = document.getElementById("filtroMetodo").value;
 
-            // Limpiar los campos del formulario
-            document.getElementById('descripcion').value = '';
-            document.getElementById('monto').value = '';
-            document.getElementById('fecha').value = '';
-            document.getElementById('metodo').value = '';
-        }
+    const filtrados = gastos.filter(g => {
+      return (!fechaF || g.fecha === fechaF) &&
+             (!catF || g.categoria === catF) &&
+             (!metF || g.metodo === metF);
+    });
 
-        // Función para agregar una fila a la tabla
-        function agregarFilaTabla(gasto) {
-            const nuevaFila = document.createElement('tr');
+    const tbody = document.getElementById("tablaGastos");
+    tbody.innerHTML = "";
+    let total = 0;
 
-            nuevaFila.innerHTML = `
-                <td>${gasto.descripcion}</td>
-                <td>$${gasto.monto.toFixed(2)}</td>
-                <td>${gasto.fecha}</td>
-                <td>${gasto.metodo}</td>
-                <td><button onclick="eliminarGasto(this, ${gasto.monto})">Eliminar</button></td>
-            `;
+    filtrados.forEach((g, i) => {
+      total += g.monto;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${g.descripcion}</td>
+        <td>$${g.monto.toFixed(2)}</td>
+        <td>${g.fecha}</td>
+        <td>${g.categoria}</td>
+        <td>${g.metodo}</td>
+        <td><button onclick="eliminarGasto(${gastos.indexOf(g)})">❌</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
 
-            // Agregar la fila a la tabla
-            document.querySelector('#tablaGastos tbody').appendChild(nuevaFila);
-        }
+    document.getElementById("totalGasto").textContent = `Total: $${total.toFixed(2)}`;
+  }
 
-        // Función para eliminar un gasto
-        function eliminarGasto(button, monto) {
-            // Restar el monto del total
-            totalGasto -= monto;
-            document.getElementById('totalGasto').textContent = `Total Gasto: $${totalGasto.toFixed(2)}`;
+  function renderChart() {
+    const ctx = document.getElementById("chart").getContext("2d");
+    const meses = {};
+    gastos.forEach(g => {
+      const mes = g.fecha.slice(0, 7);
+      meses[mes] = (meses[mes] || 0) + g.monto;
+    });
 
-            // Eliminar la fila
-            const fila = button.parentElement.parentElement;
-            fila.remove();
+    const labels = Object.keys(meses).sort();
+    const data = labels.map(m => meses[m]);
 
-            // Actualizar el almacenamiento en localStorage
-            guardarGastos();
-        }
+    // Limpiar canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        // Función para guardar los gastos en localStorage
-        function guardarGastos() {
-            const filas = document.querySelectorAll('#tablaGastos tbody tr');
-            const gastos = [];
-            filas.forEach(fila => {
-                const celdas = fila.querySelectorAll('td');
-                const descripcion = celdas[0].textContent;
-                const monto = parseFloat(celdas[1].textContent.replace('$', ''));
-                const fecha = celdas[2].textContent;
-                const metodo = celdas[3].textContent;
-                gastos.push({ descripcion, monto, fecha, metodo });
-            });
-            localStorage.setItem("gastos", JSON.stringify(gastos));
-        }
-    </script>
+    // Dibujar línea simple
+    const max = Math.max(...data, 1);
+    const padding = 40;
+    const width = ctx.canvas.width - padding * 2;
+    const height = ctx.canvas.height - padding * 2;
+
+    ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue("--primary");
+    ctx.beginPath();
+    labels.forEach((label, i) => {
+      const x = padding + (i / (labels.length - 1 || 1)) * width;
+      const y = padding + height - (data[i] / max) * height;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Etiquetas
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--text");
+    ctx.font = "12px sans-serif";
+    labels.forEach((label, i) => {
+      const x = padding + (i / (labels.length - 1 || 1)) * width;
+      ctx.fillText(label, x - 20, ctx.canvas.height - 10);
+    });
+  }
+
+  function exportarCSV() {
+    const csv = [
+      ["Descripción", "Monto", "Fecha", "Categoría", "Método"],
+      ...gastos.map(g => [g.descripcion, g.monto, g.fecha, g.categoria, g.metodo])
+    ].map(row => row.join(",")).join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "gastos.csv";
+    a.click();
+  }
+
+  // Inicializar
+  renderTabla();
+  renderChart();
+</script>
+
 </body>
 </html>
