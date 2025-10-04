@@ -33,15 +33,6 @@
             text-align: center;
         }
 
-        .logo {
-            display: block;
-            margin: 0 auto 5px auto;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
         .info, .footer {
             font-size: 13px;
             margin-top: 10px;
@@ -104,7 +95,6 @@
 </head>
 <body>
     <div class="ticket" id="invoice">
-        <img src="logo.jpg" alt="Logo EASIERSV" class="logo">
         <h2>EASIERSV</h2>
         <div class="center">
             <p>San Salvador, El Salvador</p>
@@ -157,7 +147,7 @@
     </div>
 
     <script>
-        // Fecha actual
+        // Función para obtener la fecha actual
         function obtenerFechaActual() {
             const fecha = new Date();
             const dia = String(fecha.getDate()).padStart(2, '0');
@@ -166,11 +156,12 @@
             return `${dia}/${mes}/${año}`;
         }
 
+        // Asigna la fecha actual al cargar
         window.onload = () => {
             document.getElementById("fecha").innerText = obtenerFechaActual();
         };
 
-        // Agregar fila
+        // Agregar nueva fila de producto
         function agregarFila() {
             const tabla = document.getElementById("productos");
             const fila = document.createElement("tr");
@@ -183,7 +174,7 @@
             tabla.appendChild(fila);
         }
 
-        // Calcular total
+        // Calcular total general
         function calcularTotal() {
             let total = 0;
             document.querySelectorAll("#productos tr").forEach(fila => {
@@ -196,7 +187,7 @@
             document.getElementById("total").innerText = total.toFixed(2);
         }
 
-        // Descargar PDF
+        // Descargar factura como PDF
         function descargarPDF() {
             const invoice = document.getElementById("invoice");
             const botones = invoice.querySelectorAll("button");
