@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura - EASIERSV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: "Courier New", monospace;
@@ -14,34 +16,40 @@
         }
 
         .ticket {
-            width: 250px; /* ancho tipo ticket */
+            width: 320px;
             background: #fff;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 15px;
             box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 8px;
         }
 
         h2 {
             text-align: center;
-            margin: 5px 0;
-            font-size: 16px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
         }
 
         .center {
             text-align: center;
-            font-size: 12px;
+        }
+
+        .info, .footer {
+            font-size: 13px;
+            margin-top: 10px;
+            border-top: 1px dashed #999;
+            padding-top: 5px;
         }
 
         table {
             width: 100%;
-            font-size: 12px;
             border-collapse: collapse;
+            font-size: 13px;
             margin-top: 10px;
         }
 
         th, td {
             text-align: left;
-            padding: 4px 0;
+            padding: 5px 0;
         }
 
         th {
@@ -52,63 +60,43 @@
             border-top: 1px dashed #999;
             text-align: right;
             font-weight: bold;
-            margin-top: 8px;
-            padding-top: 5px;
-            font-size: 13px;
-        }
-
-        .info, .footer {
-            font-size: 12px;
             margin-top: 10px;
-            border-top: 1px dashed #999;
             padding-top: 5px;
         }
 
         button {
+            margin-top: 10px;
             width: 100%;
-            margin-top: 8px;
             background: black;
             color: white;
             border: none;
-            padding: 6px;
+            padding: 8px;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 12px;
         }
 
         button:hover {
             background: #333;
         }
 
-        .policy {
-            font-size: 10px;
-            text-align: center;
-            margin-top: 6px;
-            color: #444;
+        @media print {
+            button {
+                display: none;
+            }
         }
 
         .social {
-            font-size: 11px;
+            font-size: 12px;
+            margin-top: 5px;
             text-align: center;
             color: #555;
         }
 
-        @media print {
-            body {
-                background: none;
-                margin: 0;
-                padding: 0;
-            }
-            .ticket {
-                width: 80mm; /* tamaño exacto de rollo térmico */
-                box-shadow: none;
-                border-radius: 0;
-                margin: 0;
-                padding: 5px;
-            }
-            button {
-                display: none;
-            }
+        .policy {
+            font-size: 11px;
+            margin-top: 8px;
+            color: #444;
+            text-align: center;
         }
     </style>
 </head>
@@ -126,7 +114,7 @@
 
         <div class="info">
             <p><strong>Factura N°:</strong> <span contenteditable="true" id="facturaNum">00015</span></p>
-            <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+            <p><strong>Fecha:</strong> <span contenteditable="true" id="fecha"></span></p>
             <p><strong>Cliente:</strong> <span contenteditable="true" id="cliente">Consumidor Final</span></p>
         </div>
 
@@ -159,22 +147,31 @@
         <div class="footer center">
             <p>¡Gracias por su compra!</p>
             <p class="policy">
-                No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.  
+                No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.
                 Se aceptará dentro de los 15 días posteriores a la fecha de compra.
             </p>
         </div>
 
-        <button onclick="imprimirFactura()">🖨️ Imprimir Factura</button>
+        <button onclick="descargarPDF()">Descargar PDF</button>
+        <button onclick="imprimirFactura()">Imprimir Factura</button>
     </div>
 
     <script>
-        // Fecha actual
-        const fechaActual = new Date();
-        const dia = String(fechaActual.getDate()).padStart(2, '0');
-        const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-        const año = fechaActual.getFullYear();
-        document.getElementById("fecha").innerText = `${dia}/${mes}/${año}`;
+        // Función para obtener la fecha actual
+        function obtenerFechaActual() {
+            const fecha = new Date();
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const año = fecha.getFullYear();
+            return `${dia}/${mes}/${año}`;
+        }
 
+        // Asigna la fecha actual al cargar
+        window.onload = () => {
+            document.getElementById("fecha").innerText = obtenerFechaActual();
+        };
+
+        // Agregar nueva fila de producto
         function agregarFila() {
             const tabla = document.getElementById("productos");
             const fila = document.createElement("tr");
@@ -187,6 +184,7 @@
             tabla.appendChild(fila);
         }
 
+        // Calcular total general
         function calcularTotal() {
             let total = 0;
             document.querySelectorAll("#productos tr").forEach(fila => {
@@ -199,8 +197,30 @@
             document.getElementById("total").innerText = total.toFixed(2);
         }
 
+        // Descargar factura como PDF
+        function descargarPDF() {
+            const invoice = document.getElementById("invoice");
+            const botones = invoice.querySelectorAll("button");
+            botones.forEach(btn => btn.style.display = "none");
+
+            html2canvas(invoice).then(canvas => {
+                const imgData = canvas.toDataURL("image/png");
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF("p", "mm", [140, 200]); // tamaño tipo ticket
+                const imgWidth = 130;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, "PNG", 5, 5, imgWidth, imgHeight);
+                pdf.save("factura_EASIERSV.pdf");
+                botones.forEach(btn => btn.style.display = "block");
+            });
+        }
+
+        // Imprimir solo la factura
         function imprimirFactura() {
+            const botones = document.querySelectorAll("button");
+            botones.forEach(btn => btn.style.display = "none");
             window.print();
+            botones.forEach(btn => btn.style.display = "block");
         }
     </script>
 </body>
