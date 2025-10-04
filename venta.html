@@ -64,12 +64,12 @@
         .ticket-preview header,
         .ticket-preview footer{text-align:center;font-size:11px}
         .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
-        .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px}
-        .ticket-preview th, .ticket-preview td{padding:2px 4px;white-space:nowrap}
-        .ticket-preview th:first-child, .ticket-preview td:first-child{text-align:left;width:45%}
-        .ticket-preview th:nth-child(2), .ticket-preview td:nth-child(2){text-align:center;width:15%}
-        .ticket-preview th:nth-child(3), .ticket-preview td:nth-child(3){text-align:right;width:20%}
-        .ticket-preview th:nth-child(4), .ticket-preview td:nth-child(4){text-align:right;width:20%}
+        .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+        .ticket-preview th, .ticket-preview td{padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .ticket-preview th:first-child, .ticket-preview td:first-child{text-align:left;width:46%}
+        .ticket-preview th:nth-child(2), .ticket-preview td:nth-child(2){text-align:center;width:12%}
+        .ticket-preview th:nth-child(3), .ticket-preview td:nth-child(3){text-align:right;width:21%}
+        .ticket-preview th:nth-child(4), .ticket-preview td:nth-child(4){text-align:right;width:21%}
         .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px}
 
         .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
@@ -174,178 +174,187 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
-    let currentPage = 1;
-    let rowsPerPage = 10;
+        // INVENTARIO DE EJEMPLO (BORRAR EN PRODUCCIÓN)
+        if(!localStorage.getItem('soldInventory')){
+            localStorage.setItem('soldInventory',JSON.stringify([
+                {name:'Chocolate Hersheys 500g',code:'CH500',price:'12.50',quantity:2,total:25.00},
+                {name:'Café Santo Domingo 1kg',code:'CSD1K',price:'8.75',quantity:1,total:8.75},
+                {name:'Galletas Oreo 154g',code:'GO154',price:'1.99',quantity:5,total:9.95}
+            ]));
+        }
 
-    function loadSoldInventory() {
-      const nameFilter = document.getElementById('filterName').value.toLowerCase();
-      const codeFilter = document.getElementById('filterCode').value.toLowerCase();
-      rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
+        let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
+        let currentPage = 1;
+        let rowsPerPage = 10;
 
-      const filtered = soldInventory.filter(item =>
-        item.name.toLowerCase().includes(nameFilter) &&
-        item.code.toLowerCase().includes(codeFilter)
-      );
+        function loadSoldInventory() {
+          const nameFilter = document.getElementById('filterName').value.toLowerCase();
+          const codeFilter = document.getElementById('filterCode').value.toLowerCase();
+          rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
 
-      const total = filtered.reduce((sum, item) => sum + item.total, 0);
-      document.getElementById('totalUSD').textContent = `Total vendido: $${total.toFixed(2)} USD`;
+          const filtered = soldInventory.filter(item =>
+            item.name.toLowerCase().includes(nameFilter) &&
+            item.code.toLowerCase().includes(codeFilter)
+          );
 
-      const start = (currentPage - 1) * rowsPerPage;
-      const paginated = filtered.slice(start, start + rowsPerPage);
+          const total = filtered.reduce((sum, item) => sum + Number(item.total), 0);
+          document.getElementById('totalUSD').textContent = `Total vendido: $${total.toFixed(2)} USD`;
 
-      const container = document.getElementById('soldInventoryList');
-      container.innerHTML = paginated.map((item, i) => `
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">${item.name}</div>
-            <div class="card-code">${item.code}</div>
-          </div>
-          <div class="card-price">$${Number(item.price).toFixed(2)}</div>
-          <div>Cantidad vendida: ${item.quantity}</div>
-          <div class="card-footer">
-            <div class="card-total">Total: $${Number(item.total).toFixed(2)}</div>
-            <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
-          </div>
-          <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
-        </div>
-      `).join('');
-    }
+          const start = (currentPage - 1) * rowsPerPage;
+          const paginated = filtered.slice(start, start + rowsPerPage);
 
-    window.deleteSoldItem = function (index) {
-      soldInventory.splice(index, 1);
-      localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
-      loadSoldInventory();
-    };
+          const container = document.getElementById('soldInventoryList');
+          container.innerHTML = paginated.map((item, i) => `
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">${item.name}</div>
+                <div class="card-code">${item.code}</div>
+              </div>
+              <div class="card-price">$${Number(item.price).toFixed(2)}</div>
+              <div>Cantidad vendida: ${item.quantity}</div>
+              <div class="card-footer">
+                <div class="card-total">Total: $${Number(item.total).toFixed(2)}</div>
+                <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
+              </div>
+              <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
+            </div>
+          `).join('');
+        }
 
-    function toggleTheme() {
-      const html = document.documentElement;
-      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    }
+        window.deleteSoldItem = function (index) {
+          soldInventory.splice(index, 1);
+          localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+          loadSoldInventory();
+        };
 
-    function prevPage() {
-      if (currentPage > 1) { currentPage--; loadSoldInventory(); }
-    }
+        function toggleTheme() {
+          const html = document.documentElement;
+          html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
 
-    function nextPage() {
-      const filtered = soldInventory.filter(item =>
-        item.name.toLowerCase().includes(document.getElementById('filterName').value.toLowerCase()) &&
-        item.code.toLowerCase().includes(document.getElementById('filterCode').value.toLowerCase())
-      );
-      if (currentPage < Math.ceil(filtered.length / rowsPerPage)) { currentPage++; loadSoldInventory(); }
-    }
+        function prevPage() {
+          if (currentPage > 1) { currentPage--; loadSoldInventory(); }
+        }
 
-    function generateDocx() { alert('Exportar DOCX (simulado)'); }
-    function exportExcel() { alert('Exportar Excel (simulado)'); }
+        function nextPage() {
+          const filtered = soldInventory.filter(item =>
+            item.name.toLowerCase().includes(document.getElementById('filterName').value.toLowerCase()) &&
+            item.code.toLowerCase().includes(document.getElementById('filterCode').value.toLowerCase())
+          );
+          if (currentPage < Math.ceil(filtered.length / rowsPerPage)) { currentPage++; loadSoldInventory(); }
+        }
 
-    document.getElementById('filterName').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
-    document.getElementById('filterCode').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
+        function generateDocx() { alert('Exportar DOCX (simulado)'); }
+        function exportExcel() { alert('Exportar Excel (simulado)'); }
 
-    loadSoldInventory();
+        document.getElementById('filterName').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
+        document.getElementById('filterCode').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
 
-    function abrirFactura(){
-      const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
-      if(seleccionados.length === 0){
-        alert('Por favor selecciona al menos un producto para facturar.');
-        return;
-      }
-      document.getElementById('facturaModal').style.display='flex';
-      document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
-      actualizarTablaTicket();
-    }
-    function cerrarFactura(){ document.getElementById('facturaModal').style.display='none'; }
+        loadSoldInventory();
 
-    function actualizarTablaTicket(){
-      const checks=[...document.querySelectorAll('.factCheck:checked')];
-      const body=document.getElementById('fBody'); body.innerHTML='';
-      let sum=0;
-      checks.forEach(ch=>{
-        const idx=+ch.value;
-        const p=soldInventory[idx];
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>$${Number(p.price).toFixed(2)}</td><td>$${Number(p.total).toFixed(2)}</td>`;
-        body.appendChild(tr);
-        sum+=p.total;
-      });
-      document.getElementById('fTotal').textContent=sum.toFixed(2);
-      document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
-      document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
-      document.getElementById('fFechaTxt').textContent=document.getElementById('fFecha').value;
-    }
+        function abrirFactura(){
+          const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
+          if(seleccionados.length === 0){
+            alert('Por favor selecciona al menos un producto para facturar.');
+            return;
+          }
+          document.getElementById('facturaModal').style.display='flex';
+          document.getElementById('fFecha').value=new Date().toLocaleDateString('es-SV');
+          actualizarTablaTicket();
+        }
+        function cerrarFactura(){ document.getElementById('facturaModal').style.display='none'; }
 
-    function imprimirTicket(){
-      const cont=document.querySelector('.ticket-preview').innerHTML;
-      const ventana=window.open('','','width=360,height=600');
-      ventana.document.write(`
-        <html>
-        <head>
-            <title>Ticket</title>
-            <style>
-                body{margin:0;padding:6px;font:11px/1.4 'Courier New',monospace;width:360px;color:#000;background:#fff}
-                table{width:100%;border-collapse:collapse}
-                th,td{padding:2px 4px;white-space:nowrap}
-                .total{font-weight:700;font-size:12px;text-align:right}
-                .line{border-top:1px dashed #000;margin:6px 0}
-            </style>
-        </head>
-        <body>${cont}</body>
-        </html>
-      `);
-      ventana.document.close();
-      ventana.focus();
-      ventana.print();
-      ventana.close();
-    }
+        function actualizarTablaTicket(){
+          const checks=[...document.querySelectorAll('.factCheck:checked')];
+          const body=document.getElementById('fBody'); body.innerHTML='';
+          let sum=0;
+          checks.forEach(ch=>{
+            const idx=+ch.value;
+            const p=soldInventory[idx];
+            const tr=document.createElement('tr');
+            tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>$${Number(p.price).toFixed(2)}</td><td>$${Number(p.total).toFixed(2)}</td>`;
+            body.appendChild(tr);
+            sum+=Number(p.total);
+          });
+          document.getElementById('fTotal').textContent=sum.toFixed(2);
+          document.getElementById('fNumTxt').textContent=document.getElementById('fNum').value;
+          document.getElementById('fClienteTxt').textContent=document.getElementById('fCliente').value;
+          document.getElementById('fFechaTxt').textContent=document.getElementById('fFecha').value;
+        }
 
-    function descargarPDF(){
-      const {jsPDF}=window.jspdf;
-      const doc=new jsPDF({unit:'mm',format:[80,200]});
-      let y=6;
-      const margen=4;
-      const ancho=80-margen*2;
+        function imprimirTicket(){
+          const cont=document.querySelector('.ticket-preview').innerHTML;
+          const ventana=window.open('','','width=360,height=600');
+          ventana.document.write(`
+            <html>
+            <head>
+                <title>Ticket</title>
+                <style>
+                    body{margin:0;padding:6px;font:11px/1.4 'Courier New',monospace;width:360px;color:#000;background:#fff}
+                    table{width:100%;border-collapse:collapse;table-layout:fixed}
+                    th,td{padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+                    .total{font-weight:700;font-size:12px;text-align:right}
+                    .line{border-top:1px dashed #000;margin:6px 0}
+                </style>
+            </head>
+            <body>${cont}</body>
+            </html>
+          `);
+          ventana.document.close();
+          ventana.focus();
+          ventana.print();
+          ventana.close();
+        }
 
-      // Header
-      doc.setFontSize(14); doc.setFont(undefined,'bold');
-      doc.text('EASIERSV',margen+((ancho-doc.getTextWidth('EASIERSV'))/2),y); y+=8;
-      doc.setFontSize(10); doc.setFont(undefined,'normal');
-      doc.text('San Salvador, El Salvador',margen+((ancho-doc.getTextWidth('San Salvador, El Salvador'))/2),y); y+=5;
-      doc.text('industriastobias@gmail.com',margen+((ancho-doc.getTextWidth('industriastobias@gmail.com'))/2),y); y+=5;
-      doc.text('IG: @Easiersv',margen+((ancho-doc.getTextWidth('IG: @Easiersv'))/2),y); y+=5;
-      doc.line(margen,y,80-margen,y); y+=5;
+        function descargarPDF(){
+          const {jsPDF}=window.jspdf;
+          const doc=new jsPDF({unit:'mm',format:[80,200]});
+          let y=6;
+          const margen=4;
+          const ancho=80-margen*2;
 
-      // Datos
-      doc.setFont(undefined,'bold'); doc.text('Factura N°:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fNum').value,margen+22,y); y+=5;
-      doc.setFont(undefined,'bold'); doc.text('Fecha:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fFecha').value,margen+22,y); y+=5;
-      doc.setFont(undefined,'bold'); doc.text('Cliente:',margen,y); doc.setFont(undefined,'normal'); 
-      const cliente=doc.splitTextToSize(document.getElementById('fCliente').value,ancho-22);
-      doc.text(cliente,margen+22,y); y+=cliente.length*4; y+=3;
-      doc.line(margen,y,80-margen,y); y+=4;
+          // Header
+          doc.setFontSize(14); doc.setFont(undefined,'bold');
+          doc.text('EASIERSV',margen+((ancho-doc.getTextWidth('EASIERSV'))/2),y); y+=8;
+          doc.setFontSize(10); doc.setFont(undefined,'normal');
+          doc.text('San Salvador, El Salvador',margen+((ancho-doc.getTextWidth('San Salvador, El Salvador'))/2),y); y+=5;
+          doc.text('industriastobias@gmail.com',margen+((ancho-doc.getTextWidth('industriastobias@gmail.com'))/2),y); y+=5;
+          doc.text('IG: @Easiersv',margen+((ancho-doc.getTextWidth('IG: @Easiersv'))/2),y); y+=5;
+          doc.line(margen,y,80-margen,y); y+=5;
 
-      // Tabla
-      doc.setFontSize(9); doc.setFont(undefined,'bold');
-      doc.text('Producto',margen,y); doc.text('Cant',margen+30,y); doc.text('P/U',margen+40,y); doc.text('Total',margen+60,y); y+=4;
-      doc.setFont(undefined,'normal');
-      const filas=document.querySelectorAll('#fBody tr');
-      filas.forEach(fr=>{
-        const c=fr.cells;
-        const prod=doc.splitTextToSize(c[0].textContent,28);
-        doc.text(prod,margen,y); doc.text(c[1].textContent,margen+30,y); doc.text(c[2].textContent,margen+40,y); doc.text(c[3].textContent,margen+60,y,'right');
-        y+=prod.length*3+1;
-      });
-      y+=3; doc.line(margen,y,80-margen,y); y+=4;
+          // Datos
+          doc.setFont(undefined,'bold'); doc.text('Factura N°:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fNum').value,margen+22,y); y+=5;
+          doc.setFont(undefined,'bold'); doc.text('Fecha:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fFecha').value,margen+22,y); y+=5;
+          doc.setFont(undefined,'bold'); doc.text('Cliente:',margen,y); doc.setFont(undefined,'normal'); 
+          const cliente=doc.splitTextToSize(document.getElementById('fCliente').value,ancho-22);
+          doc.text(cliente,margen+22,y); y+=cliente.length*4; y+=3;
+          doc.line(margen,y,80-margen,y); y+=4;
 
-      // Total
-      doc.setFontSize(12); doc.setFont(undefined,'bold');
-      doc.text('TOTAL:',margen,y); doc.text('$'+document.getElementById('fTotal').textContent,margen+60,y,'right'); y+=8;
+          // Tabla
+          doc.setFontSize(9); doc.setFont(undefined,'bold');
+          doc.text('Producto',margen,y); doc.text('Cant',margen+30,y); doc.text('P/U',margen+40,y); doc.text('Total',margen+60,y); y+=4;
+          doc.setFont(undefined,'normal');
+          const filas=document.querySelectorAll('#fBody tr');
+          filas.forEach(fr=>{
+            const c=fr.cells;
+            const prod=doc.splitTextToSize(c[0].textContent,28);
+            doc.text(prod,margen,y); doc.text(c[1].textContent,margen+30,y); doc.text(c[2].textContent,margen+40,y); doc.text(c[3].textContent,margen+60,y,'right');
+            y+=prod.length*3+1;
+          });
+          y+=3; doc.line(margen,y,80-margen,y); y+=4;
 
-      // Footer
-      doc.setFontSize(8); doc.setFont(undefined,'normal');
-      const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
-      const split=doc.splitTextToSize(msg,ancho);
-      split.forEach(l=>{doc.text(l,margen,y);y+=3;});
+          // Total
+          doc.setFontSize(12); doc.setFont(undefined,'bold');
+          doc.text('TOTAL:',margen,y); doc.text('$'+document.getElementById('fTotal').textContent,margen+60,y,'right'); y+=8;
 
-      doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
-    }
+          // Footer
+          doc.setFontSize(8); doc.setFont(undefined,'normal');
+          const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
+          const split=doc.splitTextToSize(msg,ancho);
+          split.forEach(l=>{doc.text(l,margen,y);y+=3;});
+
+          doc.save(`ticket_${document.getElementById('fNum').value}.pdf`);
+        }
   </script>
 </body>
 </html>
