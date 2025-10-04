@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura - AESIERSV</title>
+    <title>Factura - EASIERSV</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -26,10 +26,20 @@
         h2 {
             text-align: center;
             margin-bottom: 5px;
+            letter-spacing: 1px;
         }
 
         .center {
             text-align: center;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 5px auto;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .info, .footer {
@@ -83,15 +93,27 @@
                 display: none;
             }
         }
+
+        .social {
+            font-size: 12px;
+            margin-top: 5px;
+            text-align: center;
+            color: #555;
+        }
     </style>
 </head>
 <body>
     <div class="ticket" id="invoice">
-        <h2>AESIERSV</h2>
+        <img src="logo.jpg" alt="Logo EASIERSV" class="logo">
+        <h2>EASIERSV</h2>
         <div class="center">
             <p>San Salvador, El Salvador</p>
-            <p>Correo: contacto@aesiersv.com</p>
-            <p>Tel: +503 0000-0000</p>
+            <p>Correo: industriastobias@gmail.com</p>
+            <p>Celular: +503 7857-2734</p>
+        </div>
+
+        <div class="social">
+            <p>Instagram: @Easiersv</p>
         </div>
 
         <div class="info">
@@ -183,11 +205,11 @@
             html2canvas(invoice).then(canvas => {
                 const imgData = canvas.toDataURL("image/png");
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF("p", "mm", [140, 200]); // Formato tipo ticket
+                const pdf = new jsPDF("p", "mm", [140, 200]); // tamaño tipo ticket
                 const imgWidth = 130;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 pdf.addImage(imgData, "PNG", 5, 5, imgWidth, imgHeight);
-                pdf.save("factura_AESIERSV.pdf");
+                pdf.save("factura_EASIERSV.pdf");
                 botones.forEach(btn => btn.style.display = "block");
             });
         }
