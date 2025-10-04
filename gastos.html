@@ -3,43 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Control de Gastos</title>
+  <title>Gastos Full</title>
   <style>
     :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --text: #222;
-      --primary: #4f46e5;
-      --danger: #e11d48;
-      --border: #ddd;
+      --bg: #ffffff;
+      --card: #f5f5f5;
+      --text: #111;
+      --primary: #2563eb;
+      --danger: #dc2626;
     }
 
     [data-theme="dark"] {
-      --bg: #111827;
-      --card: #1f2937;
-      --text: #f9fafb;
-      --border: #374151;
+      --bg: #000000;
+      --card: #111111;
+      --text: #f5f5f5;
+      --primary: #3b82f6;
     }
 
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
-    body {
-      margin: 0;
+    html, body {
+      height: 100%;
       background: var(--bg);
       color: var(--text);
       transition: background .3s, color .3s;
     }
 
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
     header {
       background: var(--primary);
       color: white;
-      padding: 1rem 2rem;
+      padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 1.2rem;
     }
 
     header button {
@@ -51,31 +58,37 @@
       cursor: pointer;
     }
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 2rem;
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      gap: 1rem;
+      overflow-y: auto;
     }
 
-    .card {
+    section {
       background: var(--card);
-      border-radius: 12px;
+      border-radius: 0;
       padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
       gap: 1rem;
       margin-bottom: 1rem;
     }
 
     input {
+      flex: 1 1 200px;
       padding: .75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border: 1px solid #444;
+      border-radius: 6px;
       background: var(--bg);
       color: var(--text);
     }
@@ -85,13 +98,8 @@
       color: white;
       border: none;
       padding: .75rem 1.5rem;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: opacity .2s;
-    }
-
-    button:hover {
-      opacity: .9;
     }
 
     table {
@@ -102,24 +110,24 @@
     th, td {
       padding: .75rem;
       text-align: left;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #333;
     }
 
     .total {
       font-weight: bold;
       font-size: 1.2rem;
-      margin-top: 1rem;
       text-align: right;
+      margin-top: 1rem;
     }
 
-    #chart {
-      max-width: 100%;
-      height: 200px;
+    canvas {
+      width: 100%;
+      height: 180px;
     }
 
     @media (max-width: 600px) {
-      .form-grid {
-        grid-template-columns: 1fr;
+      .form-row {
+        flex-direction: column;
       }
     }
   </style>
@@ -127,33 +135,29 @@
 <body data-theme="light">
 
 <header>
-  <h1>Mis Gastos</h1>
-  <button onclick="toggleTheme()">🌙 Modo oscuro</button>
+  <span>Gastos</span>
+  <button onclick="toggleTheme()">🌙</button>
 </header>
 
-<div class="container">
-
+<main>
   <!-- Formulario -->
-  <div class="card">
-    <h2>Agregar Gasto</h2>
-    <div class="form-grid">
+  <section>
+    <div class="form-row">
       <input type="text" id="descripcion" placeholder="Descripción" />
       <input type="number" id="monto" placeholder="Monto" step="0.01" />
       <input type="date" id="fecha" />
       <input type="text" id="metodo" placeholder="Método de pago" />
+      <button onclick="agregarGasto()">Agregar</button>
     </div>
-    <button onclick="agregarGasto()">Agregar</button>
-  </div>
+  </section>
 
   <!-- Gráfico -->
-  <div class="card">
-    <h3>Gastos por mes</h3>
+  <section>
     <canvas id="chart"></canvas>
-  </div>
+  </section>
 
   <!-- Tabla -->
-  <div class="card">
-    <h3>Registro</h3>
+  <section>
     <table>
       <thead>
         <tr>
@@ -168,9 +172,8 @@
     </table>
     <div class="total" id="totalGasto">Total: $0.00</div>
     <button onclick="exportarCSV()">📥 Exportar CSV</button>
-  </div>
-
-</div>
+  </section>
+</main>
 
 <script>
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
@@ -187,10 +190,7 @@
     const fecha = document.getElementById("fecha").value;
     const metodo = document.getElementById("metodo").value.trim();
 
-    if (!descripcion || !monto || !fecha || !metodo) {
-      alert("Completa todos los campos");
-      return;
-    }
+    if (!descripcion || !monto || !fecha || !metodo) return alert("Completa todos los campos");
 
     gastos.push({ descripcion, monto, fecha, metodo });
     localStorage.setItem("gastos", JSON.stringify(gastos));
@@ -258,7 +258,7 @@
     ctx.font = "12px sans-serif";
     labels.forEach((label, i) => {
       const x = padding + (i / (labels.length - 1 || 1)) * width;
-      ctx.fillText(label, x - 20, ctx.canvas.height - 10);
+      ctx.fillText(label, x - 20, ctx.canvas.height - 5);
     });
   }
 
