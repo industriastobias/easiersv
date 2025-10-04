@@ -163,6 +163,7 @@
             max-width: 400px;
             border-radius: 8px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .close {
@@ -258,11 +259,11 @@
             <label for="soldQuantity">Cantidad vendida:</label>
             <input type="number" id="soldQuantity" min="1">
             <button class="stamp" onclick="processSale()">Registrar</button>
-            <div id="confirmationMessage" class="confirmation-message">¡Venta registrada!</div>
+            <div id="confirmationMessage" class="confirmation-message" style="display:none;">¡Venta registrada!</div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
         /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -311,28 +312,47 @@
             document.getElementById('confirmationMessage').style.display = 'none';
         }
 
+        /* ==========  NUEVA VERSIÓN: CIERRA MODAL Y AVISA FUERA  ========== */
         function processSale() {
-            const soldQuantity = parseInt(document.getElementById('soldQuantity').value);
-            const item = inventory[currentSoldIndex];
-            if (soldQuantity > 0 && soldQuantity <= item.quantity) {
-                item.quantity -= soldQuantity;
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                const soldItem = {
-                    name: item.name,
-                    code: item.code,
-                    price: item.price * (1 - item.discount / 100),
-                    quantity: soldQuantity,
-                    total: (item.price * (1 - item.discount / 100)) * soldQuantity
-                };
-                let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
-                soldInventory.push(soldItem);
-                localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
-                filterInventory();
-                document.getElementById('confirmationMessage').style.display = 'block';
-                setTimeout(() => document.getElementById('confirmationMessage').style.display = 'none', 3000);
-            } else {
-                alert('Cantidad inválida.');
+            const soldQty = parseInt(document.getElementById('soldQuantity').value);
+            if (isNaN(soldQty) || soldQty <= 0) {
+                alert('Ingresá una cantidad válida mayor a 0.');
+                return;
             }
+
+            const item = inventory[currentSoldIndex];
+            if (soldQty > item.quantity) {
+                alert('No hay stock suficiente.');
+                return;
+            }
+
+            /* ----------  actualizamos stock  ---------- */
+            item.quantity -= soldQty;
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            /* ----------  guardamos la venta  ---------- */
+            const soldItem = {
+                name: item.name,
+                code: item.code,
+                price: item.price * (1 - item.discount / 100),
+                quantity: soldQty,
+                total: (item.price * (1 - item.discount / 100)) * soldQty
+            };
+            let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
+            soldInventory.push(soldItem);
+            localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+
+            /* ----------  refrescamos tabla  ---------- */
+            filterInventory();
+
+            /* ----------  cerramos modal y avisamos  ---------- */
+            closeSoldModal();                       // <- oculta el modal
+            document.getElementById('resultMessage').textContent = '¡Venta registrada!';
+            document.getElementById('resultMessage').style.display = 'block';
+            setTimeout(() => document.getElementById('resultMessage').style.display = 'none', 3000);
+
+            /* ----------  limpiamos el input para la próxima  ---------- */
+            document.getElementById('soldQuantity').value = '';
         }
 
         function filterInventory() {
