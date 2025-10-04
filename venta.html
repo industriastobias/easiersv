@@ -45,21 +45,26 @@
     .factura-card label{font-size:.8rem}
     .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
 
-    /* ---------- TICKET ---------- */
+    /* ---------- TICKET NUEVO DISEÑO ---------- */
     .ticket-preview {
-      background:#fff;color:#000;font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.4;
-      padding:8px 6px;border:1px dashed #999;width:100%;max-width:360px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;
+      background:#fff;color:#000;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:12px;
+      padding:12px 10px;border:1px solid #ddd;border-radius:8px;width:100%;max-width:360px;margin:0 auto;box-sizing:border-box;
     }
     .ticket-preview *{margin:0;padding:0}
-    .ticket-preview header,.ticket-preview footer{text-align:center;font-size:11px}
-    .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
-    .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
-    .ticket-preview th,.ticket-preview td{padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:46%}
-    .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:12%}
-    .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:21%}
-    .ticket-preview th:nth-child(4),.ticket-preview td:nth-child(4){text-align:right;width:21%}
-    .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px}
+    .ticket-preview header{text-align:center;margin-bottom:10px}
+    .ticket-preview .brand{font-size:18px;font-weight:700;color:#2563eb}
+    .ticket-preview .subbrand{font-size:11px;color:#555}
+    .ticket-preview .line{border-top:1px solid #ccc;margin:8px 0}
+    .ticket-preview .data-row{display:flex;justify-content:space-between;font-size:11px;margin:2px 0}
+    .ticket-preview .data-row span:first-child{font-weight:600}
+    .ticket-preview .product-list{border-top:1px solid #ccc;padding-top:6px}
+    .ticket-preview .product-item{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dashed #eee}
+    .ticket-preview .product-item .name{font-weight:600;flex:1}
+    .ticket-preview .product-item .qty{text-align:center;width:30px}
+    .ticket-preview .product-item .pu{text-align:right;width:50px}
+    .ticket-preview .product-item .total{text-align:right;width:60px;font-weight:600}
+    .ticket-preview .total-box{background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;text-align:right;font-size:14px;font-weight:700}
+    .ticket-preview footer{text-align:center;font-size:10px;color:#555;margin-top:8px}
 
     .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
     .modal-buttons button{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
@@ -122,35 +127,21 @@
 
     <div class="ticket-preview">
       <header>
-        <div style="font-size:12px;font-weight:700">EASIERSV</div>
-        <div>San Salvador, El Salvador</div>
-        <div>industriastobias@gmail.com</div>
-        <div>IG: @Easiersv</div>
+        <div class="brand">EASIERSV</div>
+        <div class="subbrand">San Salvador, El Salvador</div>
+        <div class="subbrand">industriastobias@gmail.com | IG: @Easiersv</div>
       </header>
       <div class="line"></div>
-      <div style="font-size:11px">
-        <div>Factura N°: <span id="fNumTxt">00015</span></div>
-        <div>Fecha: <span id="fFechaTxt"></span></div>
-        <div>Cliente: <span id="fClienteTxt">Consumidor Final</span></div>
-      </div>
+      <div class="data-row"><span><b>Factura N°:</b></span><span id="fNumTxt">00015</span></div>
+      <div class="data-row"><span><b>Fecha:</b></span><span id="fFechaTxt"></span></div>
+      <div class="data-row"><span><b>Cliente:</b></span><span id="fClienteTxt">Consumidor Final</span></div>
       <div class="line"></div>
-      <table>
-        <thead><tr>
-          <th>Producto</th>
-          <th>Cant</th>
-          <th>P/U</th>
-          <th>Total</th>
-        </tr></thead>
-        <tbody id="fBody"></tbody>
-      </table>
+      <div class="product-list" id="fBody"></div>
       <div class="line"></div>
-      <div class="total">TOTAL: $<span id="fTotal">0.00</span></div>
+      <div class="total-box">TOTAL: $<span id="fTotal">0.00</span></div>
       <footer>
-        <div>¡Gracias por su compra!</div>
-        <div style="font-size:9px;margin-top:4px">
-          No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.
-          Se aceptará dentro de los 15 días posteriores a la fecha de compra.
-        </div>
+        ¡Gracias por su compra!<br>
+        No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.
       </footer>
     </div>
 
@@ -261,9 +252,15 @@
     checks.forEach(ch=>{
       const idx=+ch.value;
       const p=soldInventory[idx];
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${p.name}</td><td>${p.quantity}</td><td>$${Number(p.price).toFixed(2)}</td><td>$${Number(p.total).toFixed(2)}</td>`;
-      body.appendChild(tr);
+      const item=document.createElement('div');
+      item.className='product-item';
+      item.innerHTML=`
+        <span class="name">${p.name}</span>
+        <span class="qty">${p.quantity}</span>
+        <span class="pu">$${Number(p.price).toFixed(2)}</span>
+        <span class="total">$${Number(p.total).toFixed(2)}</span>
+      `;
+      body.appendChild(item);
       sum+=Number(p.total);
     });
     document.getElementById('fTotal').textContent=sum.toFixed(2);
@@ -280,11 +277,20 @@
       <head>
           <title>Ticket</title>
           <style>
-              body{margin:0;padding:6px;font:11px/1.4 'Courier New',monospace;width:360px;color:#000;background:#fff}
-              table{width:100%;border-collapse:collapse;table-layout:fixed}
-              th,td{padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-              .total{font-weight:700;font-size:12px;text-align:right}
-              .line{border-top:1px dashed #000;margin:6px 0}
+              body{margin:0;padding:12px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:12px;color:#000;background:#fff}
+              .brand{font-size:18px;font-weight:700;color:#2563eb}
+              .subbrand{font-size:11px;color:#555}
+              .line{border-top:1px solid #ccc;margin:8px 0}
+              .data-row{display:flex;justify-content:space-between;font-size:11px;margin:2px 0}
+              .data-row span:first-child{font-weight:600}
+              .product-list{border-top:1px solid #ccc;padding-top:6px}
+              .product-item{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px dashed #eee}
+              .product-item .name{font-weight:600;flex:1}
+              .product-item .qty{text-align:center;width:30px}
+              .product-item .pu{text-align:right;width:50px}
+              .product-item .total{text-align:right;width:60px;font-weight:600}
+              .total-box{background:#f5f5f5;padding:8px;border-radius:6px;margin-top:8px;text-align:right;font-size:14px;font-weight:700}
+              footer{text-align:center;font-size:10px;color:#555;margin-top:8px}
           </style>
       </head>
       <body>${cont}</body>
@@ -298,47 +304,50 @@
 
   function descargarPDF(){
     const {jsPDF}=window.jspdf;
-    const doc=new jsPDF({unit:'mm',format:[80,190]});
+    const doc=new jsPDF({unit:'mm',format:[80,170]});
     let y=6;
     const margen=4;
     const ancho=80-margen*2;
 
     // Header
-    doc.setFontSize(14); doc.setFont(undefined,'bold');
+    doc.setFontSize(18); doc.setFont(undefined,'bold');
+    doc.setTextColor('#2563eb');
     doc.text('EASIERSV',margen+((ancho-doc.getTextWidth('EASIERSV'))/2),y); y+=8;
-    doc.setFontSize(10); doc.setFont(undefined,'normal');
+    doc.setFontSize(11); doc.setFont(undefined,'normal'); doc.setTextColor('#000');
     doc.text('San Salvador, El Salvador',margen+((ancho-doc.getTextWidth('San Salvador, El Salvador'))/2),y); y+=5;
     doc.text('industriastobias@gmail.com',margen+((ancho-doc.getTextWidth('industriastobias@gmail.com'))/2),y); y+=5;
     doc.text('IG: @Easiersv',margen+((ancho-doc.getTextWidth('IG: @Easiersv'))/2),y); y+=5;
-    doc.line(margen,y,80-margen,y); y+=5;
+    doc.setDrawColor('#ccc'); doc.line(margen,y,80-margen,y); y+=5;
 
     // Datos
-    doc.setFont(undefined,'bold'); doc.text('Factura N°:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fNum').value,margen+22,y); y+=5;
+    doc.setFont(undefined,'bold'); doc.setTextColor('#000');
+    doc.text('Factura N°:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fNum').value,margen+22,y); y+=5;
     doc.setFont(undefined,'bold'); doc.text('Fecha:',margen,y); doc.setFont(undefined,'normal'); doc.text(document.getElementById('fFecha').value,margen+22,y); y+=5;
     doc.setFont(undefined,'bold'); doc.text('Cliente:',margen,y); doc.setFont(undefined,'normal');
     const cliente=doc.splitTextToSize(document.getElementById('fCliente').value,ancho-22);
     doc.text(cliente,margen+22,y); y+=cliente.length*4; y+=3;
     doc.line(margen,y,80-margen,y); y+=4;
 
-    // Tabla
-    doc.setFontSize(9); doc.setFont(undefined,'bold');
-    doc.text('Producto',margen,y); doc.text('Cant',margen+28,y); doc.text('P/U',margen+42,y); doc.text('Total',margen+62,y); y+=4;
-    doc.setFont(undefined,'normal');
-    const filas=document.querySelectorAll('#fBody tr');
+    // Productos
+    const filas=document.querySelectorAll('#fBody .product-item');
     filas.forEach(fr=>{
-      const c=fr.cells;
-      const prod=doc.splitTextToSize(c[0].textContent,26);
-      doc.text(prod,margen,y); doc.text(c[1].textContent,margen+28,y); doc.text(c[2].textContent,margen+42,y); doc.text(c[3].textContent,margen+62,y,'right');
+      const name=fr.querySelector('.name').textContent;
+      const qty=fr.querySelector('.qty').textContent;
+      const pu=fr.querySelector('.pu').textContent;
+      const total=fr.querySelector('.total').textContent;
+      const prod=doc.splitTextToSize(name,26);
+      doc.text(prod,margen,y); doc.text(qty,margen+28,y); doc.text(pu,margen+42,y); doc.text(total,margen+62,y,'right');
       y+=prod.length*3+1;
     });
     y+=3; doc.line(margen,y,80-margen,y); y+=4;
 
     // Total
-    doc.setFontSize(12); doc.setFont(undefined,'bold');
-    doc.text('TOTAL:',margen,y); doc.text('$'+document.getElementById('fTotal').textContent,margen+62,y,'right'); y+=6;
+    doc.setFillColor('#f5f5f5'); doc.rect(margen,y-1,ancho,6,'F');
+    doc.setFontSize(14); doc.setFont(undefined,'bold');
+    doc.text('TOTAL:',margen+2,y+4); doc.text('$'+document.getElementById('fTotal').textContent,margen+62,y+4,'right'); y+=8;
 
     // Footer
-    doc.setFontSize(8); doc.setFont(undefined,'normal');
+    doc.setFontSize(10); doc.setFont(undefined,'normal');
     const msg='¡Gracias por su compra! No se aceptan cambios ni devoluciones, a menos que el producto esté dañado. Se aceptará dentro de los 15 días posteriores a la fecha de compra.';
     const split=doc.splitTextToSize(msg,ancho);
     split.forEach(l=>{doc.text(l,margen,y);y+=3;});
