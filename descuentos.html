@@ -127,19 +127,11 @@
   const tbody = document.getElementById('discountList');
   const searchInput = document.getElementById('searchInput');
   const lineInfo = document.getElementById('lineInfo');
+  let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
 
-  function loadAllProducts() {
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    const search = searchInput.value.toLowerCase();
-
-    const filtered = inventory.filter((item, idx) =>
-      item.name.toLowerCase().includes(search) ||
-      item.code.toLowerCase().includes(search) ||
-      item.category.toLowerCase().includes(search)
-    );
-
+  function renderTable(data = inventory) {
     tbody.innerHTML = '';
-    filtered.forEach((item, idx) => {
+    data.forEach((item, idx) => {
       const row = document.createElement('tr');
       row.dataset.line = idx + 1;
       row.innerHTML = `
@@ -155,17 +147,14 @@
       `;
       tbody.appendChild(row);
     });
-
-    lineInfo.textContent = `Mostrando ${filtered.length} productos.`;
   }
 
   function updateDiscount(code, value) {
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
     const item = inventory.find(i => i.code === code);
     if (item) {
       item.discount = parseFloat(value) || 0;
       localStorage.setItem('inventory', JSON.stringify(inventory));
-      loadAllProducts();
+      renderTable(inventory);
     }
   }
 
@@ -173,38 +162,74 @@
     updateDiscount(code, 0);
   }
 
+  function applyGlobalDiscount() {
+    const discount = parseFloat(document.getElementById('globalDiscount').value);
+    if (isNaN(discount) || discount < 0 || discount > 100) return alert('Descuento inválido');
+    inventory.forEach(item => item.discount = discount);
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+    renderTable(inventory);
+  }
+
+  function removeGlobalDiscount() {
+    inventory.forEach(item => item.discount = 0);
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+    renderTable(inventory);
+  }
+
   function goToLine() {
     const line = parseInt(document.getElementById('goToLine').value);
-    const rows = tbody.querySelectorAll('tr');
-    rows.forEach(r => r.classList.remove('highlight'));
+    if (isNaN(line) || line < 1 || line > inventory.length) {
+      lineInfo.textContent = 'Línea fuera de rango.';
+      return;
+    }
+    renderTable(inventory);
     const target = tbody.querySelector(`tr[data-line="${line}"]`);
     if (target) {
       target.classList.add('highlight');
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      lineInfo.textContent = `Producto encontrado en línea ${line}.`;
-    } else {
-      lineInfo.textContent = `Línea ${line} no encontrada.`;
+      lineInfo.textContent = `Producto encontrado en la línea ${line} de ${inventory.length}.`;
     }
   }
 
-  function applyGlobalDiscount() {
-    const discount = parseFloat(document.getElementById('globalDiscount').value);
-    if (isNaN(discount) || discount < 0 || discount > 100) return alert('Descuento inválido');
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    inventory.forEach(item => item.discount = discount);
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-    loadAllProducts();
-  }
+  searchInput.addEventListener('input', () => {
+    const search = searchInput.value.trim().toLowerCase();
+    if (!search) {
+      renderTable(inventory);
+      lineInfo.textContent = '';
+      return;
+    }
+    const matchIndex = inventory.findIndex(item =>
+      item.code.toLowerCase().includes(search) ||
+      item.name.toLowerCase().includes(search) ||
+      item.category.toLowerCase().includes(search)
+    );
+    if (matchIndex === -1) {
+      tbody.innerHTML = '';
+      lineInfo.textContent = 'Producto no encontrado.';
+      return;
+    }
+    const item = inventory[matchIndex];
+    tbody.innerHTML = '';
+    const row = document.createElement('tr');
+    row.dataset.line = matchIndex + 1;
+    row.classList.add('highlight');
+    row.innerHTML = `
+      <td>${matchIndex + 1}</td>
+      <td>${item.name}</td>
+      <td>${item.code}</td>
+      <td>$${item.price}</td>
+      <td><input type="number" value="${item.discount || 0}" min="0" max="100" onchange="updateDiscount('${item.code}', this.value)" /></td>
+      <td>$${(item.price - (item.price * (item.discount || 0) / 100)).toFixed(2)}</td>
+      <td>${item.category}</td>
+      <td>${item.quantity}</td>
+      <td><button onclick="removeDiscount('${item.code}')">Quitar Descuento</button></td>
+    `;
+    tbody.appendChild(row);
+    lineInfo.textContent = `Producto encontrado en la línea ${matchIndex + 1} de ${inventory.length}.`;
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
 
-  function removeGlobalDiscount() {
-    const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
-    inventory.forEach(item => item.discount = 0);
-    localStorage.setItem('inventory', JSON.stringify(inventory));
-    loadAllProducts();
-  }
-
-  searchInput.addEventListener('input', loadAllProducts);
-  document.addEventListener('DOMContentLoaded', loadAllProducts);
+  document.addEventListener('DOMContentLoaded', () => renderTable(inventory));
 </script>
 
 </body>
