@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Productos Vendidos</title>
   <style>
@@ -55,10 +55,10 @@
     .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
     .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
     .ticket-preview th,.ticket-preview td{padding:2px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:46%}
-    .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:12%}
-    .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:21%}
-    .ticket-preview th:nth-child(4),.ticket-preview td:nth-child(4){text-align:right;width:21%}
+    .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:50%}
+    .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:10%}
+    .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:20%}
+    .ticket-preview th:nth-child(4),.ticket-preview td:nth-child(4){text-align:right;width:20%}
     .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px}
 
     .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
@@ -322,13 +322,13 @@
 
     // Tabla
     doc.setFontSize(9); doc.setFont(undefined,'bold');
-    doc.text('Producto',margen,y); doc.text('Cant',margen+28,y); doc.text('P/U',margen+42,y); doc.text('Total',margen+62,y); y+=4;
+    doc.text('Producto',margen,y); doc.text('Cant',margen+30,y); doc.text('P/U',margen+45,y); doc.text('Total',margen+62,y,'right'); y+=4;
     doc.setFont(undefined,'normal');
     const filas=document.querySelectorAll('#fBody tr');
     filas.forEach(fr=>{
       const c=fr.cells;
       const prod=doc.splitTextToSize(c[0].textContent,26);
-      doc.text(prod,margen,y); doc.text(c[1].textContent,margen+28,y); doc.text(c[2].textContent,margen+42,y); doc.text(c[3].textContent,margen+62,y,'right');
+      doc.text(prod,margen,y); doc.text(c[1].textContent,margen+30,y); doc.text(c[2].textContent,margen+45,y); doc.text(c[3].textContent,margen+62,y,'right');
       y+=prod.length*3+1;
     });
     y+=3; doc.line(margen,y,80-margen,y); y+=4;
