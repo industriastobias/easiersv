@@ -5,37 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos Vendidos</title>
     <style>
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+        /* ---------- TRANSICIÓN SUAVE ENTRE PÁGINAS ---------- */
+        html {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ---------- VARIABLES PROFESIONALES ---------- */
         :root{
-          --bg:#f1f5f9;
-          --card:#ffffff99;
-          --text:#1e293b;
-          --accent:#7c3aed;          /* MORADO */
-          --danger:#ef4444;
-          --sidebar:#0f172a;
-          --sidebar-text:#94a3b8;
-          --radius:16px;
-          --shadow:0 8px 32px rgba(0,0,0,.08);
-          --blur:12px;
+          --bg:#f8fafc;               /* gris muy claro */
+          --card:#ffffffdd;
+          --text:#1e293b;             /* azul oscuro */
+          --accent:#2563eb;           /* azul profesional */
+          --danger:#dc2626;
+          --sidebar:#1e293b;
+          --sidebar-text:#cbd5e1;
+          --radius:12px;
+          --shadow:0 6px 24px rgba(0,0,0,.06);
+          --blur:8px;
         }
         [data-theme="dark"]{
           --bg:#0f172a;
-          --card:#1e293b99;
+          --card:#1e293bbb;
           --text:#f1f5f9;
-          --accent:#a855f7;          /* MORADO más claro en modo oscuro */
-          --danger:#f87171;
-          --sidebar:#020617;
-          --sidebar-text:#64748b;
+          --accent:#3b82f6;
+          --danger:#ef4444;
+          --sidebar:#0b1220;
+          --sidebar-text:#94a3b8;
         }
+
+        /* ---------- BASE ---------- */
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
         body{
           height:100vh;
           display:flex;
           background:var(--bg);
           color:var(--text);
           overflow:hidden;
-          background-image:linear-gradient(135deg,var(--accent) 0%,#9333ea 100%); /* MORADO */
+          background-image:linear-gradient(135deg,var(--accent) 0%,#475569 100%);
           transition:background .4s;
         }
+
+        /* ---------- SIDEBAR ---------- */
         .sidebar{
           width:220px;
           background:var(--sidebar);
@@ -55,6 +69,8 @@
           transition:.2s;
         }
         .sidebar a:hover{background:#ffffff11;}
+
+        /* ---------- MAIN ---------- */
         .main{
           flex:1;
           padding:40px;
@@ -85,6 +101,8 @@
           transition:.2s;
         }
         .theme-toggle:hover{background:#00000011;}
+
+        /* ---------- CONTROLES ---------- */
         .controls{
           display:flex;
           gap:12px;
@@ -109,6 +127,8 @@
           font-weight:600;
         }
         .controls button:hover{opacity:.9;}
+
+        /* ---------- CARDS ---------- */
         .cards-grid{
           display:grid;
           grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
@@ -119,7 +139,7 @@
           border-radius:var(--radius);
           padding:24px;
           box-shadow:var(--shadow);
-          backdrop-filter:blur(var(--blur});
+          backdrop-filter:blur(var(--blur));
           display:flex;
           flex-direction:column;
           gap:12px;
@@ -150,6 +170,8 @@
           font-size:.75rem;
           cursor:pointer;
         }
+
+        /* ---------- PAGINACIÓN ---------- */
         .pagination{
           display:flex;
           justify-content:center;
@@ -172,12 +194,12 @@
 <body>
   <!-- Sidebar -->
   <nav class="sidebar">
-    <h2>Gran Empresa</h2>
+    <h2>AESIERSV</h2>
     <a href="menu.html">📋 Menú</a>
     <a href="#">📦 Productos Vendidos</a>
     <a href="#">📊 Estadísticas</a>
     <a href="#">⚙️ Configuración</a>
-    <a href="inicio.html">🚪 Cerrar Sesión</a>
+    <a href="index.html">🚪 Cerrar Sesión</a>
   </nav>
 
   <!-- Contenido principal -->
