@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contabilidad Personal</title>
+  <title>Control de Gastos</title>
   <style>
     :root {
       --bg: #f5f7fa;
@@ -52,7 +52,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 800px;
       margin: auto;
       padding: 2rem;
     }
@@ -72,7 +72,7 @@
       margin-bottom: 1rem;
     }
 
-    input, select {
+    input {
       padding: .75rem;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -113,8 +113,8 @@
     }
 
     #chart {
-      max-width: 600px;
-      margin: auto;
+      max-width: 100%;
+      height: 200px;
     }
 
     @media (max-width: 600px) {
@@ -127,9 +127,8 @@
 <body data-theme="light">
 
 <header>
-  <h1>Mi Contabilidad</h1>
+  <h1>Mis Gastos</h1>
   <button onclick="toggleTheme()">🌙 Modo oscuro</button>
-</button>
 </header>
 
 <div class="container">
@@ -141,53 +140,15 @@
       <input type="text" id="descripcion" placeholder="Descripción" />
       <input type="number" id="monto" placeholder="Monto" step="0.01" />
       <input type="date" id="fecha" />
-      <select id="categoria">
-        <option value="">Categoría</option>
-        <option>Comida</option>
-        <option>Transporte</option>
-        <option>Servicios</option>
-        <option>Entretenimiento</option>
-        <option>Salud</option>
-        <option>Otros</option>
-      </select>
-      <select id="metodo">
-        <option value="">Método</option>
-        <option>Efectivo</option>
-        <option>Tarjeta</option>
-        <option>Transferencia</option>
-      </select>
+      <input type="text" id="metodo" placeholder="Método de pago" />
     </div>
     <button onclick="agregarGasto()">Agregar</button>
-  </div>
-
-  <!-- Filtros -->
-  <div class="card">
-    <h3>Filtrar</h3>
-    <div class="form-grid">
-      <input type="date" id="filtroFecha" onchange="filtrar()" />
-      <select id="filtroCategoria" onchange="filtrar()">
-        <option value="">Todas las categorías</option>
-        <option>Comida</option>
-        <option>Transporte</option>
-        <option>Servicios</option>
-        <option>Entretenimiento</option>
-        <option>Salud</option>
-        <option>Otros</option>
-      </select>
-      <select id="filtroMetodo" onchange="filtrar()">
-        <option value="">Todos los métodos</option>
-        <option>Efectivo</option>
-        <option>Tarjeta</option>
-        <option>Transferencia</option>
-      </select>
-      <button onclick="exportarCSV()">📥 Exportar CSV</button>
-    </div>
   </div>
 
   <!-- Gráfico -->
   <div class="card">
     <h3>Gastos por mes</h3>
-    <canvas id="chart" height="200"></canvas>
+    <canvas id="chart"></canvas>
   </div>
 
   <!-- Tabla -->
@@ -199,7 +160,6 @@
           <th>Descripción</th>
           <th>Monto</th>
           <th>Fecha</th>
-          <th>Categoría</th>
           <th>Método</th>
           <th></th>
         </tr>
@@ -207,6 +167,7 @@
       <tbody id="tablaGastos"></tbody>
     </table>
     <div class="total" id="totalGasto">Total: $0.00</div>
+    <button onclick="exportarCSV()">📥 Exportar CSV</button>
   </div>
 
 </div>
@@ -224,19 +185,18 @@
     const descripcion = document.getElementById("descripcion").value.trim();
     const monto = parseFloat(document.getElementById("monto").value);
     const fecha = document.getElementById("fecha").value;
-    const categoria = document.getElementById("categoria").value;
-    const metodo = document.getElementById("metodo").value;
+    const metodo = document.getElementById("metodo").value.trim();
 
-    if (!descripcion || !monto || !fecha || !categoria || !metodo) {
+    if (!descripcion || !monto || !fecha || !metodo) {
       alert("Completa todos los campos");
       return;
     }
 
-    gastos.push({ descripcion, monto, fecha, categoria, metodo });
+    gastos.push({ descripcion, monto, fecha, metodo });
     localStorage.setItem("gastos", JSON.stringify(gastos));
     renderTabla();
     renderChart();
-    document.querySelectorAll("input,select").forEach(el => el.value = "");
+    document.querySelectorAll("input").forEach(el => el.value = "");
   }
 
   function eliminarGasto(index) {
@@ -246,35 +206,20 @@
     renderChart();
   }
 
-  function filtrar() {
-    renderTabla();
-  }
-
   function renderTabla() {
-    const fechaF = document.getElementById("filtroFecha").value;
-    const catF = document.getElementById("filtroCategoria").value;
-    const metF = document.getElementById("filtroMetodo").value;
-
-    const filtrados = gastos.filter(g => {
-      return (!fechaF || g.fecha === fechaF) &&
-             (!catF || g.categoria === catF) &&
-             (!metF || g.metodo === metF);
-    });
-
     const tbody = document.getElementById("tablaGastos");
     tbody.innerHTML = "";
     let total = 0;
 
-    filtrados.forEach((g, i) => {
+    gastos.forEach((g, i) => {
       total += g.monto;
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${g.descripcion}</td>
         <td>$${g.monto.toFixed(2)}</td>
         <td>${g.fecha}</td>
-        <td>${g.categoria}</td>
         <td>${g.metodo}</td>
-        <td><button onclick="eliminarGasto(${gastos.indexOf(g)})">❌</button></td>
+        <td><button onclick="eliminarGasto(${i})">❌</button></td>
       `;
       tbody.appendChild(tr);
     });
@@ -293,10 +238,7 @@
     const labels = Object.keys(meses).sort();
     const data = labels.map(m => meses[m]);
 
-    // Limpiar canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    // Dibujar línea simple
     const max = Math.max(...data, 1);
     const padding = 40;
     const width = ctx.canvas.width - padding * 2;
@@ -312,7 +254,6 @@
     });
     ctx.stroke();
 
-    // Etiquetas
     ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--text");
     ctx.font = "12px sans-serif";
     labels.forEach((label, i) => {
@@ -323,8 +264,8 @@
 
   function exportarCSV() {
     const csv = [
-      ["Descripción", "Monto", "Fecha", "Categoría", "Método"],
-      ...gastos.map(g => [g.descripcion, g.monto, g.fecha, g.categoria, g.metodo])
+      ["Descripción", "Monto", "Fecha", "Método"],
+      ...gastos.map(g => [g.descripcion, g.monto, g.fecha, g.metodo])
     ].map(row => row.join(",")).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv" });
