@@ -190,7 +190,8 @@
             <div class="card-total">Total: $${item.total.toFixed(2)}</div>
             <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
           </div>
-          <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;display:none;">
+          <!-- ✅ Check-box siempre visible -->
+          <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
         </div>
       `).join('');
     }
