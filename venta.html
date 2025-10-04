@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ventas • Tobias</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.0.0/pizzip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.10.1/docxtemplater.js"></script>
   <style>
     :root {
       --bg: #fafafa;
@@ -15,7 +12,6 @@
       --line: #e5e7eb;
       --accent: #6b7280;
     }
-
     [data-theme="dark"] {
       --bg: #0a0a0a;
       --card: #111111;
@@ -23,26 +19,22 @@
       --line: #27272a;
       --accent: #9ca3af;
     }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-
     html, body {
       height: 100%;
       background: var(--bg);
       color: var(--text);
       transition: background .3s, color .3s;
     }
-
     body {
       display: flex;
       flex-direction: column;
     }
-
     header {
       display: flex;
       justify-content: space-between;
@@ -50,19 +42,16 @@
       padding: 1.5rem 2rem;
       border-bottom: 1px solid var(--line);
     }
-
     header h1 {
       font-size: 1.25rem;
       font-weight: 600;
       letter-spacing: .5px;
     }
-
     .actions {
       display: flex;
       gap: 1rem;
       align-items: center;
     }
-
     input[type="search"] {
       padding: .5rem .75rem;
       border-radius: 6px;
@@ -71,7 +60,6 @@
       color: var(--text);
       width: 200px;
     }
-
     button.icon {
       background: none;
       border: none;
@@ -80,23 +68,19 @@
       cursor: pointer;
       transition: color .2s;
     }
-
     button.icon:hover {
       color: var(--text);
     }
-
     main {
       flex: 1;
       padding: 2rem;
       overflow-y: auto;
     }
-
     .grid {
       display: grid;
       gap: 1.5rem;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
-
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -106,13 +90,11 @@
       flex-direction: column;
       gap: 1rem;
     }
-
     .form-row {
       display: flex;
       flex-wrap: wrap;
       gap: .75rem;
     }
-
     .form-row input {
       flex: 1 1 160px;
       padding: .75rem 1rem;
@@ -124,11 +106,9 @@
       outline: none;
       transition: border-color .2s;
     }
-
     .form-row input:focus {
       border-color: var(--accent);
     }
-
     .btn-primary {
       align-self: flex-start;
       padding: .65rem 1.25rem;
@@ -140,34 +120,28 @@
       cursor: pointer;
       transition: opacity .2s;
     }
-
     .btn-primary:hover {
       opacity: .85;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: .95rem;
     }
-
     th, td {
       padding: .75rem 1rem;
       text-align: left;
       border-bottom: 1px solid var(--line);
     }
-
     th {
       cursor: pointer;
       user-select: none;
       font-weight: 600;
       color: var(--accent);
     }
-
     th:hover {
       color: var(--text);
     }
-
     .total-bar {
       display: flex;
       justify-content: space-between;
@@ -175,7 +149,6 @@
       margin-top: 1rem;
       font-weight: 500;
     }
-
     .toast {
       position: fixed;
       bottom: 2rem;
@@ -190,12 +163,10 @@
       transition: opacity .3s, transform .3s;
       pointer-events: none;
     }
-
     .toast.show {
       opacity: 1;
       transform: translateY(0);
     }
-
     @media (max-width: 600px) {
       header {
         flex-direction: column;
@@ -223,20 +194,8 @@
 
 <main>
   <div class="grid">
-    <!-- Formulario -->
-    <div class="card">
-      <h2>Registrar venta</h2>
-      <div class="form-row">
-        <input type="text" id="nombre" placeholder="Nombre del producto" />
-        <input type="text" id="codigo" placeholder="Código" />
-        <input type="number" id="precio" placeholder="Precio unitario" min="0" step="0.01" />
-        <input type="number" id="cantidad" placeholder="Cantidad vendida" min="0" />
-      </div>
-      <button class="btn-primary" onclick="addSale()">Agregar venta</button>
-    </div>
-
     <!-- Tabla + total -->
-    <div class="card" style="grid-column: 1/-1;">
+    <div class="card" style="grid-column:1/-1">
       <table id="table">
         <thead>
           <tr>
@@ -261,13 +220,10 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  let data = JSON.parse(localStorage.getItem('ventas')) || [];
-  let sortDirection = true;
-
+  /* ----------  UTILS  ---------- */
   function toggleTheme() {
     document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
   }
-
   function toast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -275,22 +231,13 @@
     setTimeout(() => t.classList.remove('show'), 2000);
   }
 
+  /* ----------  DATA  ---------- */
+  let data = JSON.parse(localStorage.getItem('ventas')) || [];
+  let sortDirection = true;
+
   function save() {
     localStorage.setItem('ventas', JSON.stringify(data));
     render();
-  }
-
-  function addSale() {
-    const nombre = document.getElementById('nombre').value.trim();
-    const codigo = document.getElementById('codigo').value.trim();
-    const precio = parseFloat(document.getElementById('precio').value);
-    const cantidad = parseInt(document.getElementById('cantidad').value);
-
-    if (!nombre || !codigo || !precio || !cantidad) return toast('Completa todos los campos');
-    data.push({ nombre, codigo, precio, cantidad, total: precio * cantidad });
-    document.querySelectorAll('.form-row input').forEach(i => i.value = '');
-    toast('Venta agregada');
-    save();
   }
 
   function removeSale(index) {
@@ -319,7 +266,7 @@
       <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
         <w:body>
           <w:p><w:r><w:t>Ventas realizadas - ${date}</w:t></w:r></w:p>
-          <w:p><w:r><w:t>Nombre | Código | Precio | Cantidad | Total</w:t></w:r></w:p>`;
+          <w:p><w:r><w:t>Producto | Código | Precio | Cantidad | Total</w:t></w:r></w:p>`;
     data.forEach(r => {
       content += `<w:p><w:r><w:t>${r.nombre} | ${r.codigo} | $${r.precio.toFixed(2)} | ${r.cantidad} | $${r.total.toFixed(2)}</w:t></w:r></w:p>`;
     });
@@ -337,7 +284,7 @@
 
   function copyTable() {
     const csv = data.map(r => `${r.nombre},${r.codigo},${r.precio},${r.cantidad},${r.total}`).join('\n');
-    navigator.clipboard.writeText('Nombre,Código,Precio,Cantidad,Total\n' + csv);
+    navigator.clipboard.writeText('Producto,Código,Precio,Cantidad,Total\n' + csv);
     toast('Tabla copiada al portapapeles');
   }
 
@@ -363,7 +310,7 @@
         <td>$${r.precio.toFixed(2)}</td>
         <td>${r.cantidad}</td>
         <td>$${r.total.toFixed(2)}</td>
-        <td><button class="icon" onclick="removeSale(${data.indexOf(r)})">×</button></td>
+        <td><button class="icon" onclick="removeSale(${i})">×</button></td>
       </tr>
     `).join('');
 
@@ -374,6 +321,5 @@
   document.getElementById('search').addEventListener('input', render);
   render();
 </script>
-
 </body>
 </html>
