@@ -91,6 +91,13 @@
             text-align: center;
             color: #555;
         }
+
+        .policy {
+            font-size: 11px;
+            margin-top: 8px;
+            color: #444;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -99,7 +106,6 @@
         <div class="center">
             <p>San Salvador, El Salvador</p>
             <p>Correo: industriastobias@gmail.com</p>
-            <p>Celular: +503 7857-2734</p>
         </div>
 
         <div class="social">
@@ -140,10 +146,14 @@
 
         <div class="footer center">
             <p>¡Gracias por su compra!</p>
-            <p>*** No se aceptan devoluciones sin factura ***</p>
+            <p class="policy">
+                No se aceptan cambios ni devoluciones, a menos que el producto esté dañado.
+                Se aceptará dentro de los 15 días posteriores a la fecha de compra.
+            </p>
         </div>
 
         <button onclick="descargarPDF()">Descargar PDF</button>
+        <button onclick="imprimirFactura()">Imprimir Factura</button>
     </div>
 
     <script>
@@ -203,6 +213,14 @@
                 pdf.save("factura_EASIERSV.pdf");
                 botones.forEach(btn => btn.style.display = "block");
             });
+        }
+
+        // Imprimir solo la factura
+        function imprimirFactura() {
+            const botones = document.querySelectorAll("button");
+            botones.forEach(btn => btn.style.display = "none");
+            window.print();
+            botones.forEach(btn => btn.style.display = "block");
         }
     </script>
 </body>
