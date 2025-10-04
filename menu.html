@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – AESIER COMPANY</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        /* TEMA CLARO (por defecto) */
         :root {
             --bg: #f5f5f5;
             --panel: #ffffff;
@@ -13,6 +14,18 @@
             --text: #111827;
             --muted: #6b7280;
             --danger: #b91c1c;
+            --border: #d1d5db;
+        }
+
+        /* TEMA AZUL MARINO */
+        body[data-theme="dark"] {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --accent: #38bdf8;
+            --text: #e5e7eb;
+            --muted: #6b7280;
+            --danger: #f43f5e;
+            --border: #30363d;
         }
 
         * {
@@ -28,9 +41,9 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 260px;
             background: var(--panel);
@@ -38,26 +51,19 @@
             flex-direction: column;
             padding: 2rem 1.5rem;
             gap: 2rem;
-            border-right: 1px solid #d1d5db;
-            animation: slideIn 0.4s ease-out;
-
-            /* scroll vertical cuando sea necesario */
+            border-right: 1px solid var(--border);
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--accent) transparent;
         }
-        /* Chrome / Edge / Safari */
+
         .sidebar::-webkit-scrollbar {
             width: 6px;
         }
+
         .sidebar::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 3px;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
         }
 
         .logo {
@@ -66,12 +72,6 @@
             letter-spacing: 1px;
             color: var(--accent);
             text-align: center;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .nav {
@@ -90,25 +90,7 @@
             text-decoration: none;
             color: var(--text);
             font-weight: 500;
-            transition: background .2s, color .2s, transform .2s;
-            animation: popIn 0.4s ease-out backwards;
-        }
-
-        .nav a:nth-child(1) { animation-delay: 0.05s; }
-        .nav a:nth-child(2) { animation-delay: 0.1s; }
-        .nav a:nth-child(3) { animation-delay: 0.15s; }
-        .nav a:nth-child(4) { animation-delay: 0.2s; }
-        .nav a:nth-child(5) { animation-delay: 0.25s; }
-        .nav a:nth-child(6) { animation-delay: 0.3s; }
-        .nav a:nth-child(7) { animation-delay: 0.35s; }
-        .nav a:nth-child(8) { animation-delay: 0.4s; }
-        .nav a:nth-child(9) { animation-delay: 0.45s; }
-        .nav a:nth-child(10) { animation-delay: 0.5s; }
-        .nav a:nth-child(11) { animation-delay: 0.55s; }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+            transition: background .2s, transform .2s;
         }
 
         .nav a:hover {
@@ -116,17 +98,18 @@
             transform: translateX(6px);
         }
 
+        body[data-theme="dark"] .nav a:hover {
+            background: rgba(255, 255, 255, .05);
+        }
+
         .nav a.active {
             background: var(--accent);
             color: #fff;
         }
 
-        /* BOTÓN CERRAR SESIÓN (ESQ. SUPERIOR DERECHA) */
-        .logout-btn-top {
+        .logout-btn-top, .theme-toggle {
             position: absolute;
             top: 1.5rem;
-            right: 2rem;
-            background: var(--danger);
             border: none;
             border-radius: 50%;
             width: 48px;
@@ -138,12 +121,25 @@
             z-index: 1000;
         }
 
+        .logout-btn-top {
+            right: 2rem;
+            background: var(--danger);
+        }
+
         .logout-btn-top:hover {
             background: #991b1b;
             transform: scale(1.1);
         }
 
-        /* MAIN */
+        .theme-toggle {
+            right: 5.5rem;
+            background: var(--accent);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
         main {
             flex: 1;
             padding: 3rem 4rem;
@@ -157,11 +153,14 @@
             font-weight: 800;
             letter-spacing: -1px;
             color: var(--accent);
-            animation: fadeIn 1s ease-out;
         }
     </style>
 </head>
 <body>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+    <i id="theme-icon" class="fa-solid fa-moon"></i>
+</button>
 
 <button class="logout-btn-top" onclick="logout();" title="Cerrar sesión">
     <i class="fa-solid fa-right-from-bracket"></i>
@@ -221,10 +220,33 @@
         });
     }
 
+    function applyTheme(theme) {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        if (theme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            body.removeAttribute('data-theme');
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    }
+
+    function toggleTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         checkAuthentication();
         configureUserLinks();
         highlightCurrentPage();
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
     });
 </script>
 
