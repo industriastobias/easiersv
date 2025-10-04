@@ -55,10 +55,9 @@
     .ticket-preview .line{border-top:1px dashed #000;margin:6px 0}
     .ticket-preview table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
     .ticket-preview th,.ticket-preview td{padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:46%}
-    .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:12%}
-    .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:21%;padding-right:6px}
-    .ticket-preview th:nth-child(4),.ticket-preview td:nth-child(4){text-align:right;width:21%;padding-right:6px}
+    .ticket-preview th:first-child,.ticket-preview td:first-child{text-align:left;width:60%}
+    .ticket-preview th:nth-child(2),.ticket-preview td:nth-child(2){text-align:center;width:15%}
+    .ticket-preview th:nth-child(3),.ticket-preview td:nth-child(3){text-align:right;width:25%;padding-right:6px}
     .ticket-preview .total{font-weight:700;font-size:12px;text-align:right;margin-top:6px;padding-right:6px}
 
     .modal-buttons{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
@@ -181,10 +180,13 @@
     const codeFilter = document.getElementById('filterCode').value.toLowerCase();
     rowsPerPage = parseInt(document.getElementById('rowsPerPage').value);
 
-    const filtered = soldInventory.filter(item =>
+    let filtered = soldInventory.filter(item =>
       item.name.toLowerCase().includes(nameFilter) &&
       item.code.toLowerCase().includes(codeFilter)
     );
+
+    // ✅ Mostrar primero las ventas más recientes
+    filtered.reverse();
 
     const total = filtered.reduce((sum, item) => sum + Number(item.total), 0);
     document.getElementById('totalUSD').textContent = `Total vendido: $${total.toFixed(2)} USD`;
@@ -226,10 +228,11 @@
   }
 
   function nextPage() {
-    const filtered = soldInventory.filter(item =>
+    let filtered = soldInventory.filter(item =>
       item.name.toLowerCase().includes(document.getElementById('filterName').value.toLowerCase()) &&
       item.code.toLowerCase().includes(document.getElementById('filterCode').value.toLowerCase())
     );
+    filtered.reverse();
     if (currentPage < Math.ceil(filtered.length / rowsPerPage)) { currentPage++; loadSoldInventory(); }
   }
 
