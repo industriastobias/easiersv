@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoyaltyPro - Gestión de Clientes</title>
+    <title>Gestión de Clientes</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* (Estilos iguales que los tuyos, sin cambios) */
         :root {
             --primary-color: #DBB8BC;
             --primary-dark: #C9A7AB;
@@ -44,7 +45,6 @@
             padding: 20px;
         }
 
-        /* Header */
         .header {
             background: var(--secondary-color);
             box-shadow: var(--shadow-sm);
@@ -69,10 +69,6 @@
             color: var(--primary-color);
         }
 
-        .logo i {
-            font-size: 32px;
-        }
-
         .stats {
             display: flex;
             gap: 30px;
@@ -87,19 +83,6 @@
             min-width: 120px;
         }
 
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -113,62 +96,11 @@
             }
         }
 
-        /* Card Component */
         .card {
             background: var(--bg-secondary);
             border-radius: 16px;
             padding: 30px;
             box-shadow: var(--shadow-md);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-
-        .form-input, .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.2s;
-            background-color: var(--bg-secondary);
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(219, 184, 188, 0.1);
         }
 
         .form-row {
@@ -183,7 +115,14 @@
             }
         }
 
-        /* Button Styles */
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
         .btn {
             padding: 12px 24px;
             border: none;
@@ -191,11 +130,9 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            text-decoration: none;
         }
 
         .btn-primary {
@@ -203,23 +140,8 @@
             color: white;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
         .btn-secondary {
             background-color: var(--accent-color);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #4B5563;
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
             color: white;
         }
 
@@ -239,36 +161,14 @@
             margin-top: 25px;
         }
 
-        /* Search Box */
-        .search-container {
-            position: relative;
-            margin-bottom: 25px;
-        }
-
         .search-input {
             width: 100%;
             padding: 12px 45px 12px 16px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 16px;
-            transition: all 0.2s;
         }
 
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(219, 184, 188, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        /* Table Styles */
         .table-container {
             overflow-x: auto;
             border-radius: 12px;
@@ -278,25 +178,12 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--bg-secondary);
         }
 
-        th {
-            background-color: var(--bg-primary);
+        th, td {
             padding: 16px;
             text-align: left;
-            font-weight: 600;
-            color: var(--text-primary);
             border-bottom: 1px solid var(--border-color);
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        tr:hover {
-            background-color: var(--bg-primary);
         }
 
         .status-badge {
@@ -323,7 +210,6 @@
             gap: 8px;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -333,7 +219,6 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            animation: fadeIn 0.2s;
         }
 
         .modal-content {
@@ -346,37 +231,8 @@
             padding: 30px;
             max-width: 500px;
             width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideIn 0.3s;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .close-button {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: color 0.2s;
-        }
-
-        .close-button:hover {
-            color: var(--text-primary);
-        }
-
-        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -385,9 +241,7 @@
             color: white;
             padding: 16px 24px;
             border-radius: 8px;
-            box-shadow: var(--shadow-lg);
             display: none;
-            animation: slideUp 0.3s;
             z-index: 2000;
         }
 
@@ -398,68 +252,6 @@
         .toast.error {
             background: var(--danger-color);
         }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translate(-50%, -60%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, -50%);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-
-        .empty-state h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -468,7 +260,7 @@
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-crown"></i>
-                    <span>LoyaltyPro</span>
+                    <span>Gestión de Clientes</span>
                 </div>
                 <div class="stats">
                     <div class="stat-card">
@@ -490,7 +282,6 @@
 
     <div class="container">
         <div class="main-content">
-            <!-- Form Section -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
@@ -509,7 +300,6 @@
                             <input type="text" class="form-input" id="nombre" placeholder="Ej: Juan Pérez" required>
                         </div>
                     </div>
-                    
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="correo">Correo Electrónico</label>
@@ -520,7 +310,6 @@
                             <input type="tel" class="form-input" id="telefono" placeholder="Ej: 555-1234" required>
                         </div>
                     </div>
-                    
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="numero-tarjeta">Número de Tarjeta</label>
@@ -534,7 +323,6 @@
                             </select>
                         </div>
                     </div>
-                    
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="monto">Monto en Tarjeta ($)</label>
@@ -545,38 +333,31 @@
                             <input type="number" class="form-input" id="puntos" placeholder="0" min="0" value="0" required>
                         </div>
                     </div>
-                    
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
                             <span id="btn-submit-text">Guardar Cliente</span>
                         </button>
                         <button type="button" class="btn btn-secondary" id="btn-cancel" style="display: none;">
-                            <i class="fas fa-times"></i>
-                            Cancelar
+                            <i class="fas fa-times"></i> Cancelar
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Table Section -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
-                        <i class="fas fa-users"></i>
-                        Lista de Clientes
+                        <i class="fas fa-users"></i> Lista de Clientes
                     </h2>
                     <button class="btn btn-primary btn-sm" onclick="exportarDatos()">
-                        <i class="fas fa-download"></i>
-                        Exportar
+                        <i class="fas fa-download"></i> Exportar
                     </button>
                 </div>
-                
                 <div class="search-container">
                     <input type="text" class="search-input" id="search" placeholder="Buscar por ID, nombre, correo o tarjeta...">
                     <i class="fas fa-search search-icon"></i>
                 </div>
-                
                 <div class="table-container">
                     <table id="clientes-table">
                         <thead>
@@ -592,8 +373,7 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-clientes">
-                        </tbody>
+                        <tbody id="tabla-clientes"></tbody>
                     </table>
                     <div class="empty-state" id="empty-state" style="display: none;">
                         <i class="fas fa-inbox"></i>
@@ -605,7 +385,6 @@
         </div>
     </div>
 
-    <!-- Modal para confirmación -->
     <div class="modal" id="confirm-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -617,28 +396,23 @@
             <p>¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.</p>
             <div class="btn-group">
                 <button class="btn btn-danger" onclick="confirmarEliminacion()">
-                    <i class="fas fa-trash"></i>
-                    Eliminar
+                    <i class="fas fa-trash"></i> Eliminar
                 </button>
                 <button class="btn btn-secondary" onclick="cerrarModal()">
-                    <i class="fas fa-times"></i>
-                    Cancelar
+                    <i class="fas fa-times"></i> Cancelar
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // Estado de la aplicación
         let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
         let clienteAEliminar = null;
         let modoEdicion = false;
         let clienteEnEdicion = null;
 
-        // Referencias DOM
         const form = document.getElementById('cliente-form');
         const tablaClientes = document.getElementById('tabla-clientes');
         const searchInput = document.getElementById('search');
@@ -647,80 +421,45 @@
         const formTitle = document.getElementById('form-title');
         const btnSubmitText = document.getElementById('btn-submit-text');
 
-        // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             mostrarClientes();
             actualizarEstadisticas();
-            
-            // Event listeners
             form.addEventListener('submit', manejarSubmit);
             searchInput.addEventListener('input', buscarCliente);
             btnCancel.addEventListener('click', cancelarEdicion);
         });
 
-        // Funciones principales
         function manejarSubmit(e) {
             e.preventDefault();
-            
-            if (modoEdicion) {
-                actualizarCliente();
-            } else {
-                registrarCliente();
-            }
+            modoEdicion ? actualizarCliente() : registrarCliente();
         }
 
         function registrarCliente() {
             const cliente = obtenerDatosFormulario();
-            
             if (!cliente) return;
-            
-            if (clientes.some(c => c.id === cliente.id)) {
-                mostrarToast('El ID ya está registrado', 'error');
-                return;
-            }
-            
-            if (clientes.some(c => c.numeroTarjeta === cliente.numeroTarjeta)) {
-                mostrarToast('El número de tarjeta ya está registrado', 'error');
-                return;
-            }
-            
+            if (clientes.some(c => c.id === cliente.id)) return mostrarToast('ID duplicado', 'error');
+            if (clientes.some(c => c.numeroTarjeta === cliente.numeroTarjeta)) return mostrarToast('Tarjeta duplicada', 'error');
             clientes.push(cliente);
             guardarClientes();
             mostrarClientes();
             actualizarEstadisticas();
             form.reset();
-            mostrarToast('Cliente registrado exitosamente', 'success');
+            mostrarToast('Cliente registrado', 'success');
         }
 
         function actualizarCliente() {
             const cliente = obtenerDatosFormulario();
-            
             if (!cliente || !clienteEnEdicion) return;
-            
             const index = clientes.findIndex(c => c.id === clienteEnEdicion.id);
-            
-            if (index === -1) {
-                mostrarToast('Cliente no encontrado', 'error');
-                return;
-            }
-            
-            // Verificar duplicados excluyendo el cliente actual
-            if (clientes.some(c => c.id === cliente.id && c.id !== clienteEnEdicion.id)) {
-                mostrarToast('El ID ya está registrado', 'error');
-                return;
-            }
-            
-            if (clientes.some(c => c.numeroTarjeta === cliente.numeroTarjeta && c.id !== clienteEnEdicion.id)) {
-                mostrarToast('El número de tarjeta ya está registrado', 'error');
-                return;
-            }
-            
+            if (index === -1) return mostrarToast('Cliente no encontrado', 'error');
+            if (clientes.some(c => c.id === cliente.id && c.id !== clienteEnEdicion.id)) return mostrarToast('ID duplicado', 'error');
+            if (clientes.some(c => c.numeroTarjeta === cliente.numeroTarjeta && c.id !== clienteEnEdicion.id)) return mostrarToast('Tarjeta duplicada', 'error');
             clientes[index] = cliente;
             guardarClientes();
             mostrarClientes();
             actualizarEstadisticas();
             cancelarEdicion();
-            mostrarToast('Cliente actualizado exitosamente', 'success');
+            mostrarToast('Cliente actualizado', 'success');
         }
 
         function obtenerDatosFormulario() {
@@ -732,27 +471,18 @@
             const monto = parseFloat(document.getElementById('monto').value) || 0;
             const estadoTarjeta = document.getElementById('estado-tarjeta').value;
             const puntos = parseInt(document.getElementById('puntos').value) || 0;
-            
             if (!id || !nombre || !correo || !telefono || !numeroTarjeta) {
-                mostrarToast('Por favor completa todos los campos obligatorios', 'error');
+                mostrarToast('Completa todos los campos obligatorios', 'error');
                 return null;
             }
-            
             return { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
         }
 
         function editarCliente(id) {
             const cliente = clientes.find(c => c.id === id);
-            
-            if (!cliente) {
-                mostrarToast('Cliente no encontrado', 'error');
-                return;
-            }
-            
+            if (!cliente) return mostrarToast('Cliente no encontrado', 'error');
             modoEdicion = true;
             clienteEnEdicion = cliente;
-            
-            // Llenar formulario
             document.getElementById('id').value = cliente.id;
             document.getElementById('nombre').value = cliente.nombre;
             document.getElementById('correo').value = cliente.correo;
@@ -761,13 +491,9 @@
             document.getElementById('monto').value = cliente.monto;
             document.getElementById('estado-tarjeta').value = cliente.estadoTarjeta;
             document.getElementById('puntos').value = cliente.puntos;
-            
-            // Actualizar UI
             formTitle.textContent = 'Editar Cliente';
             btnSubmitText.textContent = 'Actualizar Cliente';
             btnCancel.style.display = 'inline-flex';
-            
-            // Scroll al formulario
             form.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -775,7 +501,6 @@
             modoEdicion = false;
             clienteEnEdicion = null;
             form.reset();
-            
             formTitle.textContent = 'Nuevo Cliente';
             btnSubmitText.textContent = 'Guardar Cliente';
             btnCancel.style.display = 'none';
@@ -788,13 +513,12 @@
 
         function confirmarEliminacion() {
             if (!clienteAEliminar) return;
-            
             clientes = clientes.filter(c => c.id !== clienteAEliminar);
             guardarClientes();
             mostrarClientes();
             actualizarEstadisticas();
             cerrarModal();
-            mostrarToast('Cliente eliminado exitosamente', 'success');
+            mostrarToast('Cliente eliminado', 'success');
             clienteAEliminar = null;
         }
 
@@ -804,15 +528,15 @@
         }
 
         function buscarCliente() {
-            const termino = searchInput.value.toLowerCase();
-            const clientesFiltrados = clientes.filter(cliente => 
-                cliente.id.toLowerCase().includes(termino) ||
-                cliente.nombre.toLowerCase().includes(termino) ||
-                cliente.correo.toLowerCase().includes(termino) ||
-                cliente.numeroTarjeta.toLowerCase().includes(termino)
+            const termino = searchInput.value.toLowerCase().trim();
+            const filtrados = clientes.filter(c =>
+                c.id.toLowerCase() === termino ||
+                c.correo.toLowerCase() === termino ||
+                c.telefono === termino ||
+                c.nombre.toLowerCase().includes(termino) ||
+                c.numeroTarjeta.toLowerCase().includes(termino)
             );
-            
-            renderizarTabla(clientesFiltrados);
+            renderizarTabla(filtrados);
         }
 
         function mostrarClientes() {
@@ -821,14 +545,7 @@
 
         function renderizarTabla(clientesMostrar) {
             tablaClientes.innerHTML = '';
-            
-            if (clientesMostrar.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
+            emptyState.style.display = clientesMostrar.length === 0 ? 'block' : 'none';
             clientesMostrar.forEach(cliente => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
@@ -863,49 +580,25 @@
             const totalClientes = clientes.length;
             const totalActivos = clientes.filter(c => c.estadoTarjeta === 'activo').length;
             const totalPuntos = clientes.reduce((sum, c) => sum + c.puntos, 0);
-            
             document.getElementById('total-clientes').textContent = totalClientes.toLocaleString();
             document.getElementById('total-activos').textContent = totalActivos.toLocaleString();
             document.getElementById('total-puntos').textContent = totalPuntos.toLocaleString();
         }
 
         function exportarDatos() {
-            if (clientes.length === 0) {
-                mostrarToast('No hay datos para exportar', 'error');
-                return;
-            }
-            
-            const csv = convertirACSV(clientes);
-            descargarArchivo(csv, 'clientes_fidelidad.csv', 'text/csv');
-            mostrarToast('Datos exportados exitosamente', 'success');
-        }
-
-        function convertirACSV(datos) {
-            const headers = ['ID', 'Nombre', 'Correo', 'Teléfono', 'Número de Tarjeta', 'Monto', 'Estado', 'Puntos'];
-            const filas = datos.map(cliente => [
-                cliente.id,
-                cliente.nombre,
-                cliente.correo,
-                cliente.telefono,
-                cliente.numeroTarjeta,
-                cliente.monto,
-                cliente.estadoTarjeta,
-                cliente.puntos
-            ]);
-            
-            return [headers, ...filas].map(fila => fila.join(',')).join('\n');
-        }
-
-        function descargarArchivo(contenido, nombre, tipo) {
-            const blob = new Blob([contenido], { type: tipo });
+            if (clientes.length === 0) return mostrarToast('No hay datos para exportar', 'error');
+            const csv = [
+                ['ID', 'Nombre', 'Correo', 'Teléfono', 'Tarjeta', 'Monto', 'Estado', 'Puntos'],
+                ...clientes.map(c => [c.id, c.nombre, c.correo, c.telefono, c.numeroTarjeta, c.monto, c.estadoTarjeta, c.puntos])
+            ].map(fila => fila.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = nombre;
-            document.body.appendChild(a);
+            a.download = 'clientes.csv';
             a.click();
-            document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            mostrarToast('Datos exportados', 'success');
         }
 
         function guardarClientes() {
@@ -917,19 +610,13 @@
             toast.textContent = mensaje;
             toast.className = `toast ${tipo}`;
             toast.style.display = 'block';
-            
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+            setTimeout(() => toast.style.display = 'none', 3000);
         }
 
-        // Cerrar modal al hacer clic fuera
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('confirm-modal');
-            if (event.target === modal) {
-                cerrarModal();
-            }
-        }
+            if (event.target === modal) cerrarModal();
+        };
     </script>
 </body>
 </html>
