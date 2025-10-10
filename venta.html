@@ -204,11 +204,21 @@
         <div>Cantidad vendida: ${item.quantity}</div>
         <div class="card-footer">
           <div class="card-total">Total: $${Number(item.total).toFixed(2)}</div>
+          <button class="card-delete" onclick="deleteSoldItem('${item.code}')">Eliminar</button>
         </div>
         <input type="checkbox" class="factCheck" value='${JSON.stringify(item)}' style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
       </div>
     `).join('');
   }
+
+  window.deleteSoldItem = function (code) {
+    const index = soldInventory.findIndex(item => item.code === code);
+    if (index !== -1) {
+      soldInventory.splice(index, 1);
+      localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
+      loadSoldInventory();
+    }
+  };
 
   function toggleTheme() {
     const html = document.documentElement;
