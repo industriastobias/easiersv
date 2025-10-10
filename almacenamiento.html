@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
-
         :root {
             --bg: #f5f7fa;
             --text: #1f2937;
@@ -18,183 +17,35 @@
             --white: #ffffff;
             --danger: #dc2626;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier Prime', monospace;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 2rem;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 2rem;
-            letter-spacing: 1px;
-            color: var(--text);
-            text-transform: uppercase;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: var(--white);
-            border: 1px solid var(--border);
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .search-block {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            align-items: flex-end;
-        }
-
-        label {
-            font-weight: 700;
-            font-size: .9rem;
-            color: var(--text);
-        }
-
-        input, select {
-            padding: .5rem .7rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--white);
-            color: var(--text);
-            font-size: .95rem;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        button.stamp {
-            padding: .5rem 1rem;
-            border: 1px solid var(--accent);
-            background: var(--accent);
-            color: var(--white);
-            font-weight: 700;
-            font-size: .85rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background .2s ease;
-        }
-
-        button.stamp:hover {
-            background: var(--accent-hover);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        thead {
-            background: var(--highlight);
-        }
-
-        th, td {
-            padding: .6rem .8rem;
-            border: 1px solid var(--border);
-            text-align: left;
-        }
-
-        th {
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        tbody tr:nth-child(odd) {
-            background: var(--highlight);
-        }
-
-        .no-results,
-        .result-message,
-        .confirmation-message {
-            font-weight: 700;
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .no-results {
-            color: var(--danger);
-        }
-
-        .result-message {
-            color: var(--text);
-        }
-
-        .confirmation-message {
-            color: var(--accent);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 10;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background: var(--white);
-            border: 1px solid var(--border);
-            margin: 10% auto;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .close {
-            position: absolute;
-            top: .5rem;
-            right: .7rem;
-            font-size: 1.5rem;
-            color: var(--text);
-            cursor: pointer;
-        }
-
-        .highlight {
-            background: var(--accent) !important;
-            color: var(--white);
-            font-weight: 700;
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier Prime', monospace; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+        h1 { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem; letter-spacing: 1px; text-transform: uppercase; }
+        .container { max-width: 1200px; margin: auto; background: var(--white); border: 1px solid var(--border); padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+        .search-block { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-end; }
+        label { font-weight: 700; font-size: .9rem; }
+        input, select { padding: .5rem .7rem; border: 1px solid var(--border); border-radius: 4px; background: var(--white); color: var(--text); font-size: .95rem; }
+        input:focus, select:focus { outline: none; border-color: var(--accent); }
+        button.stamp { padding: .5rem 1rem; border: 1px solid var(--accent); background: var(--accent); color: var(--white); font-weight: 700; font-size: .85rem; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: background .2s ease; }
+        button.stamp:hover { background: var(--accent-hover); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        thead { background: var(--highlight); }
+        th, td { padding: .6rem .8rem; border: 1px solid var(--border); text-align: left; }
+        th { font-weight: 700; letter-spacing: .5px; }
+        tbody tr:nth-child(odd) { background: var(--highlight); }
+        .no-results, .result-message, .confirmation-message { font-weight: 700; text-align: center; margin-top: 1rem; }
+        .no-results { color: var(--danger); }
+        .result-message { color: var(--text); }
+        .confirmation-message { color: var(--accent); }
+        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); }
+        .modal-content { background: var(--white); border: 1px solid var(--border); margin: 10% auto; padding: 2rem; width: 90%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.1); position: relative; }
+        .close { position: absolute; top: .5rem; right: .7rem; font-size: 1.5rem; color: var(--text); cursor: pointer; }
+        .highlight { background: var(--accent) !important; color: var(--white); font-weight: 700; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
     </style>
 </head>
 <body>
-
     <h1>Gestión de Inventario</h1>
-
     <div class="container">
         <div class="search-block">
             <div>
@@ -220,33 +71,22 @@
             </div>
             <button class="stamp" onclick="openSoldModal()">Registrar Venta</button>
         </div>
-
         <div style="display:flex; gap:1rem; align-items:center; flex-wrap: wrap;">
             <label for="goToRow">Ir a fila:</label>
             <input type="number" id="goToRow" min="1" style="width:80px;">
             <button class="stamp" onclick="goToRow()">Ir</button>
             <button class="stamp" onclick="clearFilters()" style="margin-left:auto;">Limpiar filtros</button>
         </div>
-
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Código de Barras</th>
-                    <th>Precio</th>
-                    <th>Descuento (%)</th>
-                    <th>Precio con Descuento</th>
-                    <th>Descripción</th>
-                    <th>Categoría</th>
-                    <th>Cantidad en Stock</th>
-                    <th>Acciones</th>
+                    <th>#</th><th>Nombre</th><th>Código</th><th>Código de Barras</th><th>Precio</th>
+                    <th>Descuento (%)</th><th>Precio con Descuento</th><th>Descripción</th>
+                    <th>Categoría</th><th>Cantidad en Stock</th><th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="inventoryList"></tbody>
         </table>
-
         <div id="noResultsMessage" class="no-results">No se encontraron productos.</div>
         <div id="resultMessage" class="result-message"></div>
     </div>
@@ -258,6 +98,8 @@
             <h2>Registrar Venta</h2>
             <label for="soldQuantity">Cantidad vendida:</label>
             <input type="number" id="soldQuantity" min="1">
+            <label for="soldPrice" style="margin-top:1rem;display:block;">Precio vendido (unidad):</label>
+            <input type="number" id="soldPrice" min="0" step="0.01" placeholder="Ej: 1500">
             <button class="stamp" onclick="processSale()">Registrar</button>
             <div id="confirmationMessage" class="confirmation-message" style="display:none;">¡Venta registrada!</div>
         </div>
@@ -265,7 +107,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
-        /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentSoldIndex = -1;
 
@@ -273,88 +114,52 @@
             const list = document.getElementById('inventoryList');
             const noResults = document.getElementById('noResultsMessage');
             if (filteredInventory.length === 0) {
-                list.innerHTML = '';
-                noResults.style.display = 'block';
+                list.innerHTML = ''; noResults.style.display = 'block';
             } else {
                 noResults.style.display = 'none';
                 list.innerHTML = filteredInventory.map((item, index) => {
                     const priceWithDiscount = item.price * (1 - item.discount / 100);
                     return `
                         <tr id="product-${index}">
-                            <td>${index + 1}</td>
-                            <td>${item.name}</td>
-                            <td>${item.code}</td>
-                            <td>${item.barcode}</td>
-                            <td>${item.price}</td>
-                            <td>${item.discount}</td>
-                            <td>${priceWithDiscount.toFixed(2)}</td>
-                            <td>${item.description}</td>
-                            <td>${item.category}</td>
-                            <td>${item.quantity}</td>
+                            <td>${index + 1}</td><td>${item.name}</td><td>${item.code}</td>
+                            <td>${item.barcode}</td><td>${item.price}</td><td>${item.discount}</td>
+                            <td>${priceWithDiscount.toFixed(2)}</td><td>${item.description}</td>
+                            <td>${item.category}</td><td>${item.quantity}</td>
                             <td><button class="stamp" onclick="markSold(${index})">Vender</button></td>
-                        </tr>
-                    `;
+                        </tr>`;
                 }).join('');
             }
         }
-
-        function markSold(index) {
-            currentSoldIndex = index;
-            document.getElementById('soldModal').style.display = 'block';
-        }
-
-        function openSoldModal() {
-            document.getElementById('soldModal').style.display = 'block';
-        }
-
+        function markSold(index) { currentSoldIndex = index; document.getElementById('soldModal').style.display = 'block'; }
+        function openSoldModal() { document.getElementById('soldModal').style.display = 'block'; }
         function closeSoldModal() {
             document.getElementById('soldModal').style.display = 'none';
             document.getElementById('confirmationMessage').style.display = 'none';
         }
-
-        /* ==========  NUEVA VERSIÓN: CIERRA MODAL Y AVISA FUERA  ========== */
         function processSale() {
-            const soldQty = parseInt(document.getElementById('soldQuantity').value);
-            if (isNaN(soldQty) || soldQty <= 0) {
-                alert('Ingresá una cantidad válida mayor a 0.');
-                return;
-            }
-
+            const soldQty   = parseInt(document.getElementById('soldQuantity').value);
+            const soldPrice = parseFloat(document.getElementById('soldPrice').value);
+            if (isNaN(soldQty) || soldQty <= 0) { alert('Ingresá una cantidad válida mayor a 0.'); return; }
+            if (isNaN(soldPrice) || soldPrice < 0) { alert('Ingresá un precio de venta válido.'); return; }
             const item = inventory[currentSoldIndex];
-            if (soldQty > item.quantity) {
-                alert('No hay stock suficiente.');
-                return;
-            }
-
-            /* ----------  actualizamos stock  ---------- */
+            if (soldQty > item.quantity) { alert('No hay stock suficiente.'); return; }
             item.quantity -= soldQty;
             localStorage.setItem('inventory', JSON.stringify(inventory));
-
-            /* ----------  guardamos la venta  ---------- */
             const soldItem = {
-                name: item.name,
-                code: item.code,
-                price: item.price * (1 - item.discount / 100),
-                quantity: soldQty,
-                total: (item.price * (1 - item.discount / 100)) * soldQty
+                name: item.name, code: item.code,
+                price: soldPrice, quantity: soldQty, total: soldPrice * soldQty
             };
             let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
-
-            /* ----------  refrescamos tabla  ---------- */
             filterInventory();
-
-            /* ----------  cerramos modal y avisamos  ---------- */
-            closeSoldModal();                       // <- oculta el modal
+            closeSoldModal();
             document.getElementById('resultMessage').textContent = '¡Venta registrada!';
             document.getElementById('resultMessage').style.display = 'block';
             setTimeout(() => document.getElementById('resultMessage').style.display = 'none', 3000);
-
-            /* ----------  limpiamos el input para la próxima  ---------- */
             document.getElementById('soldQuantity').value = '';
+            document.getElementById('soldPrice').value = '';
         }
-
         function filterInventory() {
             const category = document.getElementById('searchCategory').value.trim().toLowerCase();
             const code = document.getElementById('searchCode').value.trim().toLowerCase();
@@ -372,7 +177,6 @@
                 document.getElementById('resultMessage').style.display = 'none';
             }
         }
-
         function goToRow() {
             const row = parseInt(document.getElementById('goToRow').value);
             const rows = document.querySelectorAll('#inventoryList tr');
@@ -380,11 +184,8 @@
             if (row >= 1 && row <= rows.length) {
                 rows[row - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 rows[row - 1].classList.add('highlight');
-            } else {
-                alert('Fila fuera de rango.');
-            }
+            } else { alert('Fila fuera de rango.'); }
         }
-
         function clearFilters() {
             document.getElementById('searchCategory').value = '';
             document.getElementById('searchCode').value = '';
@@ -392,12 +193,9 @@
             loadInventory();
             document.getElementById('resultMessage').style.display = 'none';
         }
-
         document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
         document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
-
         loadInventory();
-
         function debounce(func, delay) {
             let timer;
             return function () {
@@ -406,6 +204,5 @@
             };
         }
     </script>
-
 </body>
 </html>
