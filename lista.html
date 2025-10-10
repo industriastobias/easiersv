@@ -6,7 +6,6 @@
     <title>Gestión de Clientes</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* (Estilos iguales que los tuyos, sin cambios) */
         :root {
             --primary-color: #DBB8BC;
             --primary-dark: #C9A7AB;
@@ -420,6 +419,12 @@
         const btnCancel = document.getElementById('btn-cancel');
         const formTitle = document.getElementById('form-title');
         const btnSubmitText = document.getElementById('btn-submit-text');
+
+        // ✅ LIMPIAR FORMULARIO AL CARGAR (evita que aparezca al dar "atrás")
+        window.addEventListener('pageshow', () => {
+            form.reset();
+            cancelarEdicion();
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
             mostrarClientes();
