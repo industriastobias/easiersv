@@ -181,7 +181,6 @@
       transform: none;
     }
 
-    /* Responsive: vuelve a columna */
     @media (max-width: 768px) {
       .split {
         flex-direction: column;
@@ -273,32 +272,37 @@
       const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
       const validarTel = t => /^\d{7,15}$/.test(t);
 
+      /* ---------- 3. FILTRO exacto por ID, correo o teléfono ---------- */
       const render = () => {
-        const fid = $('#filtro-id').value.trim().toLowerCase();
-        const fcor = $('#filtro-correo').value.trim().toLowerCase();
-        const ftel = $('#filtro-telefono').value.trim().toLowerCase();
+        const fid   = $('#filtro-id').value.trim().toLowerCase();
+        const fcor  = $('#filtro-correo').value.trim().toLowerCase();
+        const ftel  = $('#filtro-telefono').value.trim().toLowerCase();
+
         const filtrados = clientes.filter(c =>
-          c.id.toLowerCase().includes(fid) &&
-          c.correo.toLowerCase().includes(fcor) &&
-          c.telefono.toLowerCase().includes(ftel)
+          (!fid  || c.id === fid) &&
+          (!fcor || c.correo.toLowerCase() === fcor) &&
+          (!ftel || c.telefono === ftel)
         );
-        $('#clientes-table').innerHTML = filtrados.map(c => `
-          <tr>
-            <td>${c.id}</td>
-            <td>${c.correo}</td>
-            <td>${c.telefono}</td>
-            <td>${c.puntos}</td>
-            <td>${c.fecha}</td>
-            <td class="actions">
-              <button class="edit" data-id="${c.id}">✎</button>
-              <button class="add" data-id="${c.id}">+</button>
-              <button class="sub" data-id="${c.id}">−</button>
-              <button class="del" data-id="${c.id}">×</button>
-            </td>
-          </tr>
-        `).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--muted)">Sin coincidencias</td></tr>`;
+
+        $('#clientes-table').innerHTML = filtrados.length
+          ? filtrados.map(c => `
+              <tr>
+                <td>${c.id}</td>
+                <td>${c.correo}</td>
+                <td>${c.telefono}</td>
+                <td>${c.puntos}</td>
+                <td>${c.fecha}</td>
+                <td class="actions">
+                  <button class="edit" data-id="${c.id}">✎</button>
+                  <button class="add" data-id="${c.id}">+</button>
+                  <button class="sub" data-id="${c.id}">−</button>
+                  <button class="del" data-id="${c.id}">×</button>
+                </td>
+              </tr>`).join('')
+          : `<tr><td colspan="6" style="text-align:center;color:var(--muted)">Sin coincidencias</td></tr>`;
       };
 
+      /* ---------- 1. Guardar cliente NUEVO (no se perderá al recargar) ---------- */
       $('#form-cliente').addEventListener('submit', e => {
         e.preventDefault();
         const id = $('#cliente-id').value.trim();
@@ -322,6 +326,7 @@
         save(); e.target.reset(); render();
       });
 
+      /* ---------- 2. Botones editar / eliminar (siempre visibles) ---------- */
       $('#clientes-table').addEventListener('click', e => {
         const b = e.target.closest('button');
         if (!b) return;
@@ -378,6 +383,7 @@
         };
       });
 
+      /* ---------- 4. Limpiar filtros al escribir ---------- */
       ['#filtro-id', '#filtro-correo', '#filtro-telefono'].forEach(id => {
         $(id).addEventListener('input', render);
       });
