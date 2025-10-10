@@ -37,7 +37,7 @@
             flex-direction: column;
         }
 
-        /* ---------- HEADER ---------- */
+        /* HEADER */
         .header {
             background: var(--card);
             box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
@@ -83,7 +83,7 @@
             color: var(--muted);
         }
 
-        /* ---------- MAIN LAYOUT ---------- */
+        /* MAIN LAYOUT */
         .main {
             flex: 1;
             display: grid;
@@ -100,7 +100,7 @@
             }
         }
 
-        /* ---------- FORM CARD ---------- */
+        /* FORM CARD */
         .form-card {
             background: var(--card);
             border-radius: var(--radius);
@@ -184,7 +184,7 @@
             color: #fff;
         }
 
-        /* ---------- TABLE CARD ---------- */
+        /* TABLE CARD */
         .table-card {
             background: var(--card);
             border-radius: var(--radius);
@@ -296,7 +296,29 @@
             opacity: .3;
         }
 
-        /* ---------- MODAL / TOAST ---------- */
+        /* BOTÓN REGRESAR */
+        .btn-back {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: #fff;
+            padding: 1rem;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background .2s;
+        }
+
+        .btn-back:hover {
+            background: var(--primary-dark);
+        }
+
+        /* MODAL / TOAST */
         .modal {
             display: none;
             position: fixed;
@@ -340,7 +362,7 @@
     <header class="header">
         <div class="logo">
             <i class="fas fa-crown"></i>
-            <span>Gestión de Clientes</span>
+            <span>Lista de Clientes</span>
         </div>
         <div class="stats">
             <div class="stat-card">
@@ -462,6 +484,11 @@
             </div>
         </section>
     </main>
+
+    <!-- BOTÓN REGRESAR A MENÚ -->
+    <a href="menu.html" class="btn-back" title="Volver al menú">
+        <i class="fas fa-arrow-left"></i>
+    </a>
 
     <!-- MODAL CONFIRMACIÓN -->
     <div class="modal" id="confirm-modal">
@@ -624,7 +651,7 @@
 
         function renderizarTabla(datos) {
             tablaClientes.innerHTML = '';
-            emptyState.style.display = datos.length ? 'none' 'block';
+            emptyState.style.display = datos.length ? 'none' : 'block';
             datos.forEach(c => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
