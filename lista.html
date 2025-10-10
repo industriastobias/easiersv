@@ -338,21 +338,21 @@
 
       <form id="cliente-form">
         <div class="form-row">
-          <div><label for="id">ID Cliente</label><input id="id" type="text" placeholder="Ej: C001" required></div>
-          <div><label for="nombre">Nombre Completo</label><input id="nombre" type="text" placeholder="Ej: Juan Pérez" required></div>
-          <div><label for="correo">Correo Electrónico</label><input id="correo" type="email" placeholder="ejemplo@correo.com" required></div>
-          <div><label for="telefono">Teléfono</label><input id="telefono" type="tel" placeholder="555-1234" required></div>
+          <div><label for="id">ID Cliente</label><input id="id" type="text" required></div>
+          <div><label for="nombre">Nombre Completo</label><input id="nombre" type="text" required></div>
+          <div><label for="correo">Correo Electrónico</label><input id="correo" type="email" required></div>
+          <div><label for="telefono">Teléfono</label><input id="telefono" type="tel" required></div>
         </div>
 
         <div class="form-row">
-          <div><label for="numero-tarjeta">Número de Tarjeta</label><input id="numero-tarjeta" type="text" placeholder="1234-5678-9012" required></div>
+          <div><label for="numero-tarjeta">Número de Tarjeta</label><input id="numero-tarjeta" type="text" required></div>
           <div><label for="estado-tarjeta">Estado de Tarjeta</label>
             <select id="estado-tarjeta">
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
           </div>
-          <div><label for="monto">Monto en Tarjeta ($)</label><input id="monto" type="number" step="0.01" min="0" placeholder="0.00" required></div>
+          <div><label for="monto">Monto en Tarjeta ($)</label><input id="monto" type="number" step="0.01" min="0" required></div>
           <div><label for="puntos">Puntos Acumulados</label><input id="puntos" type="number" min="0" value="0" required></div>
         </div>
 
@@ -582,10 +582,10 @@
     function buscarCliente() {
       const q = searchInput.value.trim().toLowerCase();
       const filtrados = clientes.filter(c =>
-        c.id.toLowerCase() === q ||
-        c.correo.toLowerCase() === q ||
-        c.telefono === q ||
+        c.id.toLowerCase().includes(q) ||
         c.nombre.toLowerCase().includes(q) ||
+        c.correo.toLowerCase().includes(q) ||
+        c.telefono.includes(q) ||
         c.numeroTarjeta.toLowerCase().includes(q)
       );
       renderizarTabla(filtrados);
