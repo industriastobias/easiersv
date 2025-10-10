@@ -3,232 +3,933 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Clientes con Tarjeta de Fidelidad</title>
+    <title>LoyaltyPro - Gestión de Clientes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        :root {
+            --primary-color: #DBB8BC;
+            --primary-dark: #C9A7AB;
+            --primary-light: #EDD5D7;
+            --secondary-color: #ffffff;
+            --accent-color: #6B7280;
+            --success-color: #10B981;
+            --danger-color: #EF4444;
+            --warning-color: #F59E0B;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --bg-primary: #F9FAFB;
+            --bg-secondary: #ffffff;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            box-sizing: border-box;
         }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
         }
-        table, th, td {
-            border: 1px solid #ddd;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        th, td {
-            padding: 10px;
-            text-align: left;
+
+        /* Header */
+        .header {
+            background: var(--secondary-color);
+            box-shadow: var(--shadow-sm);
+            padding: 20px 0;
+            margin-bottom: 30px;
         }
-        th {
-            background-color: #f2f2f2;
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-        .form-container {
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo i {
+            font-size: 32px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Component */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Styles */
+        .form-group {
             margin-bottom: 20px;
         }
-        label, input {
-            margin: 5px 0;
-            padding: 8px;
-            font-size: 16px;
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
         }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background-color: var(--bg-secondary);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(219, 184, 188, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 12px 24px;
             border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .search-container {
-            margin-bottom: 15px;
-        }
-        input[type="search"] {
-            padding: 8px;
+            border-radius: 8px;
             font-size: 16px;
-            width: 250px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        /* Search Box */
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(219, 184, 188, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+        }
+
+        th {
+            background-color: var(--bg-primary);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: var(--bg-primary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-inactive {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: var(--text-primary);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--text-primary);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: slideUp 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <h1>Registro de Clientes con Tarjeta de Fidelidad</h1>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-crown"></i>
+                    <span>LoyaltyPro</span>
+                </div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-clientes">0</div>
+                        <div class="stat-label">Total Clientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-activos">0</div>
+                        <div class="stat-label">Tarjetas Activas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-puntos">0</div>
+                        <div class="stat-label">Puntos Totales</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <p>Total de Clientes: <span id="total-clientes">0</span></p>
+    <div class="container">
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-plus"></i>
+                        <span id="form-title">Nuevo Cliente</span>
+                    </h2>
+                </div>
+                <form id="cliente-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="id">ID Cliente</label>
+                            <input type="text" class="form-input" id="id" placeholder="Ej: C001" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nombre">Nombre Completo</label>
+                            <input type="text" class="form-input" id="nombre" placeholder="Ej: Juan Pérez" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="correo">Correo Electrónico</label>
+                            <input type="email" class="form-input" id="correo" placeholder="ejemplo@correo.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="telefono">Teléfono</label>
+                            <input type="tel" class="form-input" id="telefono" placeholder="Ej: 555-1234" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="numero-tarjeta">Número de Tarjeta</label>
+                            <input type="text" class="form-input" id="numero-tarjeta" placeholder="Ej: 1234-5678-9012" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="estado-tarjeta">Estado de Tarjeta</label>
+                            <select class="form-select" id="estado-tarjeta">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="monto">Monto en Tarjeta ($)</label>
+                            <input type="number" class="form-input" id="monto" placeholder="0.00" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="puntos">Puntos Acumulados</label>
+                            <input type="number" class="form-input" id="puntos" placeholder="0" min="0" value="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            <span id="btn-submit-text">Guardar Cliente</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btn-cancel" style="display: none;">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-    <div class="search-container">
-        <label for="search">Buscar Cliente: </label>
-        <input type="search" id="search" placeholder="Buscar por ID, nombre, correo o tarjeta" onkeyup="buscarCliente()">
+            <!-- Table Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-users"></i>
+                        Lista de Clientes
+                    </h2>
+                    <button class="btn btn-primary btn-sm" onclick="exportarDatos()">
+                        <i class="fas fa-download"></i>
+                        Exportar
+                    </button>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search" placeholder="Buscar por ID, nombre, correo o tarjeta...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                
+                <div class="table-container">
+                    <table id="clientes-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Tarjeta</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Puntos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-clientes">
+                        </tbody>
+                    </table>
+                    <div class="empty-state" id="empty-state" style="display: none;">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No hay clientes registrados</h3>
+                        <p>Comienza agregando tu primer cliente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-container">
-        <label for="id">ID:</label>
-        <input type="number" id="id" placeholder="ID del Cliente" required>
-        
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" placeholder="Nombre del Cliente" required>
-        
-        <label for="correo">Correo:</label>
-        <input type="email" id="correo" placeholder="Correo del Cliente" required>
-        
-        <label for="telefono">Teléfono:</label>
-        <input type="tel" id="telefono" placeholder="Número de Teléfono" required>
-        
-        <label for="numero-tarjeta">Número de Tarjeta:</label>
-        <input type="text" id="numero-tarjeta" placeholder="Número de Tarjeta" required>
-        
-        <label for="monto">Monto:</label>
-        <input type="number" id="monto" placeholder="Monto en Tarjeta" required>
-        
-        <label for="estado-tarjeta">Estado de la Tarjeta:</label>
-        <select id="estado-tarjeta">
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
-        </select>
-
-        <label for="puntos">Puntos Acumulados:</label>
-        <input type="number" id="puntos" placeholder="Puntos acumulados" value="0" required>
-
-        <button onclick="registrarCliente()">Registrar Cliente</button>
-        <button onclick="actualizarCliente()">Actualizar Cliente</button>
+    <!-- Modal para confirmación -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmar Eliminación</h3>
+                <button class="close-button" onclick="cerrarModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p>¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.</p>
+            <div class="btn-group">
+                <button class="btn btn-danger" onclick="confirmarEliminacion()">
+                    <i class="fas fa-trash"></i>
+                    Eliminar
+                </button>
+                <button class="btn btn-secondary" onclick="cerrarModal()">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+            </div>
+        </div>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Teléfono</th>
-                <th>Número de Tarjeta</th>
-                <th>Monto</th>
-                <th>Estado</th>
-                <th>Puntos</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-clientes">
-        </tbody>
-    </table>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
     <script>
+        // Estado de la aplicación
         let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+        let clienteAEliminar = null;
+        let modoEdicion = false;
+        let clienteEnEdicion = null;
 
-        function registrarCliente() {
-            const id = document.getElementById("id").value.trim();
-            const nombre = document.getElementById("nombre").value.trim();
-            const correo = document.getElementById("correo").value.trim();
-            const telefono = document.getElementById("telefono").value.trim();
-            const numeroTarjeta = document.getElementById("numero-tarjeta").value.trim();
-            const monto = document.getElementById("monto").value.trim();
-            const estadoTarjeta = document.getElementById("estado-tarjeta").value;
-            const puntos = document.getElementById("puntos").value.trim();
+        // Referencias DOM
+        const form = document.getElementById('cliente-form');
+        const tablaClientes = document.getElementById('tabla-clientes');
+        const searchInput = document.getElementById('search');
+        const emptyState = document.getElementById('empty-state');
+        const btnCancel = document.getElementById('btn-cancel');
+        const formTitle = document.getElementById('form-title');
+        const btnSubmitText = document.getElementById('btn-submit-text');
 
-            if (!id || !nombre || !correo || !telefono || !numeroTarjeta || !monto || !puntos) {
-                alert("Todos los campos son obligatorios.");
-                return;
-            }
-
-            if (clientes.some(cliente => cliente.id === id)) {
-                alert("El ID ya está registrado.");
-                return;
-            }
-
-            const cliente = { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
-
-            clientes.push(cliente);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
             mostrarClientes();
-            actualizarContador();
+            actualizarEstadisticas();
+            
+            // Event listeners
+            form.addEventListener('submit', manejarSubmit);
+            searchInput.addEventListener('input', buscarCliente);
+            btnCancel.addEventListener('click', cancelarEdicion);
+        });
+
+        // Funciones principales
+        function manejarSubmit(e) {
+            e.preventDefault();
+            
+            if (modoEdicion) {
+                actualizarCliente();
+            } else {
+                registrarCliente();
+            }
         }
 
-        function editarCliente(id) {
-            const cliente = clientes.find(cliente => cliente.id === id);
-
-            document.getElementById("id").value = cliente.id;
-            document.getElementById("nombre").value = cliente.nombre;
-            document.getElementById("correo").value = cliente.correo;
-            document.getElementById("telefono").value = cliente.telefono;
-            document.getElementById("numero-tarjeta").value = cliente.numeroTarjeta;
-            document.getElementById("monto").value = cliente.monto;
-            document.getElementById("estado-tarjeta").value = cliente.estadoTarjeta;
-            document.getElementById("puntos").value = cliente.puntos;
+        function registrarCliente() {
+            const cliente = obtenerDatosFormulario();
+            
+            if (!cliente) return;
+            
+            if (clientes.some(c => c.id === cliente.id)) {
+                mostrarToast('El ID ya está registrado', 'error');
+                return;
+            }
+            
+            if (clientes.some(c => c.numeroTarjeta === cliente.numeroTarjeta)) {
+                mostrarToast('El número de tarjeta ya está registrado', 'error');
+                return;
+            }
+            
+            clientes.push(cliente);
+            guardarClientes();
+            mostrarClientes();
+            actualizarEstadisticas();
+            form.reset();
+            mostrarToast('Cliente registrado exitosamente', 'success');
         }
 
         function actualizarCliente() {
-            const id = document.getElementById("id").value.trim();
-            const nombre = document.getElementById("nombre").value.trim();
-            const correo = document.getElementById("correo").value.trim();
-            const telefono = document.getElementById("telefono").value.trim();
-            const numeroTarjeta = document.getElementById("numero-tarjeta").value.trim();
-            const monto = document.getElementById("monto").value.trim();
-            const estadoTarjeta = document.getElementById("estado-tarjeta").value;
-            const puntos = document.getElementById("puntos").value.trim();
-
-            const clienteIndex = clientes.findIndex(cliente => cliente.id === id);
-            if (clienteIndex === -1) {
-                alert("Cliente no encontrado.");
+            const cliente = obtenerDatosFormulario();
+            
+            if (!cliente || !clienteEnEdicion) return;
+            
+            const index = clientes.findIndex(c => c.id === clienteEnEdicion.id);
+            
+            if (index === -1) {
+                mostrarToast('Cliente no encontrado', 'error');
                 return;
             }
-
-            clientes[clienteIndex] = { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
-            localStorage.setItem("clientes", JSON.stringify(clientes));
+            
+            // Verificar duplicados excluyendo el cliente actual
+            if (clientes.some(c => c.id === cliente.id && c.id !== clienteEnEdicion.id)) {
+                mostrarToast('El ID ya está registrado', 'error');
+                return;
+            }
+            
+            if (clientes.some(c => c.numeroTarjeta === cliente.numeroTarjeta && c.id !== clienteEnEdicion.id)) {
+                mostrarToast('El número de tarjeta ya está registrado', 'error');
+                return;
+            }
+            
+            clientes[index] = cliente;
+            guardarClientes();
             mostrarClientes();
-            actualizarContador();
+            actualizarEstadisticas();
+            cancelarEdicion();
+            mostrarToast('Cliente actualizado exitosamente', 'success');
+        }
+
+        function obtenerDatosFormulario() {
+            const id = document.getElementById('id').value.trim();
+            const nombre = document.getElementById('nombre').value.trim();
+            const correo = document.getElementById('correo').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const numeroTarjeta = document.getElementById('numero-tarjeta').value.trim();
+            const monto = parseFloat(document.getElementById('monto').value) || 0;
+            const estadoTarjeta = document.getElementById('estado-tarjeta').value;
+            const puntos = parseInt(document.getElementById('puntos').value) || 0;
+            
+            if (!id || !nombre || !correo || !telefono || !numeroTarjeta) {
+                mostrarToast('Por favor completa todos los campos obligatorios', 'error');
+                return null;
+            }
+            
+            return { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
+        }
+
+        function editarCliente(id) {
+            const cliente = clientes.find(c => c.id === id);
+            
+            if (!cliente) {
+                mostrarToast('Cliente no encontrado', 'error');
+                return;
+            }
+            
+            modoEdicion = true;
+            clienteEnEdicion = cliente;
+            
+            // Llenar formulario
+            document.getElementById('id').value = cliente.id;
+            document.getElementById('nombre').value = cliente.nombre;
+            document.getElementById('correo').value = cliente.correo;
+            document.getElementById('telefono').value = cliente.telefono;
+            document.getElementById('numero-tarjeta').value = cliente.numeroTarjeta;
+            document.getElementById('monto').value = cliente.monto;
+            document.getElementById('estado-tarjeta').value = cliente.estadoTarjeta;
+            document.getElementById('puntos').value = cliente.puntos;
+            
+            // Actualizar UI
+            formTitle.textContent = 'Editar Cliente';
+            btnSubmitText.textContent = 'Actualizar Cliente';
+            btnCancel.style.display = 'inline-flex';
+            
+            // Scroll al formulario
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelarEdicion() {
+            modoEdicion = false;
+            clienteEnEdicion = null;
+            form.reset();
+            
+            formTitle.textContent = 'Nuevo Cliente';
+            btnSubmitText.textContent = 'Guardar Cliente';
+            btnCancel.style.display = 'none';
         }
 
         function eliminarCliente(id) {
-            clientes = clientes.filter(cliente => cliente.id !== id);
-            localStorage.setItem("clientes", JSON.stringify(clientes));
+            clienteAEliminar = id;
+            document.getElementById('confirm-modal').style.display = 'block';
+        }
+
+        function confirmarEliminacion() {
+            if (!clienteAEliminar) return;
+            
+            clientes = clientes.filter(c => c.id !== clienteAEliminar);
+            guardarClientes();
             mostrarClientes();
-            actualizarContador();
+            actualizarEstadisticas();
+            cerrarModal();
+            mostrarToast('Cliente eliminado exitosamente', 'success');
+            clienteAEliminar = null;
+        }
+
+        function cerrarModal() {
+            document.getElementById('confirm-modal').style.display = 'none';
+            clienteAEliminar = null;
         }
 
         function buscarCliente() {
-            const searchTerm = document.getElementById("search").value.toLowerCase();
-            const tablaClientes = document.getElementById("tabla-clientes");
+            const termino = searchInput.value.toLowerCase();
+            const clientesFiltrados = clientes.filter(cliente => 
+                cliente.id.toLowerCase().includes(termino) ||
+                cliente.nombre.toLowerCase().includes(termino) ||
+                cliente.correo.toLowerCase().includes(termino) ||
+                cliente.numeroTarjeta.toLowerCase().includes(termino)
+            );
             
-            tablaClientes.innerHTML = "";
-            
-            clientes
-                .filter(cliente => 
-                    cliente.id.toLowerCase().includes(searchTerm) ||
-                    cliente.nombre.toLowerCase().includes(searchTerm) ||
-                    cliente.correo.toLowerCase().includes(searchTerm) ||
-                    cliente.numeroTarjeta.toLowerCase().includes(searchTerm)
-                )
-                .forEach(cliente => {
-                    const fila = document.createElement("tr");
-
-                    for (const key in cliente) {
-                        const celda = document.createElement("td");
-                        celda.textContent = cliente[key];
-                        fila.appendChild(celda);
-                    }
-
-                    const celdaAcciones = document.createElement("td");
-                    celdaAcciones.innerHTML = `
-                        <button onclick="editarCliente('${cliente.id}')">Editar</button>
-                        <button onclick="eliminarCliente('${cliente.id}')">Eliminar</button>
-                    `;
-                    fila.appendChild(celdaAcciones);
-                    tablaClientes.appendChild(fila);
-                });
+            renderizarTabla(clientesFiltrados);
         }
 
         function mostrarClientes() {
-            buscarCliente();
-            actualizarContador();
+            renderizarTabla(clientes);
         }
 
-        function actualizarContador() {
-            document.getElementById("total-clientes").textContent = clientes.length;
+        function renderizarTabla(clientesMostrar) {
+            tablaClientes.innerHTML = '';
+            
+            if (clientesMostrar.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            clientesMostrar.forEach(cliente => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${cliente.id}</td>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.correo}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.numeroTarjeta}</td>
+                    <td>$${cliente.monto.toFixed(2)}</td>
+                    <td>
+                        <span class="status-badge ${cliente.estadoTarjeta === 'activo' ? 'status-active' : 'status-inactive'}">
+                            ${cliente.estadoTarjeta === 'activo' ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>${cliente.puntos.toLocaleString()}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-sm" onclick="editarCliente('${cliente.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarCliente('${cliente.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tablaClientes.appendChild(fila);
+            });
         }
 
-        mostrarClientes();
+        function actualizarEstadisticas() {
+            const totalClientes = clientes.length;
+            const totalActivos = clientes.filter(c => c.estadoTarjeta === 'activo').length;
+            const totalPuntos = clientes.reduce((sum, c) => sum + c.puntos, 0);
+            
+            document.getElementById('total-clientes').textContent = totalClientes.toLocaleString();
+            document.getElementById('total-activos').textContent = totalActivos.toLocaleString();
+            document.getElementById('total-puntos').textContent = totalPuntos.toLocaleString();
+        }
+
+        function exportarDatos() {
+            if (clientes.length === 0) {
+                mostrarToast('No hay datos para exportar', 'error');
+                return;
+            }
+            
+            const csv = convertirACSV(clientes);
+            descargarArchivo(csv, 'clientes_fidelidad.csv', 'text/csv');
+            mostrarToast('Datos exportados exitosamente', 'success');
+        }
+
+        function convertirACSV(datos) {
+            const headers = ['ID', 'Nombre', 'Correo', 'Teléfono', 'Número de Tarjeta', 'Monto', 'Estado', 'Puntos'];
+            const filas = datos.map(cliente => [
+                cliente.id,
+                cliente.nombre,
+                cliente.correo,
+                cliente.telefono,
+                cliente.numeroTarjeta,
+                cliente.monto,
+                cliente.estadoTarjeta,
+                cliente.puntos
+            ]);
+            
+            return [headers, ...filas].map(fila => fila.join(',')).join('\n');
+        }
+
+        function descargarArchivo(contenido, nombre, tipo) {
+            const blob = new Blob([contenido], { type: tipo });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombre;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function guardarClientes() {
+            localStorage.setItem('clientes', JSON.stringify(clientes));
+        }
+
+        function mostrarToast(mensaje, tipo = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensaje;
+            toast.className = `toast ${tipo}`;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirm-modal');
+            if (event.target === modal) {
+                cerrarModal();
+            }
+        }
     </script>
 </body>
 </html>
