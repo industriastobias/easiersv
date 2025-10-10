@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resumen Total de Ventas</title>
+  <style>
+    :root{--bg:#fafafa;--card:#fff;--text:#000;--accent:#2563eb;--radius:12px;--shadow:0 4px 16px rgba(0,0,0,.06)}
+    [data-theme="dark"]{--bg:#121212;--card:#1e1e1e;--text:#fff;--accent:#3b82f6}
+    body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:40px;display:flex;flex-direction:column;align-items:center}
+    h1{margin-bottom:24px}
+    table{width:100%;max-width:900px;border-collapse:collapse;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    th,td{padding:12px 16px;text-align:left;font-size:.95rem}
+    th{background:var(--accent);color:#fff;font-weight:600}
+    tr:nth-child(even){background:#00000008}
+    .total-row{font-weight:700;font-size:1.1rem;background:#f3f4f6!important}
+    .back-btn{margin-top:24px;padding:10px 18px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+    .back-btn:hover{opacity:.9}
+  </style>
+</head>
+<body>
+
+  <h1>Total de Productos Vendidos</h1>
+
+  <table id="totalTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Producto</th>
+        <th>Código</th>
+        <th>Precio Unitario</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="5">TOTAL GENERAL</td>
+        <td id="granTotal">$0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <a class="back-btn" href="javascript:history.back()">← Regresar</a>
+
+  <script>
+    (function(){
+      const sold = JSON.parse(localStorage.getItem('soldInventory')) || [];
+      const tbody = document.querySelector('#totalTable tbody');
+      let granTotal = 0;
+
+      sold.forEach((item, idx) => {
+        granTotal += Number(item.total);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${item.name}</td>
+          <td>${item.code}</td>
+          <td>$${Number(item.price).toFixed(2)}</td>
+          <td>${item.quantity}</td>
+          <td>$${Number(item.total).toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('granTotal').textContent = `$${granTotal.toFixed(2)}`;
+    })();
+  </script>
+
+</body>
+</html>
