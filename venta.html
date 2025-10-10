@@ -185,7 +185,6 @@
       item.code.toLowerCase().includes(codeFilter)
     );
 
-    // ✅ Mostrar primero las ventas más recientes
     filtered.reverse();
 
     const total = filtered.reduce((sum, item) => sum + Number(item.total), 0);
@@ -195,7 +194,7 @@
     const paginated = filtered.slice(start, start + rowsPerPage);
 
     const container = document.getElementById('soldInventoryList');
-    container.innerHTML = paginated.map((item, i) => `
+    container.innerHTML = paginated.map((item) => `
       <div class="card">
         <div class="card-header">
           <div class="card-title">${item.name}</div>
@@ -205,18 +204,11 @@
         <div>Cantidad vendida: ${item.quantity}</div>
         <div class="card-footer">
           <div class="card-total">Total: $${Number(item.total).toFixed(2)}</div>
-          <button class="card-delete" onclick="deleteSoldItem(${start + i})">Eliminar</button>
         </div>
-        <input type="checkbox" class="factCheck" value="${start + i}" style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
+        <input type="checkbox" class="factCheck" value='${JSON.stringify(item)}' style="position:absolute;top:8px;right:8px;width:16px;height:16px;">
       </div>
     `).join('');
   }
-
-  window.deleteSoldItem = function (index) {
-    soldInventory.splice(index, 1);
-    localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
-    loadSoldInventory();
-  };
 
   function toggleTheme() {
     const html = document.documentElement;
@@ -261,8 +253,7 @@
     const body=document.getElementById('fBody'); body.innerHTML='';
     let sum=0;
     checks.forEach(ch=>{
-      const idx=+ch.value;
-      const p=soldInventory[idx];
+      const p=JSON.parse(ch.value);
       const tr=document.createElement('tr');
       tr.innerHTML=`
         <td>
@@ -321,7 +312,7 @@
     doc.setFontSize(10); doc.setFont(undefined,'normal');
     doc.text('San Salvador, El Salvador',margen+((ancho-doc.getTextWidth('San Salvador, El Salvador'))/2),y); y+=5;
     doc.text('industriastobias@gmail.com',margen+((ancho-doc.getTextWidth('industriastobias@gmail.com'))/2),y); y+=5;
-    doc.text('IG: @Klohesv',margen+((ancho-doc.getTextWidth('Instagram: @Klohesv'))/2),y); y+=5;
+    doc.text('IG: @Klohesv',margen+((ancho-doc.getTextWidth('IG: @Klohesv'))/2),y); y+=5;
     doc.line(margen,y,80-margen,y); y+=5;
 
     // Datos
@@ -360,6 +351,3 @@
 </script>
 </body>
 </html>
-
-
-
