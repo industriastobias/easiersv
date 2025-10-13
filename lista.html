@@ -1,756 +1,427 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Soft Glass - Clientes</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    /* ===== VARIABLES DE COLOR ===== */
-    :root {
-      --primary: #DBB8BC;
-      --primary-dark: #C9A7AB;
-      --primary-light: #EDD5D7;
-      --glass: rgba(255, 255, 255, 0.25);
-      --glass-border: rgba(255, 255, 255, 0.4);
-      --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      --text: #1F2937;
-      --muted: #6B7280;
-      --border: rgba(255, 255, 255, 0.3);
-      --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      --radius: 16px;
-      --transition: all 0.3s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Clientes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* ===== RESET Y BASE ===== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-    html, body {
-      height: 100%;
-    }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      backdrop-filter: blur(10px);
-    }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
 
-    /* ===== GLASSMORPHISM HEADER ===== */
-    .header {
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 1.5rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-      box-shadow: var(--shadow);
-      border-radius: 0 0 var(--radius) var(--radius);
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .stats {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .stat-card {
-      background: var(--glass);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      border: 1px solid var(--glass-border);
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      text-align: center;
-      min-width: 120px;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-    }
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-    }
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--primary);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .stat-label {
-      font-size: .875rem;
-      color: var(--muted);
-      margin-top: .25rem;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
 
-    /* ===== GLASSMORPHISM MAIN ===== */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 2rem;
-      gap: 2rem;
-      overflow: hidden;
-    }
+        .header {
+            background-color: #DBB8BC;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-    /* ===== GLASS FORM ===== */
-    .form-section {
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      max-height: 320px;
-      min-height: 320px;
-      overflow-y: auto;
-      transition: var(--transition);
-    }
-    .form-section:hover {
-      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-    }
-    .form-header {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      margin-bottom: 1.5rem;
-    }
-    .form-header h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-    }
-    label {
-      font-size: .875rem;
-      font-weight: 500;
-      margin-bottom: .5rem;
-      color: var(--text);
-      display: block;
-    }
-    input, select {
-      width: 100%;
-      padding: .875rem 1rem;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      background: var(--glass);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      color: var(--text);
-      transition: var(--transition);
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(219, 184, 188, 0.3);
-    }
-    .btn-group {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-    .btn {
-      padding: .875rem 1.5rem;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      transition: var(--transition);
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(219, 184, 188, 0.4);
-    }
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(219, 184, 188, 0.6);
-    }
-    .btn-secondary {
-      background: var(--glass);
-      color: var(--text);
-      border: 1px solid var(--glass-border);
-    }
-    .btn-secondary:hover {
-      background: var(--primary-light);
-      transform: translateY(-2px);
-    }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
 
-    /* ===== GLASS TABLE ===== */
-    .table-section {
-      flex: 1;
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      overflow: hidden;
-      transition: var(--transition);
-    }
-    .table-section:hover {
-      box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-    }
-    .table-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .table-header h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .search-box {
-      position: relative;
-      min-width: 250px;
-      flex: 1;
-    }
-    .search-box input {
-      padding-left: 3rem;
-      border-radius: 12px;
-    }
-    .search-box i {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-size: 1.1rem;
-    }
-    .table-wrapper {
-      flex: 1;
-      overflow: auto;
-      border-radius: 12px;
-      border: 1px solid var(--glass-border);
-      background: var(--glass);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .875rem;
-    }
-    thead {
-      background: var(--primary-light);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    th, td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--glass-border);
-    }
-    tbody tr {
-      transition: var(--transition);
-    }
-    tbody tr:hover {
-      background: rgba(219, 184, 188, 0.1);
-      transform: scale(1.01);
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: .35rem .875rem;
-      border-radius: 9999px;
-      font-size: .75rem;
-      font-weight: 600;
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-    }
-    .status-active {
-      background: rgba(16, 185, 129, 0.2);
-      color: #065F46;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    .status-inactive {
-      background: rgba(239, 68, 68, 0.2);
-      color: #991B1B;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-    .action-buttons {
-      display: flex;
-      gap: .5rem;
-    }
-    .btn-sm {
-      padding: .5rem .75rem;
-      font-size: .875rem;
-      border-radius: 8px;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: var(--muted);
-    }
-    .empty-state i {
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-      opacity: .5;
-    }
-    .empty-state h3 {
-      font-size: 1.5rem;
-      margin-bottom: .5rem;
-    }
+        .content {
+            padding: 30px;
+        }
 
-    /* ===== BOTÓN REGRESAR ===== */
-    .btn-back {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--primary);
-      color: #fff;
-      padding: 1rem;
-      border-radius: 50%;
-      box-shadow: 0 4px 15px rgba(219, 184, 188, 0.4);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      transition: var(--transition);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      border: 1px solid var(--glass-border);
-    }
-    .btn-back:hover {
-      background: var(--primary-dark);
-      transform: translateY(-3px) scale(1.1);
-      box-shadow: 0 8px 25px rgba(219, 184, 188, 0.6);
-    }
+        .form-section, .search-section, .list-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
 
-    /* ===== MODAL / TOAST ===== */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      z-index: 1000;
-      animation: fadeIn 0.3s ease;
-    }
-    .modal-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
-      background: var(--glass);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 2.5rem;
-      max-width: 500px;
-      width: 90%;
-      animation: modalAppear 0.3s ease;
-    }
-    .modal-content h3 {
-      font-size: 1.75rem;
-      margin-bottom: 1rem;
-      color: var(--text);
-    }
-    .modal-content p {
-      color: var(--muted);
-      margin-bottom: 2rem;
-    }
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--primary);
-      color: #fff;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      display: none;
-      z-index: 2000;
-      animation: slideIn 0.3s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--shadow);
-    }
-    .toast.error {
-      background: #EF4444;
-    }
+        .form-section h2, .search-section h2, .list-section h2 {
+            color: #DBB8BC;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
 
-    /* ===== ANIMACIONES ===== */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes modalAppear {
-      from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    }
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .main {
-        padding: 1rem;
-      }
-      .form-section, .table-section {
-        padding: 1.5rem;
-      }
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-      .table-header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .search-box {
-        width: 100%;
-      }
-    }
-  </style>
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 2px solid #DBB8BC;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #c9a4a9;
+        }
+
+        .btn {
+            background-color: #DBB8BC;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #c9a4a9;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #DBB8BC;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .clients-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .clients-table th {
+            background-color: #DBB8BC;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .clients-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .clients-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .clients-table tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .status-active {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .clients-table {
+                font-size: 12px;
+            }
+            
+            .clients-table th, .clients-table td {
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-  <!-- ===== GLASS HEADER ===== -->
-  <header class="header">
-    <div class="logo">
-      <i class="fas fa-sparkles"></i>
-      <span>Soft Glass - Clientes</span>
-    </div>
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-value" id="total-clientes">0</div>
-        <div class="stat-label">Total Clientes</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="total-activos">0</div>
-        <div class="stat-label">Tarjetas Activas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="total-puntos">0</div>
-        <div class="stat-label">Puntos Totales</div>
-      </div>
-    </div>
-  </header>
-
-  <!-- ===== GLASS MAIN ===== -->
-  <main class="main">
-    <!-- ===== GLASS FORM ===== -->
-    <section class="form-section">
-      <div class="form-header">
-        <i class="fas fa-user-plus"></i>
-        <h2 id="form-title">Nuevo Cliente</h2>
-      </div>
-
-      <form id="cliente-form">
-        <div class="form-row">
-          <div><label for="id">ID Cliente</label><input id="id" type="text" required></div>
-          <div><label for="nombre">Nombre Completo</label><input id="nombre" type="text" required></div>
-          <div><label for="correo">Correo Electrónico</label><input id="correo" type="email" required></div>
-          <div><label for="telefono">Teléfono</label><input id="telefono" type="tel" required></div>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Gestión de Clientes</h1>
+            <p>Administra tus clientes de manera eficiente</p>
         </div>
 
-        <div class="form-row">
-          <div><label for="numero-tarjeta">Número de Tarjeta</label><input id="numero-tarjeta" type="text" required></div>
-          <div><label for="estado-tarjeta">Estado de Tarjeta</label>
-            <select id="estado-tarjeta">
-              <option value="activo">Activo</option>
-              <option value="inactivo">Inactivo</option>
-            </select>
-          </div>
-          <div><label for="monto">Monto en Tarjeta ($)</label><input id="monto" type="number" step="0.01" min="0" required></div>
-          <div><label for="puntos">Puntos Acumulados</label><input id="puntos" type="number" min="0" value="0" required></div>
-        </div>
-
-        <div class="btn-group">
-          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <span id="btn-submit-text">Guardar Cliente</span></button>
-          <button type="button" class="btn btn-secondary" id="btn-cancel" style="display:none;"><i class="fas fa-times"></i> Cancelar</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- ===== GLASS TABLE ===== -->
-    <section class="table-section">
-      <div class="table-header">
-        <h2><i class="fas fa-users"></i> Lista de Clientes</h2>
-        <div class="search-box"><i class="fas fa-search"></i><input id="search" type="text" placeholder="Buscar por ID, nombre, correo o tarjeta..."></div>
-        <button class="btn btn-primary btn-sm" onclick="exportarDatos()"><i class="fas fa-download"></i> Exportar</button>
-      </div>
-
-      <div class="table-wrapper">
-        <table id="clientes-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Teléfono</th>
-              <th>Tarjeta</th>
-              <th>Monto</th>
-              <th>Estado</th>
-              <th>Puntos</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-clientes"></tbody>
-        </table>
-
-        <div class="empty-state" id="empty-state" style="display:none;">
-          <i class="fas fa-inbox"></i>
-          <h3>No hay clientes registrados</h3>
-          <p>Comienza agregando tu primer cliente</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ===== BOTÓN REGRESAR ===== -->
-  <a href="menu.html" class="btn-back" title="Volver al menú">
-    <i class="fas fa-arrow-left"></i>
-  </a>
-
-  <!-- ===== MODAL CONFIRMACIÓN ===== -->
-  <div class="modal" id="confirm-modal">
-    <div class="modal-content">
-      <h3>Confirmar Eliminación</h3>
-      <p>¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.</p>
-      <div class="btn-group">
-        <button class="btn btn-danger" onclick="confirmarEliminacion()"><i class="fas fa-trash"></i> Eliminar</button>
-        <button class="btn btn-secondary" onclick="cerrarModal()"><i class="fas fa-times"></i> Cancelar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== TOAST ===== -->
-  <div class="toast" id="toast"></div>
-
-  <script>
-    /* ---------- ESTADO ---------- */
-    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-    let clienteAEliminar = null;
-    let modoEdicion = false;
-    let clienteEnEdicion = null;
-
-    /* ---------- REFERENCIAS ---------- */
-    const form = document.getElementById('cliente-form');
-    const tablaClientes = document.getElementById('tabla-clientes');
-    const searchInput = document.getElementById('search');
-    const emptyState = document.getElementById('empty-state');
-    const btnCancel = document.getElementById('btn-cancel');
-    const formTitle = document.getElementById('form-title');
-    const btnSubmitText = document.getElementById('btn-submit-text');
-
-    /* ---------- INICIO ---------- */
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('Clientes al cargar:', clientes);
-      mostrarClientes();
-      actualizarEstadisticas();
-      form.addEventListener('submit', manejarSubmit);
-      searchInput.addEventListener('input', buscarCliente);
-      btnCancel.addEventListener('click', cancelarEdicion);
-    });
-
-    /* ---------- PREVENIR RECARGA ---------- */
-    function manejarSubmit(e) {
-      e.preventDefault(); // EVITA RECARGA
-      console.log('Formulario enviado');
-      modoEdicion ? actualizarCliente() : registrarCliente();
-    }
-
-    /* ---------- REGISTRAR ---------- */
-    function registrarCliente() {
-      const c = obtenerDatosFormulario();
-      if (!c) return;
-      if (clientes.some(x => x.id === c.id)) return mostrarToast('ID duplicado', 'error');
-      if (clientes.some(x => x.numeroTarjeta === c.numeroTarjeta)) return mostrarToast('Tarjeta duplicada', 'error');
-      clientes.push(c);
-      guardarClientes();
-      mostrarClientes();
-      actualizarEstadisticas();
-      form.reset();
-      mostrarToast('Cliente registrado', 'success');
-      console.log('Cliente guardado:', c);
-    }
-
-    /* ---------- OBTENER DATOS ---------- */
-    function obtenerDatosFormulario() {
-      const id = document.getElementById('id').value.trim();
-      const nombre = document.getElementById('nombre').value.trim();
-      const correo = document.getElementById('correo').value.trim();
-      const telefono = document.getElementById('telefono').value.trim();
-      const numeroTarjeta = document.getElementById('numero-tarjeta').value.trim();
-      const monto = parseFloat(document.getElementById('monto').value) || 0;
-      const estadoTarjeta = document.getElementById('estado-tarjeta').value;
-      const puntos = parseInt(document.getElementById('puntos').value) || 0;
-      if (!id || !nombre || !correo || !telefono || !numeroTarjeta) {
-        mostrarToast('Completa todos los campos obligatorios', 'error');
-        return null;
-      }
-      return { id, nombre, correo, telefono, numeroTarjeta, monto, estadoTarjeta, puntos };
-    }
-
-    /* ---------- MOSTRAR EN TABLA ---------- */
-    function mostrarClientes() {
-      console.log('Mostrando clientes:', clientes);
-      tablaClientes.innerHTML = '';
-      emptyState.style.display = clientes.length ? 'none' : 'block';
-      clientes.forEach(c => {
-        const fila = document.createElement('tr');
-        fila.innerHTML = `
-          <td>${c.id}</td>
-          <td>${c.nombre}</td>
-          <td>${c.correo}</td>
-          <td>${c.telefono}</td>
-          <td>${c.numeroTarjeta}</td>
-          <td>$${c.monto.toFixed(2)}</td>
-          <td>
-            <span class="status-badge ${c.estadoTarjeta === 'activo' ? 'status-active' : 'status-inactive'}">
-              ${c.estadoTarjeta === 'activo' ? 'Activo' : 'Inactivo'}
-            </span>
-          </td>
-          <td>${c.puntos.toLocaleString()}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn btn-primary btn-sm" onclick="editarCliente('${c.id}')"><i class="fas fa-edit"></i></button>
-              <button class="btn btn-danger btn-sm" onclick="eliminarCliente('${c.id}')"><i class="fas fa-trash"></i></button>
+        <div class="content">
+            <!-- Sección de Formulario -->
+            <div class="form-section">
+                <h2>Agregar Nuevo Cliente</h2>
+                <form id="clientForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="idCliente">ID Cliente:</label>
+                            <input type="text" id="idCliente" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombreCompleto">Nombre Completo:</label>
+                            <input type="text" id="nombreCompleto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="correo">Correo Electrónico:</label>
+                            <input type="email" id="correo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono:</label>
+                            <input type="tel" id="telefono" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="numeroTarjeta">Número de Tarjeta:</label>
+                            <input type="text" id="numeroTarjeta" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="estadoTarjeta">Estado de Tarjeta:</label>
+                            <select id="estadoTarjeta" required>
+                                <option value="">Seleccione...</option>
+                                <option value="Activo">Activo</option>
+                                <option value="Desactivada">Desactivada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="montoTarjeta">Monto en Tarjeta ($):</label>
+                            <input type="number" id="montoTarjeta" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="puntosAcumulados">Puntos Acumulados:</label>
+                            <input type="number" id="puntosAcumulados" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 20px;">Agregar Cliente</button>
+                </form>
             </div>
-          </td>
-        `;
-        tablaClientes.appendChild(fila);
-      });
-    }
 
-    /* ---------- EDITAR / ACTUALIZAR / ELIMINAR ---------- */
-    function actualizarCliente() {
-      const c = obtenerDatosFormulario();
-      if (!c || !clienteEnEdicion) return;
-      const idx = clientes.findIndex(x => x.id === clienteEnEdicion.id);
-      if (idx === -1) return mostrarToast('Cliente no encontrado', 'error');
-      if (clientes.some(x => x.id === c.id && x.id !== clienteEnEdicion.id)) return mostrarToast('ID duplicado', 'error');
-      if (clientes.some(x => x.numeroTarjeta === c.numeroTarjeta && x.id !== clienteEnEdicion.id)) return mostrarToast('Tarjeta duplicada', 'error');
-      clientes[idx] = c;
-      guardarClientes();
-      mostrarClientes();
-      actualizarEstadisticas();
-      cancelarEdicion();
-      mostrarToast('Cliente actualizado', 'success');
-    }
+            <!-- Sección de Búsqueda -->
+            <div class="search-section">
+                <h2>Buscar Cliente</h2>
+                <div class="search-container">
+                    <input type="text" id="searchId" class="search-input" placeholder="Buscar por ID...">
+                    <input type="text" id="searchNombre" class="search-input" placeholder="Buscar por Nombre...">
+                    <button onclick="filtrarClientes()" class="btn">Buscar</button>
+                    <button onclick="limpiarFiltros()" class="btn" style="background-color: #6c757d;">Limpiar</button>
+                </div>
+            </div>
 
-    function editarCliente(id) {
-      const c = clientes.find(x => x.id === id);
-      if (!c) return mostrarToast('Cliente no encontrado', 'error');
-      modoEdicion = true;
-      clienteEnEdicion = c;
-      document.getElementById('id').value = c.id;
-      document.getElementById('nombre').value = c.nombre;
-      document.getElementById('correo').value = c.correo;
-      document.getElementById('telefono').value = c.telefono;
-      document.getElementById('numero-tarjeta').value = c.numeroTarjeta;
-      document.getElementById('monto').value = c.monto;
-      document.getElementById('estado-tarjeta').value = c.estadoTarjeta;
-      document.getElementById('puntos').value = c.puntos;
-      formTitle.textContent = 'Editar Cliente';
-      btnSubmitText.textContent = 'Actualizar Cliente';
-      btnCancel.style.display = 'inline-flex';
-      form.scrollIntoView({ behavior: 'smooth' });
-    }
+            <!-- Sección de Lista -->
+            <div class="list-section">
+                <h2>Lista de Clientes</h2>
+                <div id="clientesList">
+                    <table class="clients-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre Completo</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Número de Tarjeta</th>
+                                <th>Estado</th>
+                                <th>Monto ($)</th>
+                                <th>Puntos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesTableBody">
+                            <!-- Los clientes se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                    <div id="noResults" class="no-results" style="display: none;">
+                        No se encontraron clientes.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function cancelarEdicion() {
-      modoEdicion = false;
-      clienteEnEdicion = null;
-      form.reset();
-      formTitle.textContent = 'Nuevo Cliente';
-      btnSubmitText.textContent = 'Guardar Cliente';
-      btnCancel.style.display = 'none';
-    }
+    <script>
+        // Sistema de gestión de clientes
+        class ClienteManager {
+            constructor() {
+                this.clientes = this.cargarClientes();
+                this.renderizarClientes();
+            }
 
-    function eliminarCliente(id) {
-      clienteAEliminar = id;
-      document.getElementById('confirm-modal').style.display = 'block';
-    }
+            cargarClientes() {
+                const clientesGuardados = localStorage.getItem('clientes');
+                return clientesGuardados ? JSON.parse(clientesGuardados) : [];
+            }
 
-    function confirmarEliminacion() {
-      if (!clienteAEliminar) return;
-      clientes = clientes.filter(x => x.id !== clienteAEliminar);
-      guardarClientes();
-      mostrarClientes();
-      actualizarEstadisticas();
-      cerrarModal();
-      mostrarToast('Cliente eliminado', 'success');
-      clienteAEliminar = null;
-    }
+            guardarClientes() {
+                localStorage.setItem('clientes', JSON.stringify(this.clientes));
+            }
 
-    function cerrarModal() {
-      document.getElementById('confirm-modal').style.display = 'none';
-      clienteAEliminar = null;
-    }
+            agregarCliente(cliente) {
+                // Verificar si el ID ya existe
+                if (this.clientes.some(c => c.idCliente === cliente.idCliente)) {
+                    alert('El ID del cliente ya existe.');
+                    return false;
+                }
+                
+                this.clientes.push(cliente);
+                this.guardarClientes();
+                return true;
+            }
 
-    function buscarCliente() {
-      const q = searchInput.value.trim().toLowerCase();
-      const filtrados = clientes.filter(c =>
-        c.id.toLowerCase().includes(q) ||
-        c.nombre.toLowerCase().includes(q) ||
-        c.correo.toLowerCase().includes(q) ||
-        c.telefono.includes(q) ||
-        c.numeroTarjeta.toLowerCase().includes(q)
-      );
-      renderizarTabla(filtrados);
-    }
+            eliminarCliente(idCliente) {
+                if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
+                    this.clientes = this.clientes.filter(c => c.idCliente !== idCliente);
+                    this.guardarClientes();
+                    this.renderizarClientes();
+                }
+            }
 
-    function actualizarEstadisticas() {
-      document.getElementById('total-clientes').textContent = clientes.length.toLocaleString();
-      document.getElementById('total-activos').textContent = clientes.filter(c => c.estadoTarjeta === 'activo').length.toLocaleString();
-      document.getElementById('total-puntos').textContent = clientes.reduce((s, c) => s + c.puntos, 0).toLocaleString();
-    }
+            filtrarClientes(id, nombre) {
+                let clientesFiltrados = this.clientes;
 
-    function guardarClientes() {
-      localStorage.setItem('clientes', JSON.stringify(clientes));
-    }
+                if (id) {
+                    clientesFiltrados = clientesFiltrados.filter(c => 
+                        c.idCliente.toLowerCase().includes(id.toLowerCase())
+                    );
+                }
 
-    function mostrarToast(msg, tipo = 'success') {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.className = 'toast ' + (tipo === 'error' ? 'error' : '');
-      toast.style.display = 'block';
-      setTimeout(() => toast.style.display = 'none', 3000);
-    }
+                if (nombre) {
+                    clientesFiltrados = clientesFiltrados.filter(c => 
+                        c.nombreCompleto.toLowerCase().includes(nombre.toLowerCase())
+                    );
+                }
 
-    window.onclick = e => {
-      if (e.target === document.getElementById('confirm-modal')) cerrarModal();
-    };
-  </script>
+                return clientesFiltrados;
+            }
+
+            renderizarClientes(clientesMostrar = null) {
+                const tbody = document.getElementById('clientesTableBody');
+                const clientesAMostrar = clientesMostrar || this.clientes;
+                const noResults = document.getElementById('noResults');
+
+                if (clientesAMostrar.length === 0) {
+                    tbody.innerHTML = '';
+                    noResults.style.display = 'block';
+                    return;
+                }
+
+                noResults.style.display = 'none';
+                tbody.innerHTML = clientesAMostrar.map(cliente => `
+                    <tr>
+                        <td>${cliente.idCliente}</td>
+                        <td>${cliente.nombreCompleto}</td>
+                        <td>${cliente.correo}</td>
+                        <td>${cliente.telefono}</td>
+                        <td>${cliente.numeroTarjeta}</td>
+                        <td class="${cliente.estadoTarjeta === 'Activo' ? 'status-active' : 'status-inactive'}">
+                            ${cliente.estadoTarjeta}
+                        </td>
+                        <td>$${parseFloat(cliente.montoTarjeta).toFixed(2)}</td>
+                        <td>${cliente.puntosAcumulados}</td>
+                        <td>
+                            <button onclick="clienteManager.eliminarCliente('${cliente.idCliente}')" 
+                                    class="delete-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Inicializar el manager
+        const clienteManager = new ClienteManager();
+
+        // Manejar el formulario
+        document.getElementById('clientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cliente = {
+                idCliente: document.getElementById('idCliente').value.trim(),
+                nombreCompleto: document.getElementById('nombreCompleto').value.trim(),
+                correo: document.getElementById('correo').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
+                numeroTarjeta: document.getElementById('numeroTarjeta').value.trim(),
+                estadoTarjeta: document.getElementById('estadoTarjeta').value,
+                montoTarjeta: document.getElementById('montoTarjeta').value,
+                puntosAcumulados: document.getElementById('puntosAcumulados').value
+            };
+
+            if (clienteManager.agregarCliente(cliente)) {
+                // Limpiar el formulario
+                this.reset();
+                // Actualizar la tabla
+                clienteManager.renderizarClientes();
+                alert('Cliente agregado exitosamente.');
+            }
+        });
+
+        // Funciones de búsqueda
+        function filtrarClientes() {
+            const id = document.getElementById('searchId').value.trim();
+            const nombre = document.getElementById('searchNombre').value.trim();
+            
+            const clientesFiltrados = clienteManager.filtrarClientes(id, nombre);
+            clienteManager.renderizarClientes(clientesFiltrados);
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('searchNombre').value = '';
+            clienteManager.renderizarClientes();
+        }
+
+        // Búsqueda en tiempo real
+        document.getElementById('searchId').addEventListener('input', filtrarClientes);
+        document.getElementById('searchNombre').addEventListener('input', filtrarClientes);
+    </script>
 </body>
 </html>
