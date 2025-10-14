@@ -1,341 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Clientes</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background-color: #DBB8BC;
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 1.8em;
-        }
-
-        .btn-menu {
-            background-color: white;
-            color: #DBB8BC;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-menu:hover {
-            background-color: #f1f1f1;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
-        .form-section, .search-section, .list-section {
-            margin-bottom: 20px;
-            padding: 20px;
-            background-color: #fafafa;
-            border-radius: 8px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
-            padding: 10px;
-            border: 2px solid #DBB8BC;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .btn {
-            background-color: #DBB8BC;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            background-color: #c9a4a9;
-        }
-
-        .search-container {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 1;
-            min-width: 200px;
-            padding: 10px;
-            border: 2px solid #DBB8BC;
-            border-radius: 5px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: #DBB8BC;
-            color: white;
-        }
-
-        .status-active {
-            color: green;
-            font-weight: bold;
-        }
-
-        .status-inactive {
-            color: red;
-            font-weight: bold;
-        }
-
-        .delete-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 20px;
-            color: #888;
-            font-style: italic;
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Costos y valorización – 20/80 Split</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+    label { font-weight: 500; margin-bottom: .25rem; display: block; }
+    input, select { width: 100%; padding: .6rem .75rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
+    button { width: 100%; padding: .6rem; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; background: var(--primary); color: #fff; }
+    button:hover { background: var(--primary-hover); }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; margin-top: 1rem; }
+    th, td { padding: .6rem .75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg); font-weight: 600; }
+    .tright { text-align: right; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Lista de Clientes</h1>
-            <a href="menu.html" class="btn-menu">Volver al Menú</a>
-        </div>
+  <h1>Costos y valorización</h1>
 
-        <div class="content">
-            <div class="form-section">
-                <h2>Agregar Cliente</h2>
-                <form id="clientForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ID Cliente:</label>
-                            <input type="text" id="idCliente" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre Completo:</label>
-                            <input type="text" id="nombreCompleto" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Correo:</label>
-                            <input type="email" id="correo" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono:</label>
-                            <input type="text" id="telefono" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Número de Tarjeta:</label>
-                            <input type="text" id="numeroTarjeta" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Estado de Tarjeta:</label>
-                            <select id="estadoTarjeta" required>
-                                <option value="">Seleccione</option>
-                                <option value="Activo">Activo</option>
-                                <option value="Desactivada">Desactivada</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Monto en Tarjeta ($):</label>
-                            <input type="number" id="montoTarjeta" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Puntos Acumulados:</label>
-                            <input type="number" id="puntosAcumulados" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn" style="margin-top: 15px;">Agregar Cliente</button>
-                </form>
-            </div>
+  <div class="grid">
+    <!-- ENTRADA DE MERCANCÍA -->
+    <div class="card">
+      <h2>Registrar entrada</h2>
+      <form id="frmEntrada">
+        <label>Producto (SKU)</label>
+        <select id="sku" required></select>
 
-            <div class="search-section">
-                <h2>Buscar Cliente</h2>
-                <div class="search-container">
-                    <input type="text" id="searchId" class="search-input" placeholder="Buscar por ID...">
-                    <input type="text" id="searchNombre" class="search-input" placeholder="Buscar por Nombre...">
-                    <button onclick="filtrarClientes()" class="btn">Buscar</button>
-                    <button onclick="limpiarFiltros()" class="btn" style="background-color: #6c757d;">Limpiar</button>
-                </div>
-            </div>
+        <label>Cantidad entrante</label>
+        <input id="cantEntra" type="number" min="1" required>
 
-            <div class="list-section">
-                <h2>Clientes Registrados</h2>
-                <div id="noResults" class="no-results" style="display: none;">No se encontraron clientes.</div>
-                <table id="clientesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Correo</th>
-                            <th>Teléfono</th>
-                            <th>Tarjeta</th>
-                            <th>Estado</th>
-                            <th>Monto</th>
-                            <th>Puntos</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clientesTableBody">
-                        <!-- Se llena dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <label>Costo unitario de la entrada ($)</label>
+        <input id="costoEntra" type="number" step=".01" min=".01" required>
+
+        <label>PVP actual ($)</label>
+        <input id="pvp" type="number" step=".01" min=".01" required>
+
+        <button type="submit">Actualizar stock y CPP</button>
+      </form>
     </div>
 
-    <script>
-        const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    <!-- PARAMETROS -->
+    <div class="card">
+      <h2>Parámetros</h2>
+      <label>Tipo de cambio del día (1 USD = ? MXN)</label>
+      <input id="tipoCambio" type="number" step=".01" value="17.50">
+      <button id="btnCierre">Descargar cierre contable (CSV)</button>
+    </div>
+  </div>
 
-        function guardarClientes() {
-            localStorage.setItem('clientes', JSON.stringify(clientes));
-        }
+  <!-- TABLA RESUMEN -->
+  <div class="card" style="margin-top:1.5rem">
+    <h2>Valorización actual</h2>
+    <table id="tblValor">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th class="tright">Existencia</th>
+          <th class="tright">CPP ($)</th>
+          <th class="tright">PVP ($)</th>
+          <th class="tright">Margen %</th>
+          <th class="tright">Valorizado ($)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-        function renderizarTabla(lista = clientes) {
-            const tbody = document.getElementById('clientesTableBody');
-            const noResults = document.getElementById('noResults');
-            tbody.innerHTML = '';
-            if (lista.length === 0) {
-                noResults.style.display = 'block';
-                return;
-            }
-            noResults.style.display = 'none';
-            lista.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${c.idCliente}</td>
-                    <td>${c.nombreCompleto}</td>
-                    <td>${c.correo}</td>
-                    <td>${c.telefono}</td>
-                    <td>${c.numeroTarjeta}</td>
-                    <td class="${c.estadoTarjeta === 'Activo' ? 'status-active' : 'status-inactive'}">${c.estadoTarjeta}</td>
-                    <td>$${parseFloat(c.montoTarjeta).toFixed(2)}</td>
-                    <td>${c.puntosAcumulados}</td>
-                    <td><button class="delete-btn" onclick="eliminarCliente('${c.idCliente}')">Eliminar</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+  <script>
+    /* ----------  HELPERS  ---------- */
+    const $ = s => document.querySelector(s);
+    const key = 'inventario_costo';
+    let db = JSON.parse(localStorage.getItem(key)) || {};   // { sku : {exist, cpp, pvp} }
 
-        function eliminarCliente(id) {
-            if (!confirm('¿Estás seguro de eliminar este cliente?')) return;
-            const index = clientes.findIndex(c => c.idCliente === id);
-            if (index !== -1) {
-                clientes.splice(index, 1);
-                guardarClientes();
-                renderizarTabla();
-            }
-        }
+    const save = () => localStorage.setItem(key, JSON.stringify(db));
+    const fmt = n => n.toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-        function filtrarClientes() {
-            const id = document.getElementById('searchId').value.toLowerCase();
-            const nombre = document.getElementById('searchNombre').value.toLowerCase();
-            const filtrados = clientes.filter(c =>
-                c.idCliente.toLowerCase().includes(id) &&
-                c.nombreCompleto.toLowerCase().includes(nombre)
-            );
-            renderizarTabla(filtrados);
-        }
+    /* ----------  RELLENAR SELECT  ---------- */
+    function fillSelect() {
+      $('#sku').innerHTML = Object.keys(db).map(k => `<option value="${k}">${k}</option>`).join('');
+      if (!Object.keys(db).length) $('#sku').innerHTML = '<option value="">Crea un producto primero</option>';
+    }
 
-        function limpiarFiltros() {
-            document.getElementById('searchId').value = '';
-            document.getElementById('searchNombre').value = '';
-            renderizarTabla();
-        }
+    /* ----------  RENDER TABLA  ---------- */
+    function render() {
+      const tbody = $('#tblValor tbody');
+      if (!Object.keys(db).length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#6b7280">Sin productos</td></tr>'; return; }
+      tbody.innerHTML = Object.entries(db).map(([sku, {exist, cpp, pvp}]) => {
+        const margen = pvp > 0 ? ((pvp - cpp) / pvp * 100) : 0;
+        const valorizado = exist * cpp;
+        return `<tr>
+          <td>${sku}</td>
+          <td class="tright">${exist}</td>
+          <td class="tright">$${fmt(cpp)}</td>
+          <td class="tright">$${fmt(pvp)}</td>
+          <td class="tright">${fmt(margen)} %</td>
+          <td class="tright">$${fmt(valorizado)}</td>
+        </tr>`;
+      }).join('');
+    }
 
-        document.getElementById('clientForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const id = document.getElementById('idCliente').value.trim();
-            if (clientes.some(c => c.idCliente === id)) {
-                alert('El ID ya existe.');
-                return;
-            }
-            const cliente = {
-                idCliente: id,
-                nombreCompleto: document.getElementById('nombreCompleto').value.trim(),
-                correo: document.getElementById('correo').value.trim(),
-                telefono: document.getElementById('telefono').value.trim(),
-                numeroTarjeta: document.getElementById('numeroTarjeta').value.trim(),
-                estadoTarjeta: document.getElementById('estadoTarjeta').value,
-                montoTarjeta: document.getElementById('montoTarjeta').value,
-                puntosAcumulados: document.getElementById('puntosAcumulados').value
-            };
-            clientes.push(cliente);
-            guardarClientes();
-            renderizarTabla();
-            this.reset();
-        });
+    /* ----------  ALTA / ACTUALIZA COSTO  ---------- */
+    $('#frmEntrada').addEventListener('submit', e => {
+      e.preventDefault();
+      const sku = $('#sku').value;
+      if (!sku) return alert('Selecciona un SKU');
+      const cantEntra = parseFloat($('#cantEntra').value);
+      const costoEntra = parseFloat($('#costoEntra').value);
+      const pvp = parseFloat($('#pvp').value);
 
-        // Inicializar tabla
-        renderizarTabla();
-    </script>
+      const old = db[sku] || { exist: 0, cpp: 0, pvp: 0 };
+      const newExist = old.exist + cantEntra;
+      const newCpp = ( (old.exist * old.cpp) + (cantEntra * costoEntra) ) / newExist;
+
+      db[sku] = { exist: newExist, cpp: newCpp, pvp };
+      save(); render(); e.target.reset();
+    });
+
+    /* ----------  DESCARGA CSV  ---------- */
+    $('#btnCierre').addEventListener('click', () => {
+      const tc = parseFloat($('#tipoCambio').value) || 1;
+      const rows = [['SKU', 'EXISTENCIA', 'CPP_MXN', 'PVP_MXN', 'MARGEN_%', 'VALOR_MXN', 'VALOR_USD']];
+      Object.entries(db).forEach(([sku, {exist, cpp, pvp}]) => {
+        const margen = pvp > 0 ? ((pvp - cpp)/pvp*100) : 0;
+        const valMx = exist * cpp;
+        rows.push([sku, exist, fmt(cpp), fmt(pvp), fmt(margen), fmt(valMx), fmt(valMx/tc)]);
+      });
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+      const link = document.createElement('a');
+      const ts = new Date().toISOString().slice(0,10);
+      link.href = URL.createObjectURL(blob);
+      link.download = `cierre_inventario_${ts}.csv`;
+      link.click();
+    });
+
+    /* ----------  INICIO  ---------- */
+    /* Si no hay productos crea 3 de ejemplo */
+    if (!Object.keys(db).length) {
+      db = {
+        PROD001: {exist: 10, cpp: 50, pvp: 80},
+        PROD002: {exist: 25, cpp: 12.5, pvp: 20},
+        PROD003: {exist:  5, cpp:100, pvp: 150}
+      };
+      save();
+    }
+    fillSelect(); render();
+  </script>
 </body>
 </html>
