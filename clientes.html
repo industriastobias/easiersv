@@ -64,7 +64,7 @@
       display: block;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 0.6rem 0.75rem;
       border: 1px solid var(--border);
@@ -72,7 +72,7 @@
       margin-bottom: 1rem;
     }
 
-    input:focus {
+    input:focus, select:focus {
       outline: none;
       border-color: var(--primary);
     }
@@ -204,8 +204,17 @@
         <label for="cliente-id">ID</label>
         <input id="cliente-id" placeholder="ABC123" required />
 
+        <label for="cliente-correo-select">Dominio</label>
+        <select id="cliente-correo-select">
+          <option value="@gmail.com">@gmail.com</option>
+          <option value="@outlook.com">@outlook.com</option>
+          <option value="@icloud.com">@icloud.com</option>
+          <option value="@hotmail.com">@hotmail.com</option>
+          <option value="otro">Otro</option>
+        </select>
+
         <label for="cliente-correo">Correo</label>
-        <input id="cliente-correo" type="email" placeholder="correo@ejemplo.com" required />
+        <input id="cliente-correo" type="email" placeholder="usuario@gmail.com" required />
 
         <label for="cliente-telefono">Celular</label>
         <input id="cliente-telefono" type="tel" placeholder="777123456" required />
@@ -226,6 +235,7 @@
           <tr>
             <th>ID</th>
             <th>Correo</th>
+            <th>Tipo Correo</th>
             <th>Celular</th>
             <th>Puntos</th>
             <th>Registro</th>
@@ -272,7 +282,20 @@
       const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
       const validarTel = t => /^\d{7,15}$/.test(t);
 
-      /* ---------- 3. FILTRO exacto por ID, correo o teléfono ---------- */
+      // Selector dinámico
+      const sel = $('#cliente-correo-select');
+      const inp = $('#cliente-correo');
+      sel.addEventListener('change', () => {
+        if (sel.value === 'otro') {
+          inp.value = '';
+          inp.placeholder = 'correo@dominio.com';
+          inp.focus();
+        } else {
+          inp.value = '';
+          inp.placeholder = 'usuario' + sel.value;
+        }
+      });
+
       const render = () => {
         const fid   = $('#filtro-id').value.trim().toLowerCase();
         const fcor  = $('#filtro-correo').value.trim().toLowerCase();
@@ -289,6 +312,7 @@
               <tr>
                 <td>${c.id}</td>
                 <td>${c.correo}</td>
+                <td>${c.correo.split('@')[1]}</td>
                 <td>${c.telefono}</td>
                 <td>${c.puntos}</td>
                 <td>${c.fecha}</td>
@@ -299,10 +323,9 @@
                   <button class="del" data-id="${c.id}">×</button>
                 </td>
               </tr>`).join('')
-          : `<tr><td colspan="6" style="text-align:center;color:var(--muted)">Sin coincidencias</td></tr>`;
+          : `<tr><td colspan="7" style="text-align:center;color:var(--muted)">Sin coincidencias</td></tr>`;
       };
 
-      /* ---------- 1. Guardar cliente NUEVO (no se perderá al recargar) ---------- */
       $('#form-cliente').addEventListener('submit', e => {
         e.preventDefault();
         const id = $('#cliente-id').value.trim();
@@ -326,7 +349,6 @@
         save(); e.target.reset(); render();
       });
 
-      /* ---------- 2. Botones editar / eliminar (siempre visibles) ---------- */
       $('#clientes-table').addEventListener('click', e => {
         const b = e.target.closest('button');
         if (!b) return;
@@ -383,7 +405,6 @@
         };
       });
 
-      /* ---------- 4. Limpiar filtros al escribir ---------- */
       ['#filtro-id', '#filtro-correo', '#filtro-telefono'].forEach(id => {
         $(id).addEventListener('input', render);
       });
