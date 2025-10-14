@@ -16,184 +16,31 @@
       --border: #e5e7eb;
       --radius: 12px;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    html, body {
-      height: 100%;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .split {
-      display: flex;
-      height: 100%;
-    }
-
-    .left {
-      flex: 0 0 20%;
-      background: var(--card);
-      border-right: 1px solid var(--border);
-      padding: 2rem 1.5rem;
-      overflow-y: auto;
-    }
-
-    .right {
-      flex: 0 0 80%;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 0.25rem;
-      display: block;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.6rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    button {
-      width: 100%;
-      padding: 0.6rem;
-      border: none;
-      border-radius: 8px;
-      font-weight: 500;
-      cursor: pointer;
-      background: var(--primary);
-      color: #fff;
-    }
-
-    button:hover {
-      background: var(--primary-hover);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-    }
-
-    th, td {
-      padding: 0.6rem 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      background: var(--bg);
-      font-weight: 600;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.25rem;
-    }
-
-    .actions button {
-      width: 28px;
-      height: 28px;
-      padding: 0;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 0.9rem;
-    }
-
-    .actions button:hover {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-
-    .modal.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-content {
-      background: var(--card);
-      padding: 2rem;
-      border-radius: var(--radius);
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 1.5rem;
-    }
-
-    .notification {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--primary);
-      color: #fff;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s;
-      z-index: 1000;
-    }
-
-    .notification.show {
-      opacity: 1;
-      transform: none;
-    }
-
-    @media (max-width: 768px) {
-      .split {
-        flex-direction: column;
-      }
-      .left, .right {
-        flex: 1 1 auto;
-        width: 100%;
-      }
-      .left {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-      }
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; }
+    body { background: var(--bg); color: var(--text); }
+    .split { display: flex; height: 100%; }
+    .left { flex: 0 0 20%; background: var(--card); border-right: 1px solid var(--border); padding: 2rem 1.5rem; overflow-y: auto; }
+    .right { flex: 0 0 80%; padding: 2rem; overflow-y: auto; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; }
+    label { font-weight: 500; margin-bottom: 0.25rem; display: block; }
+    input, select { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    button { width: 100%; padding: 0.6rem; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; background: var(--primary); color: #fff; }
+    button:hover { background: var(--primary-hover); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg); font-weight: 600; }
+    .actions { display: flex; gap: 0.25rem; }
+    .actions button { width: 28px; height: 28px; padding: 0; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; }
+    .actions button:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .modal.active { opacity: 1; pointer-events: auto; }
+    .modal-content { background: var(--card); padding: 2rem; border-radius: var(--radius); width: 90%; max-width: 400px; }
+    .modal-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .notification { position: fixed; bottom: 2rem; right: 2rem; background: var(--primary); color: #fff; padding: 1rem 1.5rem; border-radius: 8px; opacity: 0; transform: translateY(10px); transition: all 0.3s; z-index: 1000; }
+    .notification.show { opacity: 1; transform: none; }
+    @media (max-width: 768px) { .split { flex-direction: column; } .left, .right { flex: 1 1 auto; width: 100%; } .left { border-right: none; border-bottom: 1px solid var(--border); } }
   </style>
 </head>
 <body>
@@ -214,7 +61,7 @@
         </select>
 
         <label for="cliente-usuario">Usuario (sin @)</label>
-        <input id="cliente-usuario" placeholder="usuario" required />
+        <input id="cliente-usuario" placeholder="usuario" />
 
         <input id="cliente-correo" type="hidden" />
 
@@ -270,7 +117,6 @@
       const key = 'clientes';
       let clientes = [];
 
-      // Carga segura (chunkificación para grandes volúmenes)
       function load() {
         try {
           const raw = localStorage.getItem(key);
@@ -303,7 +149,6 @@
       const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
       const validarTel = t => /^\d{7,15}$/.test(t);
 
-      // Dinámico usuario + dominio
       const sel = $('#cliente-correo-select');
       const usr = $('#cliente-usuario');
       const hdn = $('#cliente-correo');
@@ -314,10 +159,15 @@
           hdn.placeholder = 'correo@dominio.com';
           hdn.disabled = false;
           usr.style.display = 'none';
+          usr.required = false;
+          hdn.required = true;
         } else {
           hdn.type = 'hidden';
           hdn.disabled = true;
           usr.style.display = 'block';
+          usr.placeholder = 'usuario';
+          hdn.required = false;
+          usr.required = true;
           hdn.value = usr.value.trim() + sel.value;
         }
       }
@@ -326,7 +176,6 @@
       usr.addEventListener('input', armaCorreo);
       armaCorreo();
 
-      // Render rápido
       function render() {
         const fid   = $('#filtro-id').value.trim().toLowerCase();
         const fcor  = $('#filtro-correo').value.trim().toLowerCase();
@@ -357,6 +206,8 @@
           : `<tr><td colspan="7" style="text-align:center;color:var(--muted)">Sin coincidencias</td></tr>`;
       }
 
+      let editando = null;
+
       $('#form-cliente').addEventListener('submit', e => {
         e.preventDefault();
         const id = $('#cliente-id').value.trim();
@@ -379,8 +230,6 @@
         }
         save(); e.target.reset(); armaCorreo(); render();
       });
-
-      let editando = null;
 
       $('#clientes-table').addEventListener('click', e => {
         const b = e.target.closest('button');
