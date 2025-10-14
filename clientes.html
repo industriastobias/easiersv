@@ -213,8 +213,10 @@
           <option value="otro">Otro</option>
         </select>
 
-        <label for="cliente-correo">Correo</label>
-        <input id="cliente-correo" type="email" placeholder="usuario@gmail.com" required />
+        <label for="cliente-usuario">Usuario (sin @)</label>
+        <input id="cliente-usuario" placeholder="usuario" required />
+
+        <input id="cliente-correo" type="hidden" />
 
         <label for="cliente-telefono">Celular</label>
         <input id="cliente-telefono" type="tel" placeholder="777123456" required />
@@ -266,11 +268,30 @@
   <script>
     (() => {
       const key = 'clientes';
-      let clientes = JSON.parse(localStorage.getItem(key)) || [];
-      let editando = null;
+      let clientes = [];
+
+      // Carga segura (chunkificación para grandes volúmenes)
+      function load() {
+        try {
+          const raw = localStorage.getItem(key);
+          if (raw) clientes = JSON.parse(raw);
+        } catch (e) {
+          console.warn('Error al cargar clientes:', e);
+          clientes = [];
+        }
+      }
+
+      function save() {
+        try {
+          localStorage.setItem(key, JSON.stringify(clientes));
+        } catch (e) {
+          alert('Error al guardar: límite de almacenamiento');
+        }
+      }
+
+      load();
 
       const $ = s => document.querySelector(s);
-      const save = () => localStorage.setItem(key, JSON.stringify(clientes));
       const notify = msg => {
         const n = $('#notification');
         n.textContent = msg;
@@ -282,28 +303,38 @@
       const validarEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
       const validarTel = t => /^\d{7,15}$/.test(t);
 
-      // Selector dinámico
+      // Dinámico usuario + dominio
       const sel = $('#cliente-correo-select');
-      const inp = $('#cliente-correo');
-      sel.addEventListener('change', () => {
-        if (sel.value === 'otro') {
-          inp.value = '';
-          inp.placeholder = 'correo@dominio.com';
-          inp.focus();
-        } else {
-          inp.value = '';
-          inp.placeholder = 'usuario' + sel.value;
-        }
-      });
+      const usr = $('#cliente-usuario');
+      const hdn = $('#cliente-correo');
 
-      const render = () => {
+      function armaCorreo() {
+        if (sel.value === 'otro') {
+          hdn.type = 'email';
+          hdn.placeholder = 'correo@dominio.com';
+          hdn.disabled = false;
+          usr.style.display = 'none';
+        } else {
+          hdn.type = 'hidden';
+          hdn.disabled = true;
+          usr.style.display = 'block';
+          hdn.value = usr.value.trim() + sel.value;
+        }
+      }
+
+      sel.addEventListener('change', armaCorreo);
+      usr.addEventListener('input', armaCorreo);
+      armaCorreo();
+
+      // Render rápido
+      function render() {
         const fid   = $('#filtro-id').value.trim().toLowerCase();
         const fcor  = $('#filtro-correo').value.trim().toLowerCase();
         const ftel  = $('#filtro-telefono').value.trim().toLowerCase();
 
         const filtrados = clientes.filter(c =>
           (!fid  || c.id === fid) &&
-          (!fcor || c.correo.toLowerCase() === fcor) &&
+          (!fcor || c.correo.toLowerCase().includes(fcor)) &&
           (!ftel || c.telefono === ftel)
         );
 
@@ -324,12 +355,12 @@
                 </td>
               </tr>`).join('')
           : `<tr><td colspan="7" style="text-align:center;color:var(--muted)">Sin coincidencias</td></tr>`;
-      };
+      }
 
       $('#form-cliente').addEventListener('submit', e => {
         e.preventDefault();
         const id = $('#cliente-id').value.trim();
-        const correo = $('#cliente-correo').value.trim();
+        const correo = hdn.value.trim();
         const telefono = $('#cliente-telefono').value.trim();
         if (!validarId(id)) return alert('ID inválido');
         if (!validarEmail(correo)) return alert('Correo inválido');
@@ -346,8 +377,10 @@
           clientes.push({ id, correo, telefono, puntos: 0, fecha: new Date().toLocaleDateString() });
           notify('Agregado');
         }
-        save(); e.target.reset(); render();
+        save(); e.target.reset(); armaCorreo(); render();
       });
+
+      let editando = null;
 
       $('#clientes-table').addEventListener('click', e => {
         const b = e.target.closest('button');
