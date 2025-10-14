@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Clientes</title>
+    <title>Lista de Clientes</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             padding: 20px;
         }
@@ -22,43 +22,52 @@
             margin: 0 auto;
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
         .header {
             background-color: #DBB8BC;
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .btn-menu {
+            background-color: white;
+            color: #DBB8BC;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-menu:hover {
+            background-color: #f1f1f1;
         }
 
         .content {
-            padding: 30px;
+            padding: 20px;
         }
 
         .form-section, .search-section, .list-section {
-            margin-bottom: 30px;
-            padding: 25px;
+            margin-bottom: 20px;
+            padding: 20px;
             background-color: #fafafa;
             border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .form-section h2, .search-section h2, .list-section h2 {
-            color: #DBB8BC;
-            margin-bottom: 20px;
-            font-size: 1.5em;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
         }
 
@@ -69,7 +78,6 @@
 
         .form-group label {
             margin-bottom: 5px;
-            color: #333;
             font-weight: bold;
         }
 
@@ -78,24 +86,16 @@
             border: 2px solid #DBB8BC;
             border-radius: 5px;
             font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #c9a4a9;
         }
 
         .btn {
             background-color: #DBB8BC;
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
             font-weight: bold;
-            transition: background-color 0.3s;
         }
 
         .btn:hover {
@@ -114,141 +114,109 @@
             padding: 10px;
             border: 2px solid #DBB8BC;
             border-radius: 5px;
-            font-size: 14px;
         }
 
-        .clients-table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
-        .clients-table th {
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
             background-color: #DBB8BC;
             color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .clients-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .clients-table tr:nth-child(even) {
-            background-color: #fafafa;
-        }
-
-        .clients-table tr:hover {
-            background-color: #f0f0f0;
         }
 
         .status-active {
-            color: #28a745;
+            color: green;
             font-weight: bold;
         }
 
         .status-inactive {
-            color: #dc3545;
+            color: red;
             font-weight: bold;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-style: italic;
         }
 
         .delete-btn {
             background-color: #dc3545;
             color: white;
-            padding: 5px 10px;
             border: none;
+            padding: 5px 10px;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
         }
 
         .delete-btn:hover {
             background-color: #c82333;
         }
 
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .search-container {
-                flex-direction: column;
-            }
-            
-            .clients-table {
-                font-size: 12px;
-            }
-            
-            .clients-table th, .clients-table td {
-                padding: 8px;
-            }
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Sistema de Gestión de Clientes</h1>
-            <p>Administra tus clientes de manera eficiente</p>
+            <h1>Lista de Clientes</h1>
+            <a href="menu.html" class="btn-menu">Volver al Menú</a>
         </div>
 
         <div class="content">
-            <!-- Sección de Formulario -->
             <div class="form-section">
-                <h2>Agregar Nuevo Cliente</h2>
+                <h2>Agregar Cliente</h2>
                 <form id="clientForm">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="idCliente">ID Cliente:</label>
+                            <label>ID Cliente:</label>
                             <input type="text" id="idCliente" required>
                         </div>
                         <div class="form-group">
-                            <label for="nombreCompleto">Nombre Completo:</label>
+                            <label>Nombre Completo:</label>
                             <input type="text" id="nombreCompleto" required>
                         </div>
                         <div class="form-group">
-                            <label for="correo">Correo Electrónico:</label>
+                            <label>Correo:</label>
                             <input type="email" id="correo" required>
                         </div>
                         <div class="form-group">
-                            <label for="telefono">Teléfono:</label>
-                            <input type="tel" id="telefono" required>
+                            <label>Teléfono:</label>
+                            <input type="text" id="telefono" required>
                         </div>
                         <div class="form-group">
-                            <label for="numeroTarjeta">Número de Tarjeta:</label>
+                            <label>Número de Tarjeta:</label>
                             <input type="text" id="numeroTarjeta" required>
                         </div>
                         <div class="form-group">
-                            <label for="estadoTarjeta">Estado de Tarjeta:</label>
+                            <label>Estado de Tarjeta:</label>
                             <select id="estadoTarjeta" required>
-                                <option value="">Seleccione...</option>
+                                <option value="">Seleccione</option>
                                 <option value="Activo">Activo</option>
                                 <option value="Desactivada">Desactivada</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="montoTarjeta">Monto en Tarjeta ($):</label>
+                            <label>Monto en Tarjeta ($):</label>
                             <input type="number" id="montoTarjeta" step="0.01" required>
                         </div>
                         <div class="form-group">
-                            <label for="puntosAcumulados">Puntos Acumulados:</label>
+                            <label>Puntos Acumulados:</label>
                             <input type="number" id="puntosAcumulados" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn" style="margin-top: 20px;">Agregar Cliente</button>
+                    <button type="submit" class="btn" style="margin-top: 15px;">Agregar Cliente</button>
                 </form>
             </div>
 
-            <!-- Sección de Búsqueda -->
             <div class="search-section">
                 <h2>Buscar Cliente</h2>
                 <div class="search-container">
@@ -259,133 +227,99 @@
                 </div>
             </div>
 
-            <!-- Sección de Lista -->
             <div class="list-section">
-                <h2>Lista de Clientes</h2>
-                <div id="clientesList">
-                    <table class="clients-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre Completo</th>
-                                <th>Correo</th>
-                                <th>Teléfono</th>
-                                <th>Número de Tarjeta</th>
-                                <th>Estado</th>
-                                <th>Monto ($)</th>
-                                <th>Puntos</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clientesTableBody">
-                            <!-- Los clientes se cargarán aquí dinámicamente -->
-                        </tbody>
-                    </table>
-                    <div id="noResults" class="no-results" style="display: none;">
-                        No se encontraron clientes.
-                    </div>
-                </div>
+                <h2>Clientes Registrados</h2>
+                <div id="noResults" class="no-results" style="display: none;">No se encontraron clientes.</div>
+                <table id="clientesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Tarjeta</th>
+                            <th>Estado</th>
+                            <th>Monto</th>
+                            <th>Puntos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientesTableBody">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script>
-        // Sistema de gestión de clientes
-        class ClienteManager {
-            constructor() {
-                this.clientes = this.cargarClientes();
-                this.renderizarClientes();
+        const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+
+        function guardarClientes() {
+            localStorage.setItem('clientes', JSON.stringify(clientes));
+        }
+
+        function renderizarTabla(lista = clientes) {
+            const tbody = document.getElementById('clientesTableBody');
+            const noResults = document.getElementById('noResults');
+            tbody.innerHTML = '';
+            if (lista.length === 0) {
+                noResults.style.display = 'block';
+                return;
             }
+            noResults.style.display = 'none';
+            lista.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${c.idCliente}</td>
+                    <td>${c.nombreCompleto}</td>
+                    <td>${c.correo}</td>
+                    <td>${c.telefono}</td>
+                    <td>${c.numeroTarjeta}</td>
+                    <td class="${c.estadoTarjeta === 'Activo' ? 'status-active' : 'status-inactive'}">${c.estadoTarjeta}</td>
+                    <td>$${parseFloat(c.montoTarjeta).toFixed(2)}</td>
+                    <td>${c.puntosAcumulados}</td>
+                    <td><button class="delete-btn" onclick="eliminarCliente('${c.idCliente}')">Eliminar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-            cargarClientes() {
-                const clientesGuardados = localStorage.getItem('clientes');
-                return clientesGuardados ? JSON.parse(clientesGuardados) : [];
-            }
-
-            guardarClientes() {
-                localStorage.setItem('clientes', JSON.stringify(this.clientes));
-            }
-
-            agregarCliente(cliente) {
-                // Verificar si el ID ya existe
-                if (this.clientes.some(c => c.idCliente === cliente.idCliente)) {
-                    alert('El ID del cliente ya existe.');
-                    return false;
-                }
-                
-                this.clientes.push(cliente);
-                this.guardarClientes();
-                return true;
-            }
-
-            eliminarCliente(idCliente) {
-                if (confirm('¿Está seguro de que desea eliminar este cliente?')) {
-                    this.clientes = this.clientes.filter(c => c.idCliente !== idCliente);
-                    this.guardarClientes();
-                    this.renderizarClientes();
-                }
-            }
-
-            filtrarClientes(id, nombre) {
-                let clientesFiltrados = this.clientes;
-
-                if (id) {
-                    clientesFiltrados = clientesFiltrados.filter(c => 
-                        c.idCliente.toLowerCase().includes(id.toLowerCase())
-                    );
-                }
-
-                if (nombre) {
-                    clientesFiltrados = clientesFiltrados.filter(c => 
-                        c.nombreCompleto.toLowerCase().includes(nombre.toLowerCase())
-                    );
-                }
-
-                return clientesFiltrados;
-            }
-
-            renderizarClientes(clientesMostrar = null) {
-                const tbody = document.getElementById('clientesTableBody');
-                const clientesAMostrar = clientesMostrar || this.clientes;
-                const noResults = document.getElementById('noResults');
-
-                if (clientesAMostrar.length === 0) {
-                    tbody.innerHTML = '';
-                    noResults.style.display = 'block';
-                    return;
-                }
-
-                noResults.style.display = 'none';
-                tbody.innerHTML = clientesAMostrar.map(cliente => `
-                    <tr>
-                        <td>${cliente.idCliente}</td>
-                        <td>${cliente.nombreCompleto}</td>
-                        <td>${cliente.correo}</td>
-                        <td>${cliente.telefono}</td>
-                        <td>${cliente.numeroTarjeta}</td>
-                        <td class="${cliente.estadoTarjeta === 'Activo' ? 'status-active' : 'status-inactive'}">
-                            ${cliente.estadoTarjeta}
-                        </td>
-                        <td>$${parseFloat(cliente.montoTarjeta).toFixed(2)}</td>
-                        <td>${cliente.puntosAcumulados}</td>
-                        <td>
-                            <button onclick="clienteManager.eliminarCliente('${cliente.idCliente}')" 
-                                    class="delete-btn">Eliminar</button>
-                        </td>
-                    </tr>
-                `).join('');
+        function eliminarCliente(id) {
+            if (!confirm('¿Estás seguro de eliminar este cliente?')) return;
+            const index = clientes.findIndex(c => c.idCliente === id);
+            if (index !== -1) {
+                clientes.splice(index, 1);
+                guardarClientes();
+                renderizarTabla();
             }
         }
 
-        // Inicializar el manager
-        const clienteManager = new ClienteManager();
+        function filtrarClientes() {
+            const id = document.getElementById('searchId').value.toLowerCase();
+            const nombre = document.getElementById('searchNombre').value.toLowerCase();
+            const filtrados = clientes.filter(c =>
+                c.idCliente.toLowerCase().includes(id) &&
+                c.nombreCompleto.toLowerCase().includes(nombre)
+            );
+            renderizarTabla(filtrados);
+        }
 
-        // Manejar el formulario
-        document.getElementById('clientForm').addEventListener('submit', function(e) {
+        function limpiarFiltros() {
+            document.getElementById('searchId').value = '';
+            document.getElementById('searchNombre').value = '';
+            renderizarTabla();
+        }
+
+        document.getElementById('clientForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+            const id = document.getElementById('idCliente').value.trim();
+            if (clientes.some(c => c.idCliente === id)) {
+                alert('El ID ya existe.');
+                return;
+            }
             const cliente = {
-                idCliente: document.getElementById('idCliente').value.trim(),
+                idCliente: id,
                 nombreCompleto: document.getElementById('nombreCompleto').value.trim(),
                 correo: document.getElementById('correo').value.trim(),
                 telefono: document.getElementById('telefono').value.trim(),
@@ -394,34 +328,14 @@
                 montoTarjeta: document.getElementById('montoTarjeta').value,
                 puntosAcumulados: document.getElementById('puntosAcumulados').value
             };
-
-            if (clienteManager.agregarCliente(cliente)) {
-                // Limpiar el formulario
-                this.reset();
-                // Actualizar la tabla
-                clienteManager.renderizarClientes();
-                alert('Cliente agregado exitosamente.');
-            }
+            clientes.push(cliente);
+            guardarClientes();
+            renderizarTabla();
+            this.reset();
         });
 
-        // Funciones de búsqueda
-        function filtrarClientes() {
-            const id = document.getElementById('searchId').value.trim();
-            const nombre = document.getElementById('searchNombre').value.trim();
-            
-            const clientesFiltrados = clienteManager.filtrarClientes(id, nombre);
-            clienteManager.renderizarClientes(clientesFiltrados);
-        }
-
-        function limpiarFiltros() {
-            document.getElementById('searchId').value = '';
-            document.getElementById('searchNombre').value = '';
-            clienteManager.renderizarClientes();
-        }
-
-        // Búsqueda en tiempo real
-        document.getElementById('searchId').addEventListener('input', filtrarClientes);
-        document.getElementById('searchNombre').addEventListener('input', filtrarClientes);
+        // Inicializar tabla
+        renderizarTabla();
     </script>
 </body>
 </html>
