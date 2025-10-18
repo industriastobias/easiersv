@@ -4,6 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gastos</title>
+
+  <!-- 🎯 Aplicar tema ANTES de que se muestre la página -->
+  <script>
+    (function(){
+      const tema = localStorage.getItem("tema");
+      if (tema === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
   <style>
     :root {
       --bg: #ffffff;
@@ -104,14 +115,10 @@
       flex-direction: column;
     }
 
-    .item .desc {
-      font-weight: 500;
+    .item .desc,
+    .item .meta,
+    .item .monto {
       cursor: pointer;
-    }
-
-    .item .meta {
-      font-size: .85rem;
-      opacity: .6;
     }
 
     .item button {
@@ -140,7 +147,7 @@
     }
   </style>
 </head>
-<body data-theme="light">
+<body>
 
 <header>
   <h1>Gastos</h1>
@@ -161,18 +168,12 @@
 <script>
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
-  (function(){
-    const temaGuardado = localStorage.getItem("tema");
-    if (temaGuardado) {
-      document.body.setAttribute("data-theme", temaGuardado);
-    }
-  })();
-
   function toggleTheme() {
-    const body = document.body;
-    const nuevoTema = body.getAttribute("data-theme") === "light" ? "dark" : "light";
-    body.setAttribute("data-theme", nuevoTema);
-    localStorage.setItem("tema", nuevoTema);
+    const html = document.documentElement;
+    const actual = html.getAttribute("data-theme");
+    const nuevo = actual === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", nuevo);
+    localStorage.setItem("tema", nuevo);
   }
 
   function agregarGasto() {
@@ -181,7 +182,7 @@
     const fecha = document.getElementById("fecha").value;
     const metodo = document.getElementById("metodo").value.trim();
 
-    if (!descripcion || !monto || !fecha || !metodo) return;
+    if (!descripcion || isNaN(monto) || !fecha || !metodo) return;
 
     gastos.push({ descripcion, monto, fecha, metodo });
     guardarYRender();
@@ -194,15 +195,18 @@
   }
 
   function editarGasto(index, campo) {
-    const valor = prompt(`Editar ${campo}:`, gastos[index][campo]);
-    if (valor === null || valor.trim() === "") return;
+    const valorActual = gastos[index][campo];
+    const nuevoValor = prompt(`Editar ${campo}:`, valorActual);
+    if (nuevoValor === null || nuevoValor.trim() === "") return;
+
     if (campo === "monto") {
-      const num = parseFloat(valor);
+      const num = parseFloat(nuevoValor);
       if (isNaN(num)) return;
       gastos[index][campo] = num;
     } else {
-      gastos[index][campo] = valor.trim();
+      gastos[index][campo] = nuevoValor.trim();
     }
+
     guardarYRender();
   }
 
@@ -223,10 +227,11 @@
       div.innerHTML = `
         <div>
           <span class="desc" onclick="editarGasto(${i}, 'descripcion')">${g.descripcion}</span>
-          <span class="meta">${g.fecha} · ${g.metodo}</span>
+          <span class="meta" onclick="editarGasto(${i}, 'fecha')">${g.fecha}</span>
+          <span class="meta" onclick="editarGasto(${i}, 'metodo')">${g.metodo}</span>
         </div>
         <div>
-          <span onclick="editarGasto(${i}, 'monto')" style="cursor:pointer;">$${g.monto.toFixed(2)}</span>
+          <span class="monto" onclick="editarGasto(${i}, 'monto')">$${g.monto.toFixed(2)}</span>
           <button onclick="eliminarGasto(${i})">×</button>
         </div>
       `;
