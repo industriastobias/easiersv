@@ -160,9 +160,19 @@
 <script>
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
+  // Aplicar tema guardado al cargar
+  (function(){
+    const temaGuardado = localStorage.getItem("tema");
+    if (temaGuardado) {
+      document.body.setAttribute("data-theme", temaGuardado);
+    }
+  })();
+
   function toggleTheme() {
     const body = document.body;
-    body.setAttribute("data-theme", body.getAttribute("data-theme") === "light" ? "dark" : "light");
+    const nuevoTema = body.getAttribute("data-theme") === "light" ? "dark" : "light";
+    body.setAttribute("data-theme", nuevoTema);
+    localStorage.setItem("tema", nuevoTema);
   }
 
   function agregarGasto() {
