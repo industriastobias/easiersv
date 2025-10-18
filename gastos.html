@@ -106,6 +106,7 @@
 
     .item .desc {
       font-weight: 500;
+      cursor: pointer;
     }
 
     .item .meta {
@@ -160,7 +161,6 @@
 <script>
   let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
-  // Aplicar tema guardado al cargar
   (function(){
     const temaGuardado = localStorage.getItem("tema");
     if (temaGuardado) {
@@ -184,13 +184,29 @@
     if (!descripcion || !monto || !fecha || !metodo) return;
 
     gastos.push({ descripcion, monto, fecha, metodo });
-    localStorage.setItem("gastos", JSON.stringify(gastos));
-    render();
+    guardarYRender();
     document.querySelectorAll("input").forEach(el => el.value = "");
   }
 
   function eliminarGasto(index) {
     gastos.splice(index, 1);
+    guardarYRender();
+  }
+
+  function editarGasto(index, campo) {
+    const valor = prompt(`Editar ${campo}:`, gastos[index][campo]);
+    if (valor === null || valor.trim() === "") return;
+    if (campo === "monto") {
+      const num = parseFloat(valor);
+      if (isNaN(num)) return;
+      gastos[index][campo] = num;
+    } else {
+      gastos[index][campo] = valor.trim();
+    }
+    guardarYRender();
+  }
+
+  function guardarYRender() {
     localStorage.setItem("gastos", JSON.stringify(gastos));
     render();
   }
@@ -206,11 +222,11 @@
       div.className = "item";
       div.innerHTML = `
         <div>
-          <span class="desc">${g.descripcion}</span>
+          <span class="desc" onclick="editarGasto(${i}, 'descripcion')">${g.descripcion}</span>
           <span class="meta">${g.fecha} · ${g.metodo}</span>
         </div>
         <div>
-          <span>$${g.monto.toFixed(2)}</span>
+          <span onclick="editarGasto(${i}, 'monto')" style="cursor:pointer;">$${g.monto.toFixed(2)}</span>
           <button onclick="eliminarGasto(${i})">×</button>
         </div>
       `;
@@ -220,7 +236,6 @@
     document.getElementById("total").textContent = `Total: $${total.toFixed(2)}`;
   }
 
-  // Enter para agregar
   document.addEventListener("keydown", e => {
     if (e.key === "Enter") agregarGasto();
   });
