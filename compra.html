@@ -300,32 +300,38 @@
         /* ----------  NUEVA FUNCIONALIDAD  ---------- */
         async function importFolderAsProducts(event) {
             const files = Array.from(event.target.files);
+            console.log('Imágenes recibidas:', files.length);
+            if (files.length === 0) { alert('No seleccionaste imágenes'); return; }
+
+            const batch = 10; // procesar de 10 en 10
             let added = 0;
-            for (const file of files) {
-                const base64 = await blobToBase64(file);
-                const name = file.name.split('.').slice(0, -1).join('.'); // sin extensión
-                const newProduct = {
-                    name: name,
-                    code: name,
-                    barcode: '',
-                    price: '0',
-                    discount: '0',
-                    quantity: '1',
-                    description: '',
-                    category: 'Otros',
-                    imageData: base64
-                };
-                inventory.push(newProduct);
-                added++;
+
+            for (let i = 0; i < files.length; i += batch) {
+                const chunk = files.slice(i, i + batch);
+                await Promise.all(chunk.map(async file => {
+                    const base64 = await blobToBase64(file);
+                    const name = file.name.split('.').slice(0, -1).join('.');
+                    inventory.push({
+                        name: name,
+                        code: name,
+                        barcode: '',
+                        price: '0',
+                        discount: '0',
+                        quantity: '1',
+                        description: '',
+                        category: 'Otros',
+                        imageData: base64
+                    });
+                    added++;
+                }));
+                // pausa para que el navegador respire
+                await new Promise(r => setTimeout(r, 100));
             }
-            if (added === 0) {
-                alert("No se agregó ningún producto");
-            } else {
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                renderTable();
-                calculateTotal();
-                alert(`${added} productos agregados desde imágenes`);
-            }
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            renderTable();
+            calculateTotal();
+            alert(`${added} productos agregados desde imágenes`);
         }
         function blobToBase64(file) {
             return new Promise((resolve, reject) => {
