@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         :root {
             --bg: #f8f9fa;
@@ -114,8 +114,8 @@
                     <button type="button" class="coral" onclick="exportToPDF()">Exportar PDF con Imágenes</button>
                     <button type="button" class="coral" onclick="vaciarInventario()">Vaciar Inventario</button>
                     <!-- NUEVO -->
-                    <input type="file" id="importImageFolder" accept="image/*" multiple style="display:none;" onchange="importImageFolder(event)" />
-                    <button type="button" class="coral" onclick="document.getElementById('importImageFolder').click()">Importar solo carpeta de imágenes</button>
+                    <input type="file" id="importFolderAsProducts" accept="image/*" multiple style="display:none;" onchange="importFolderAsProducts(event)" />
+                    <button type="button" class="coral" onclick="document.getElementById('importFolderAsProducts').click()">Importar carpeta como productos</button>
                 </div>
             </form>
         </div>
@@ -128,7 +128,7 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let editIndex = -1;
@@ -298,21 +298,33 @@
         }
 
         /* ----------  NUEVA FUNCIONALIDAD  ---------- */
-        async function importImageFolder(event) {
+        async function importFolderAsProducts(event) {
             const files = Array.from(event.target.files);
-            let updated = 0;
+            let added = 0;
             for (const file of files) {
-                const code = file.name.split('.')[0].trim();          // P001.jpg → P001
-                const product = inventory.find(p => p.code === code);
-                if (!product) continue;
-                product.imageData = await blobToBase64(file);
-                updated++;
+                const base64 = await blobToBase64(file);
+                const name = file.name.split('.').slice(0, -1).join('.'); // sin extensión
+                const newProduct = {
+                    name: name,
+                    code: name,
+                    barcode: '',
+                    price: '0',
+                    discount: '0',
+                    quantity: '1',
+                    description: '',
+                    category: 'Otros',
+                    imageData: base64
+                };
+                inventory.push(newProduct);
+                added++;
             }
-            if (updated === 0) alert("Ninguna imagen coincide con un código de producto");
-            else {
+            if (added === 0) {
+                alert("No se agregó ningún producto");
+            } else {
                 localStorage.setItem('inventory', JSON.stringify(inventory));
                 renderTable();
-                alert(`${updated} imágenes asignadas`);
+                calculateTotal();
+                alert(`${added} productos agregados desde imágenes`);
             }
         }
         function blobToBase64(file) {
