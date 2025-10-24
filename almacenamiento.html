@@ -26,24 +26,25 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
+            font-size: 16px; /* ← base más grande */
         }
 
         h1 {
-            font-size: 1.6rem;
+            font-size: 1.8rem; /* ← un poco más grande */
             font-weight: 700;
             text-align: center;
-            margin: .6rem 0 .4rem;
+            margin: .8rem 0 .6rem;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        /* ======  CONTENEDOR 90 %  ====== */
+        /* ======  CONTENEDOR 98 % × 96 %  ====== */
         .container {
-            width: 90vw;
-            height: 90vh;
+            width: 98vw;
+            height: 96vh;
             background: var(--white);
             border: 1px solid var(--border);
-            padding: 1rem;
+            padding: 1.2rem; /* ← algo más de aire interno */
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
             display: flex;
@@ -54,24 +55,24 @@
         .search-block {
             display: flex;
             flex-wrap: wrap;
-            gap: .6rem;
-            margin-bottom: .8rem;
+            gap: .8rem;
+            margin-bottom: 1rem;
             align-items: flex-end;
         }
-        label { font-weight: 700; font-size: .8rem; }
+        label { font-weight: 700; font-size: .9rem; }
         input, select {
-            padding: .4rem .5rem;
+            padding: .55rem .65rem;
             border: 1px solid var(--border);
             border-radius: 4px;
-            font-size: .85rem;
+            font-size: .95rem;
         }
         button.stamp {
-            padding: .4rem .8rem;
+            padding: .55rem .9rem;
             border: 1px solid var(--accent);
             background: var(--accent);
             color: var(--white);
             font-weight: 700;
-            font-size: .75rem;
+            font-size: .85rem;
             text-transform: uppercase;
             cursor: pointer;
             border-radius: 4px;
@@ -79,15 +80,15 @@
         }
         button.stamp:hover { background: var(--accent-hover); }
 
-        table { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: .6rem; }
         thead { background: var(--highlight); }
-        th, td { padding: .4rem .5rem; border: 1px solid var(--border); text-align: left; font-size: .8rem; }
+        th, td { padding: .55rem .65rem; border: 1px solid var(--border); text-align: left; font-size: .9rem; }
         th { font-weight: 700; letter-spacing: .5px; }
         tbody tr:nth-child(odd) { background: var(--highlight); }
-        td img { max-height: 40px; border-radius: 4px; object-fit: cover; }
+        td img { max-height: 48px; border-radius: 4px; object-fit: cover; }
 
         .no-results, .result-message, .confirmation-message {
-            font-weight: 700; text-align: center; margin-top: .5rem; font-size: .8rem;
+            font-weight: 700; text-align: center; margin-top: .6rem; font-size: .9rem;
         }
         .no-results { color: var(--danger); }
         .result-message { color: var(--text); }
@@ -99,10 +100,10 @@
         }
         .modal-content {
             background: var(--white); border: 1px solid var(--border);
-            margin: 10% auto; padding: 1.5rem; width: 90%; max-width: 400px;
+            margin: 10% auto; padding: 1.8rem; width: 90%; max-width: 420px;
             border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.1); position: relative;
         }
-        .close { position: absolute; top: .4rem; right: .6rem; font-size: 1.4rem; cursor: pointer; }
+        .close { position: absolute; top: .5rem; right: .7rem; font-size: 1.5rem; cursor: pointer; }
         .highlight { background: var(--accent) !important; color: var(--white); font-weight: 700; }
 
         ::-webkit-scrollbar { width: 8px; }
@@ -113,7 +114,7 @@
 <body>
     <h1>Gestión de Inventario</h1>
 
-    <!-- 90 % de la pantalla -->
+    <!-- 98 % × 96 % de la pantalla -->
     <div class="container">
         <div class="search-block">
             <div>
@@ -140,14 +141,14 @@
             <button class="stamp" onclick="openSoldModal()">Registrar Venta</button>
         </div>
 
-        <div style="display:flex; gap:.5rem; align-items:center; flex-wrap: wrap;">
+        <div style="display:flex; gap:.6rem; align-items:center; flex-wrap: wrap;">
             <label for="goToRow">Ir a fila:</label>
-            <input type="number" id="goToRow" min="1" style="width:70px;">
+            <input type="number" id="goToRow" min="1" style="width:80px;">
             <button class="stamp" onclick="goToRow()">Ir</button>
             <button class="stamp" onclick="clearFilters()" style="margin-left:auto;">Limpiar filtros</button>
         </div>
 
-        <div style="flex:1 1 auto; overflow:auto; margin-top:.4rem;">
+        <div style="flex:1 1 auto; overflow:auto; margin-top:.5rem;">
             <table>
                 <thead>
                     <tr>
