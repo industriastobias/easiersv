@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg: #f8f9fa;
@@ -113,9 +115,6 @@
                     <button type="button" class="menta" onclick="exportToExcel()">Exportar Excel</button>
                     <button type="button" class="coral" onclick="exportToPDF()">Exportar PDF con Imágenes</button>
                     <button type="button" class="coral" onclick="vaciarInventario()">Vaciar Inventario</button>
-                    <!-- NUEVO -->
-                    <input type="file" id="importFolderAsProducts" accept="image/*" multiple style="display:none;" onchange="importFolderAsProducts(event)" />
-                    <button type="button" class="coral" onclick="document.getElementById('importFolderAsProducts').click()">Importar carpeta como productos</button>
                 </div>
             </form>
         </div>
@@ -296,52 +295,6 @@
             };
             reader.readAsBinaryString(file);
         }
-
-        /* ----------  NUEVA FUNCIONALIDAD  ---------- */
-        async function importFolderAsProducts(event) {
-            const files = Array.from(event.target.files);
-            console.log('Imágenes recibidas:', files.length);
-            if (files.length === 0) { alert('No seleccionaste imágenes'); return; }
-
-            const batch = 10; // procesar de 10 en 10
-            let added = 0;
-
-            for (let i = 0; i < files.length; i += batch) {
-                const chunk = files.slice(i, i + batch);
-                await Promise.all(chunk.map(async file => {
-                    const base64 = await blobToBase64(file);
-                    const name = file.name.split('.').slice(0, -1).join('.');
-                    inventory.push({
-                        name: name,
-                        code: name,
-                        barcode: '',
-                        price: '0',
-                        discount: '0',
-                        quantity: '1',
-                        description: '',
-                        category: 'Otros',
-                        imageData: base64
-                    });
-                    added++;
-                }));
-                // pausa para que el navegador respire
-                await new Promise(r => setTimeout(r, 100));
-            }
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            renderTable();
-            calculateTotal();
-            alert(`${added} productos agregados desde imágenes`);
-        }
-        function blobToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-        /* ------------------------------------------ */
 
         window.addEventListener("beforeunload", () => localStorage.setItem('inventory', JSON.stringify(inventory)));
 
