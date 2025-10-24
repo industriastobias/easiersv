@@ -112,6 +112,7 @@
             padding: .6rem .8rem;
             border: 1px solid var(--border);
             text-align: left;
+            vertical-align: middle;
         }
 
         th {
@@ -181,6 +182,13 @@
             font-weight: 700;
         }
 
+        /* miniatura de imagen */
+        td img {
+            max-height: 60px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -211,7 +219,7 @@
                     <option value="Relojes">Relojes</option>
                     <option value="Anillos">Anillos</option>
                     <option value="Accesorios para el cabello">Accesorios para el cabello</option>
-                    <option value="otros">Otros</option>
+                    <option value="Otros">Otros</option>
                 </select>
             </div>
             <div>
@@ -232,6 +240,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Imagen</th>
                     <th>Nombre</th>
                     <th>Código</th>
                     <th>Código de Barras</th>
@@ -260,7 +269,6 @@
             <label for="soldQuantity">Cantidad vendida:</label>
             <input type="number" id="soldQuantity" min="1">
 
-            <!-- NUEVO CAMPO -->
             <label for="soldPrice" style="margin-top:1rem;display:block;">Precio vendido (unidad):</label>
             <input type="number" id="soldPrice" min="0" step="0.01" placeholder="Ej: 1500">
 
@@ -271,7 +279,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
-        /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentSoldIndex = -1;
 
@@ -288,6 +295,7 @@
                     return `
                         <tr id="product-${index}">
                             <td>${index + 1}</td>
+                            <td>${item.imageData ? `<img src="${item.imageData}" alt="${item.name}">` : '—'}</td>
                             <td>${item.name}</td>
                             <td>${item.code}</td>
                             <td>${item.barcode}</td>
@@ -318,9 +326,8 @@
             document.getElementById('confirmationMessage').style.display = 'none';
         }
 
-        /* ==========  NUEVA VERSIÓN: PIDE Y GUARDA PRECIO VENDIDO  ========== */
         function processSale() {
-            const soldQty   = parseInt(document.getElementById('soldQuantity').value);
+            const soldQty = parseInt(document.getElementById('soldQuantity').value);
             const soldPrice = parseFloat(document.getElementById('soldPrice').value);
 
             if (isNaN(soldQty) || soldQty <= 0) {
@@ -338,34 +345,28 @@
                 return;
             }
 
-            /* ----------  actualizamos stock  ---------- */
             item.quantity -= soldQty;
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
-            /* ----------  guardamos la venta con el precio anotado  ---------- */
             const soldItem = {
-                name:     item.name,
-                code:     item.code,
-                price:    soldPrice,          // <-- precio que el usuario escribió
+                name: item.name,
+                code: item.code,
+                price: soldPrice,
                 quantity: soldQty,
-                total:    soldPrice * soldQty
+                total: soldPrice * soldQty
             };
             let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            /* ----------  refrescamos tabla  ---------- */
             filterInventory();
-
-            /* ----------  cerramos modal y avisamos  ---------- */
             closeSoldModal();
             document.getElementById('resultMessage').textContent = '¡Venta registrada!';
             document.getElementById('resultMessage').style.display = 'block';
             setTimeout(() => document.getElementById('resultMessage').style.display = 'none', 3000);
 
-            /* ----------  limpiamos campos para la próxima  ---------- */
             document.getElementById('soldQuantity').value = '';
-            document.getElementById('soldPrice').value    = '';
+            document.getElementById('soldPrice').value = '';
         }
 
         function filterInventory() {
