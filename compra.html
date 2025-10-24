@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg: #f8f9fa;
@@ -52,7 +54,6 @@
     <h1>Gestión de Compras</h1>
 
     <div class="container">
-        <!-- Formulario -->
         <div class="bubble">
             <form id="purchaseForm" class="form-grid">
                 <div>
@@ -99,7 +100,6 @@
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
-                <!-- Campo imagen -->
                 <div style="grid-column: 1 / -1;">
                     <label>Imagen del producto:</label>
                     <input type="file" id="imageFile" accept="image/*" onchange="previewImage(event)" />
@@ -113,16 +113,15 @@
                     <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
                     <button type="button" class="menta" onclick="document.getElementById('importFile').click()">Importar Excel</button>
                     <button type="button" class="menta" onclick="exportToExcel()">Exportar Excel</button>
+                    <button type="button" class="coral" onclick="exportToPDF()">Exportar PDF con Imágenes</button>
                     <button type="button" class="coral" onclick="vaciarInventario()">Vaciar Inventario</button>
                 </div>
             </form>
         </div>
 
-        <!-- Tarjetas de productos -->
         <div class="table-cards" id="inventoryList"></div>
     </div>
 
-    <!-- Total -->
     <div class="total-box">
         <h2>Total en USD</h2>
         <p id="totalAmount">$0.00</p>
@@ -130,7 +129,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
-        /* ==========  LÓGICA CON IMAGEN  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let editIndex = -1;
 
@@ -223,6 +221,58 @@
             XLSX.writeFile(wb, "inventario.xlsx");
         }
 
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const margin = 10;
+            const cardWidth = (pageWidth - 2 * margin) / 2;
+            let x = margin;
+            let y = margin;
+
+            for (let i = 0; i < inventory.length; i++) {
+                const item = inventory[i];
+
+                const div = document.createElement('div');
+                div.style.width = cardWidth + 'mm';
+                div.style.padding = '10px';
+                div.style.background = '#fff';
+                div.style.border = '1px solid #ccc';
+                div.style.borderRadius = '12px';
+                div.style.boxSizing = 'border-box';
+                div.innerHTML = `
+                    ${item.imageData ? `<img src="${item.imageData}" style="width:100%; height:auto; border-radius:8px;" />` : ''}
+                    <h3 style="margin:8px 0;font-size:14px;">${item.name}</h3>
+                    <p style="margin:2px 0;font-size:12px;">Código: ${item.code}</p>
+                    <p style="margin:2px 0;font-size:12px;">Precio: $${item.price}</p>
+                    <p style="margin:2px 0;font-size:12px;">Stock: ${item.quantity}</p>
+                `;
+                document.body.appendChild(div);
+
+                await html2canvas(div, { scale: 2 }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    pdf.addImage(imgData, 'PNG', x, y, cardWidth, canvas.height * cardWidth / canvas.width);
+
+                    if (i % 2 === 1) {
+                        y += canvas.height * cardWidth / canvas.width + 10;
+                        x = margin;
+                    } else {
+                        x = pageWidth / 2 + 5;
+                    }
+
+                    if (y > 250) {
+                        pdf.addPage();
+                        y = margin;
+                        x = margin;
+                    }
+                });
+
+                document.body.removeChild(div);
+            }
+
+            pdf.save('inventario_con_imagenes.pdf');
+        }
+
         function importFromExcel(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -230,7 +280,13 @@
                 const wb = XLSX.read(e.target.result, { type: 'binary' });
                 const sheet = wb.Sheets[wb.SheetNames[0]];
                 const json = XLSX.utils.sheet_to_json(sheet);
-                const withImages = json.map(item => ({ ...item, imageData: '' }));
+                const withImages = json.map(item => {
+                    const existing = inventory.find(p => p.code === item.code);
+                    return {
+                        ...item,
+                        imageData: existing ? existing.imageData : ''
+                    };
+                });
                 inventory = inventory.concat(withImages);
                 localStorage.setItem('inventory', JSON.stringify(inventory));
                 renderTable();
