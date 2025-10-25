@@ -1,370 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gestión de Compras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root {
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --lavanda: #243b55;
-            --menta: #4a6572;
-            --coral: #6c757d;
-            --text: #212529;
-            --muted: #6c757d;
-            --shadow: 0 8px 24px rgba(33, 37, 41, 0.1);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
-        h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 2rem; letter-spacing: -0.5px; color: var(--lavanda); }
-        .container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 2rem; }
-        .bubble { background: var(--card); border-radius: 24px; padding: 2rem; box-shadow: var(--shadow); transition: transform .3s ease; }
-        .bubble:hover { transform: translateY(-4px); }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
-        label { font-size: 0.9rem; color: var(--muted); margin-bottom: .25rem; }
-        input, select, textarea { width: 100%; padding: .75rem 1rem; border: 1px solid transparent; border-radius: 16px; background: #e9ecef; color: var(--text); transition: background .3s, border-color .3s; }
-        input:focus, select:focus, textarea:focus { outline: none; background: #ffffff; border-color: var(--lavanda); }
-        button { padding: .75rem 1.5rem; border: none; border-radius: 16px; font-weight: 600; cursor: pointer; transition: all .3s ease; }
-        button.lavanda { background: var(--lavanda); color: #fff; box-shadow: 0 4px 14px rgba(36, 59, 85, 0.4); }
-        button.lavanda:hover { transform: scale(1.05); }
-        button.menta { background: var(--menta); color: #fff; box-shadow: 0 4px 14px rgba(74, 101, 114, 0.4); }
-        button.menta:hover { transform: scale(1.05); }
-        button.coral { background: var(--coral); color: #fff; box-shadow: 0 4px 14px rgba(108, 117, 125, 0.4); }
-        button.coral:hover { transform: scale(1.05); }
-        .table-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
-        .card-item { background: var(--card); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: column; gap: .5rem; box-shadow: var(--shadow); transition: transform .3s, box-shadow .3s; }
-        .card-item:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(33, 37, 41, 0.15); }
-        .card-item img { width: 100%; height: 160px; object-fit: cover; border-radius: 16px; margin-bottom: .5rem; }
-        .card-item h3 { font-size: 1.1rem; color: var(--lavanda); }
-        .card-item p { font-size: .9rem; color: var(--muted); }
-        .card-item .actions { margin-top: auto; display: flex; gap: .5rem; }
-        .total-box { align-self: center; padding: 1.5rem 3rem; background: var(--card); border-radius: 20px; box-shadow: var(--shadow); text-align: center; }
-        .total-box h2 { font-size: 1rem; color: var(--lavanda); margin: 0; }
-        .total-box p { font-size: 2rem; font-weight: 700; margin: 0; color: var(--menta); }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: var(--lavanda); border-radius: 4px; }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Gestión de Compras - 6.000 productos</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ---------- tus mismos estilos ---------- */
+:root{--bg:#f8f9fa;--card:#fff;--lavanda:#243b55;--menta:#4a6572;--coral:#6c757d;--text:#212529;--muted:#6c757d;--shadow:0 8px 24px rgba(33,37,41,.1)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Poppins,system-ui,sans-serif}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem}
+h1{font-size:2.2rem;font-weight:600;margin-bottom:2rem;letter-spacing:-.5px;color:var(--lavanda)}
+.container{width:100%;max-width:1200px;display:flex;flex-direction:column;gap:2rem}
+.bubble{background:var(--card);border-radius:24px;padding:2rem;box-shadow:var(--shadow);transition:transform .3s ease}
+.bubble:hover{transform:translateY(-4px)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+label{font-size:.9rem;color:var(--muted);margin-bottom:.25rem}
+input,select,textarea{width:100%;padding:.75rem 1rem;border:1px solid transparent;border-radius:16px;background:#e9ecef;color:var(--text);transition:background .3s,border-color .3s}
+input:focus,select:focus,textarea:focus{outline:none;background:#fff;border-color:var(--lavanda)}
+button{padding:.75rem 1.5rem;border:none;border-radius:16px;font-weight:600;cursor:pointer;transition:all .3s ease}
+button.lavanda{background:var(--lavanda);color:#fff;box-shadow:0 4px 14px rgba(36,59,85,.4)}
+button.lavanda:hover{transform:scale(1.05)}
+button.menta{background:var(--menta);color:#fff;box-shadow:0 4px 14px rgba(74,101,114,.4)}
+button.menta:hover{transform:scale(1.05)}
+button.coral{background:var(--coral);color:#fff;box-shadow:0 4px 14px rgba(108,117,125,.4)}
+button.coral:hover{transform:scale(1.05)}
+.table-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}
+.card-item{background:var(--card);border-radius:20px;padding:1.5rem;display:flex;flex-direction:column;gap:.5rem;box-shadow:var(--shadow);transition:transform .3s,box-shadow .3s}
+.card-item:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(33,37,41,.15)}
+.card-item img{width:100%;height:160px;object-fit:cover;border-radius:16px;margin-bottom:.5rem}
+.card-item h3{font-size:1.1rem;color:var(--lavanda)}
+.card-item p{font-size:.9rem;color:var(--muted)}
+.card-item .actions{margin-top:auto;display:flex;gap:.5rem}
+.total-box{align-self:center;padding:1.5rem 3rem;background:var(--card);border-radius:20px;box-shadow:var(--shadow);text-align:center}
+.total-box h2{font-size:1rem;color:var(--lavanda);margin:0}
+.total-box p{font-size:2rem;font-weight:700;margin:0;color:var(--menta)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:var(--lavanda);border-radius:4px}
+</style>
 </head>
 <body>
 
-    <h1>Gestión de Compras</h1>
+<h1>Gestión de Compras</h1>
 
-    <div class="container">
-        <div class="bubble">
-            <form id="purchaseForm" class="form-grid">
-                <div>
-                    <label>Nombre del Producto:</label>
-                    <input type="text" id="name" name="name" required />
-                </div>
-                <div>
-                    <label>Código:</label>
-                    <input type="text" id="code" name="code" required />
-                </div>
-                <div>
-                    <label>Código de Barras:</label>
-                    <input type="text" id="barcode" name="barcode" />
-                </div>
-                <div>
-                    <label>Precio:</label>
-                    <input type="number" id="price" name="price" step="0.01" required />
-                </div>
-                <div>
-                    <label>Descuento (%):</label>
-                    <input type="number" id="discount" name="discount" step="0.01" value="0" />
-                </div>
-                <div>
-                    <label>Cantidad en Stock:</label>
-                    <input type="number" id="quantity" name="quantity" required />
-                </div>
-                <div style="grid-column: 1 / -1;">
-                    <label>Descripción:</label>
-                    <textarea id="description" name="description" rows="2"></textarea>
-                </div>
-                <div>
-                    <label>Categoría:</label>
-                    <select id="category" name="category">
-                        <option value="Aritos">Aritos</option>
-                        <option value="Billeteras">Billeteras</option>
-                        <option value="Carteras">Carteras</option>
-                        <option value="Chokers">Chokers</option>
-                        <option value="Collares">Collares</option>
-                        <option value="Lentes de sol">Lentes de sol</option>
-                        <option value="Pulseras">Pulseras</option>
-                        <option value="Relojes">Relojes</option>
-                        <option value="Anillos">Anillos</option>
-                        <option value="Accesorios para el cabello">Accesorios para el cabello</option>
-                        <option value="Otros">Otros</option>
-                    </select>
-                </div>
-                <div style="grid-column: 1 / -1;">
-                    <label>Imagen del producto:</label>
-                    <input type="file" id="imageFile" accept="image/*" onchange="previewImage(event)" />
-                    <div style="margin-top: .5rem;">
-                        <img id="imagePreview" src="" alt="Vista previa" style="max-height: 160px; border-radius: 16px; display: none;" />
-                    </div>
-                    <input type="hidden" id="imageData" name="imageData" />
-                </div>
-                <div style="grid-column: 1 / -1; display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button type="submit" class="lavanda">Guardar</button>
-                    <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)" />
-                    <button type="button" class="menta" onclick="document.getElementById('importFile').click()">Importar Excel</button>
-                    <button type="button" class="menta" onclick="exportToExcel()">Exportar Excel</button>
-                    <button type="button" class="coral" onclick="exportToPDF()">Exportar PDF con Imágenes</button>
-                    <button type="button" class="coral" onclick="vaciarInventario()">Vaciar Inventario</button>
-                </div>
-            </form>
-        </div>
+<div class="container">
+  <div class="bubble">
+    <form id="purchaseForm" class="form-grid">
+      <div><label>Nombre del Producto:</label><input type="text" id="name" name="name" required></div>
+      <div><label>Código:</label><input type="text" id="code" name="code" required></div>
+      <div><label>Código de Barras:</label><input type="text" id="barcode" name="barcode"></div>
+      <div><label>Precio:</label><input type="number" id="price" name="price" step="0.01" required></div>
+      <div><label>Descuento (%):</label><input type="number" id="discount" name="discount" step="0.01" value="0"></div>
+      <div><label>Cantidad en Stock:</label><input type="number" id="quantity" name="quantity" required></div>
+      <div style="grid-column:1/-1"><label>Descripción:</label><textarea id="description" name="description" rows="2"></textarea></div>
+      <div><label>Categoría:</label>
+        <select id="category" name="category">
+          <option>Aritos</option><option>Billeteras</option><option>Carteras</option><option>Chokers</option>
+          <option>Collares</option><option>Lentes de sol</option><option>Pulseras</option><option>Relojes</option>
+          <option>Anillos</option><option>Accesorios para el cabello</option><option>Otros</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Imagen del producto:</label>
+        <input type="file" id="imageFile" accept="image/*" onchange="previewImage(event)">
+        <div style="margin-top:.5rem"><img id="imagePreview" src="" alt="Vista previa" style="max-height:160px;border-radius:16px;display:none"></div>
+        <input type="hidden" id="imageData" name="imageData">
+      </div>
+      <div style="grid-column:1/-1;display:flex;gap:1rem;flex-wrap:wrap">
+        <button type="submit" class="lavanda">Guardar</button>
+        <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="importFromExcel(event)">
+        <button type="button" class="menta" onclick="document.getElementById('importFile').click()">Importar Excel</button>
+        <button type="button" class="menta" onclick="exportToExcel()">Exportar Excel</button>
+        <button type="button" class="coral" onclick="exportToPDF()">Exportar PDF con Imágenes</button>
+        <button type="button" class="coral" onclick="vaciarInventario()">Vaciar Inventario</button>
+      </div>
+    </form>
+  </div>
 
-        <div class="table-cards" id="inventoryList"></div>
-    </div>
+  <div class="table-cards" id="inventoryList"></div>
+</div>
 
-    <div class="total-box">
-        <h2>Total en USD</h2>
-        <p id="totalAmount">$0.00</p>
-    </div>
+<div class="total-box">
+  <h2>Total en USD</h2>
+  <p id="totalAmount">$0.00</p>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-    <script>
-        let inventory = [];
-        let editIndex = -1;
-        let db;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+<script>
+/* ---------- variables ---------- */
+let inventory = [];
+let editIndex = -1;
+let db;
 
-        const request = indexedDB.open('InventarioDB', 1);
+/* ---------- abrir / crear BD ---------- */
+const req = indexedDB.open('InventarioDB',1);
+req.onerror=()=>console.error('Error al abrir IndexedDB');
+req.onsuccess=()=>{db=req.result; loadAll();};
+req.onupgradeneeded=()=>{
+  db=req.result;
+  if(!db.objectStoreNames.contains('productos'))
+    db.createObjectStore('productos',{keyPath:'id',autoIncrement:true});
+};
 
-        request.onerror = () => console.error("Error al abrir IndexedDB");
-        request.onsuccess = () => {
-            db = request.result;
-            loadInventoryFromDB();
-        };
+/* ---------- CRUD básico ---------- */
+function addItem(item,ok){               // CREATE
+  const tx=db.transaction('productos','readwrite');
+  tx.objectStore('productos').add(item);
+  tx.oncomplete=()=>ok();
+}
+function putItem(item,ok){               // UPDATE
+  const tx=db.transaction('productos','readwrite');
+  tx.objectStore('productos').put(item);
+  tx.oncomplete=()=>ok();
+}
+function delItem(id,ok){                 // DELETE
+  const tx=db.transaction('productos','readwrite');
+  tx.objectStore('productos').delete(id);
+  tx.oncomplete=()=>ok();
+}
+function clearAll(ok){                   // CLEAR
+  const tx=db.transaction('productos','readwrite');
+  tx.objectStore('productos').clear();
+  tx.oncomplete=()=>ok();
+}
+function loadAll(){                      // READ
+  const tx=db.transaction('productos','readonly');
+  const req=tx.objectStore('productos').getAll();
+  req.onsuccess=()=>{inventory=req.result; renderTable(); calculateTotal();};
+}
 
-        request.onupgradeneeded = () => {
-            db = request.result;
-            if (!db.objectStoreNames.contains('productos')) {
-                db.createObjectStore('productos', { keyPath: 'id', autoIncrement: true });
-            }
-        };
+/* ---------- cálculo del total ---------- */
+function calculateTotal(){
+  const t=inventory.reduce((s,it)=>s+((+it.price||0)*(+it.quantity||0)),0);
+  document.getElementById('totalAmount').textContent=`$${t.toFixed(2)}`;
+}
 
-        function loadInventoryFromDB() {
-            const tx = db.transaction('productos', 'readonly');
-            const store = tx.objectStore('productos');
-            const req = store.getAll();
-            req.onsuccess = () => {
-                inventory = req.result;
-                renderTable();
-                calculateTotal();
-            };
-        }
+/* ---------- pintar tarjetas ---------- */
+function renderTable(){
+  const list=document.getElementById('inventoryList');
+  list.innerHTML=inventory.map((it,idx)=>`
+    <div class="card-item">
+      ${it.imageData?`<img src="${it.imageData}" alt="">`:''}
+      <h3>${it.name}</h3>
+      <p><strong>Código:</strong>${it.code}</p>
+      <p><strong>Precio:</strong>$${it.price}</p>
+      <p><strong>Stock:</strong>${it.quantity}</p>
+      <div class="actions">
+        <button class="lavanda" onclick="editItem(${idx})">Editar</button>
+        <button class="coral" onclick="deleteItem(${idx})">Eliminar</button>
+      </div>
+    </div>`).join('');
+}
 
-        function saveToDB(item, callback) {
-            const tx = db.transaction('productos', 'readwrite');
-            const store = tx.objectStore('productos');
-            store.put(item);
-            tx.oncomplete = callback;
-        }
+/* ---------- preview + compresión ---------- */
+function previewImage(ev){
+  const file=ev.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=800, scale=max/img.width;
+      canvas.width=max; canvas.height=img.height*scale;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      const data=canvas.toDataURL('image/jpeg',0.6);
+      document.getElementById('imagePreview').src=data;
+      document.getElementById('imagePreview').style.display='block';
+      document.getElementById('imageData').value=data;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 
-        function deleteFromDB(id, callback) {
-            const tx = db.transaction('productos', 'readwrite');
-            const store = tx.objectStore('productos');
-            store.delete(id);
-            tx.oncomplete = callback;
-        }
+/* ---------- guardar / editar ---------- */
+document.getElementById('purchaseForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const item=Object.fromEntries(new FormData(e.target).entries());
+  if(editIndex===-1){               // alta
+    addItem(item,()=>{loadAll(); e.target.reset(); document.getElementById('imagePreview').style.display='none';});
+  }else{                            // edición
+    const updated={...inventory[editIndex],...item};
+    putItem(updated,()=>{loadAll(); e.target.reset(); document.getElementById('imagePreview').style.display='none'; editIndex=-1;});
+  }
+});
 
-        function clearDB(callback) {
-            const tx = db.transaction('productos', 'readwrite');
-            const store = tx.objectStore('productos');
-            store.clear();
-            tx.oncomplete = callback;
-        }
+/* ---------- editar fila ---------- */
+function editItem(idx){
+  const it=inventory[idx];
+  Object.keys(it).forEach(k=>{const el=document.getElementById(k); if(el)el.value=it[k];});
+  if(it.imageData){document.getElementById('imagePreview').src=it.imageData; document.getElementById('imagePreview').style.display='block';}
+  editIndex=idx;
+}
 
-        function calculateTotal() {
-            const total = inventory.reduce((sum, item) => {
-                const price = parseFloat(item.price) || 0;
-                const quantity = parseFloat(item.quantity) || 0;
-                return sum + price * quantity;
-            }, 0);
-            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
-        }
+/* ---------- borrar fila ---------- */
+function deleteItem(idx){
+  if(!confirm('¿Eliminar producto?'))return;
+  delItem(inventory[idx].id,()=>loadAll());
+}
 
-        function renderTable() {
-            const list = document.getElementById('inventoryList');
-            list.innerHTML = inventory.map((item, idx) => `
-                <div class="card-item">
-                    ${item.imageData ? `<img src="${item.imageData}" alt="${item.name}" />` : ''}
-                    <h3>${item.name}</h3>
-                    <p><strong>Código:</strong> ${item.code}</p>
-                    <p><strong>Código de Barras:</strong> ${item.barcode}</p>
-                    <p><strong>Precio:</strong> $${item.price}</p>
-                    <p><strong>Descuento:</strong> ${item.discount}%</p>
-                    <p><strong>Descripción:</strong> ${item.description}</p>
-                    <p><strong>Categoría:</strong> ${item.category}</p>
-                    <p><strong>Stock:</strong> ${item.quantity}</p>
-                    <div class="actions">
-                        <button onclick="editItem(${idx})" class="lavanda">Editar</button>
-                        <button onclick="deleteItem(${idx})" class="coral">Eliminar</button>
-                    </div>
-                </div>
-            `).join('');
-        }
+/* ---------- vaciar todo ---------- */
+function vaciarInventario(){
+  if(!confirm('¿Vaciar inventario completo?'))return;
+  clearAll(()=>{inventory=[]; renderTable(); calculateTotal();});
+}
 
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+/* ---------- exportar Excel (sin imagen) ---------- */
+function exportToExcel(){
+  const ws=XLSX.utils.json_to_sheet(inventory.map(({imageData,id,...rest})=>rest));
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Inventario');
+  XLSX.writeFile(wb,'inventario.xlsx');
+}
 
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const maxWidth = 800;
-                    const scale = maxWidth / img.width;
-                    canvas.width = maxWidth;
-                    canvas.height = img.height * scale;
+/* ---------- exportar PDF con imágenes ---------- */
+async function exportToPDF(){
+  const {jsPDF}=window.jspdf; const pdf=new jsPDF('p','mm','a4');
+  const pw=pdf.internal.pageSize.getWidth(), m=10, cw=(pw-2*m)/2;
+  let x=m, y=m;
+  for(let i=0;i<inventory.length;i++){
+    const it=inventory[i];
+    const div=document.createElement('div');
+    div.style.width=cw+'mm'; div.style.padding='10px'; div.style.background='#fff';
+    div.style.border='1px solid #ccc'; div.style.borderRadius='12px'; div.style.boxSizing='border-box';
+    div.innerHTML=`
+      ${it.imageData?`<img src="${it.imageData}" style="width:100%;height:auto;border-radius:8px">`:''}
+      <h3 style="margin:8px 0;font-size:14px">${it.name}</h3>
+      <p style="margin:2px 0;font-size:12px">Código:${it.code}</p>
+      <p style="margin:2px 0;font-size:12px">Precio:$${it.price}</p>
+      <p style="margin:2px 0;font-size:12px">Stock:${it.quantity}</p>`;
+    document.body.appendChild(div);
+    await html2canvas(div,{scale:2}).then(canvas=>{
+      const img=canvas.toDataURL('image/png');
+      pdf.addImage(img,'PNG',x,y,cw,canvas.height*cw/canvas.width);
+      if(i%2===1){y+=canvas.height*cw/canvas.width+10; x=m;}else{x=pw/2+5;}
+      if(y>250){pdf.addPage(); y=m; x=m;}
+    });
+    document.body.removeChild(div);
+  }
+  pdf.save('inventario_con_imagenes.pdf');
+}
 
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('imagePreview').src = compressedDataUrl;
-                    document.getElementById('imagePreview').style.display = 'block';
-                    document.getElementById('imageData').value = compressedDataUrl;
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        document.getElementById('purchaseForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const newItem = Object.fromEntries(new FormData(e.target).entries());
-            if (editIndex === -1) {
-                saveToDB(newItem, () => {
-                    loadInventoryFromDB();
-                });
-            } else {
-                const updatedItem = { ...inventory[editIndex], ...newItem };
-                saveToDB(updatedItem, () => {
-                    loadInventoryFromDB();
-                });
-                editIndex = -1;
-            }
-            e.target.reset();
-            document.getElementById('imagePreview').style.display = 'none';
-        });
-
-        function editItem(index) {
-            const item = inventory[index];
-            Object.keys(item).forEach(k => {
-                if (document.getElementById(k)) document.getElementById(k).value = item[k];
-            });
-            if (item.imageData) {
-                document.getElementById('imagePreview').src = item.imageData;
-                document.getElementById('imagePreview').style.display = 'block';
-            }
-            editIndex = index;
-        }
-
-        function deleteItem(index) {
-            if (confirm('¿Eliminar producto?')) {
-                deleteFromDB(inventory[index].id, () => {
-                    loadInventoryFromDB();
-                });
-            }
-        }
-
-        function vaciarInventario() {
-            if (confirm('¿Vaciar todo el inventario?')) {
-                clearDB(() => {
-                    inventory = [];
-                    renderTable();
-                    calculateTotal();
-                });
-            }
-        }
-
-        function exportToExcel() {
-            const ws = XLSX.utils.json_to_sheet(inventory.map(({ imageData, id, ...rest }) => rest));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-            XLSX.writeFile(wb, "inventario.xlsx");
-        }
-
-        async function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const margin = 10;
-            const cardWidth = (pageWidth - 2 * margin) / 2;
-            let x = margin;
-            let y = margin;
-
-            for (let i = 0; i < inventory.length; i++) {
-                const item = inventory[i];
-
-                const div = document.createElement('div');
-                div.style.width = cardWidth + 'mm';
-                div.style.padding = '10px';
-                div.style.background = '#fff';
-                div.style.border = '1px solid #ccc';
-                div.style.borderRadius = '12px';
-                div.style.boxSizing = 'border-box';
-                div.innerHTML = `
-                    ${item.imageData ? `<img src="${item.imageData}" style="width:100%; height:auto; border-radius:8px;" />` : ''}
-                    <h3 style="margin:8px 0;font-size:14px;">${item.name}</h3>
-                    <p style="margin:2px 0;font-size:12px;">Código: ${item.code}</p>
-                    <p style="margin:2px 0;font-size:12px;">Precio: $${item.price}</p>
-                    <p style="margin:2px 0;font-size:12px;">Stock: ${item.quantity}</p>
-                `;
-                document.body.appendChild(div);
-
-                await html2canvas(div, { scale: 2 }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    pdf.addImage(imgData, 'PNG', x, y, cardWidth, canvas.height * cardWidth / canvas.width);
-
-                    if (i % 2 === 1) {
-                        y += canvas.height * cardWidth / canvas.width + 10;
-                        x = margin;
-                    } else {
-                        x = pageWidth / 2 + 5;
-                    }
-
-                    if (y > 250) {
-                        pdf.addPage();
-                        y = margin;
-                        x = margin;
-                    }
-                });
-
-                document.body.removeChild(div);
-            }
-
-            pdf.save('inventario_con_imagenes.pdf');
-        }
-
-        function importFromExcel(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = e => {
-                const wb = XLSX.read(e.target.result, { type: 'binary' });
-                const sheet = wb.Sheets[wb.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet);
-                json.forEach(item => {
-                    const newItem = {
-                        ...item,
-                        imageData: '',
-                        discount: item.discount || 0
-                    };
-                    saveToDB(newItem);
-                });
-                setTimeout(() => loadInventoryFromDB(), 500);
-                alert("Importación completada");
-            };
-            reader.readAsBinaryString(file);
-        }
-    </script>
-
+/* ---------- importar Excel ---------- */
+function importFromExcel(ev){
+  const file=ev.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:'binary'});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const data=XLSX.utils.sheet_to_json(ws);
+    data.forEach(row=>{
+      addItem({...row,imageData:'',discount:row.discount||0},()=>loadAll());
+    });
+    alert('Importación finalizada');
+  };
+  reader.readAsBinaryString(file);
+}
+</script>
 </body>
 </html>
