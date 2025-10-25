@@ -129,8 +129,56 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
-        let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+        let inventory = [];
         let editIndex = -1;
+        let db;
+
+        const request = indexedDB.open('InventarioDB', 1);
+
+        request.onerror = () => console.error("Error al abrir IndexedDB");
+        request.onsuccess = () => {
+            db = request.result;
+            loadInventoryFromDB();
+        };
+
+        request.onupgradeneeded = () => {
+            db = request.result;
+            if (!db.objectStoreNames.contains('productos')) {
+                db.createObjectStore('productos', { keyPath: 'id', autoIncrement: true });
+            }
+        };
+
+        function loadInventoryFromDB() {
+            const tx = db.transaction('productos', 'readonly');
+            const store = tx.objectStore('productos');
+            const req = store.getAll();
+            req.onsuccess = () => {
+                inventory = req.result;
+                renderTable();
+                calculateTotal();
+            };
+        }
+
+        function saveToDB(item, callback) {
+            const tx = db.transaction('productos', 'readwrite');
+            const store = tx.objectStore('productos');
+            store.put(item);
+            tx.oncomplete = callback;
+        }
+
+        function deleteFromDB(id, callback) {
+            const tx = db.transaction('productos', 'readwrite');
+            const store = tx.objectStore('productos');
+            store.delete(id);
+            tx.oncomplete = callback;
+        }
+
+        function clearDB(callback) {
+            const tx = db.transaction('productos', 'readwrite');
+            const store = tx.objectStore('productos');
+            store.clear();
+            tx.oncomplete = callback;
+        }
 
         function calculateTotal() {
             const total = inventory.reduce((sum, item) => {
@@ -179,7 +227,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
                     document.getElementById('imagePreview').src = compressedDataUrl;
                     document.getElementById('imagePreview').style.display = 'block';
                     document.getElementById('imageData').value = compressedDataUrl;
@@ -192,18 +240,26 @@
         document.getElementById('purchaseForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const newItem = Object.fromEntries(new FormData(e.target).entries());
-            editIndex === -1 ? inventory.push(newItem) : (inventory[editIndex] = newItem);
-            localStorage.setItem('inventory', JSON.stringify(inventory));
+            if (editIndex === -1) {
+                saveToDB(newItem, () => {
+                    loadInventoryFromDB();
+                });
+            } else {
+                const updatedItem = { ...inventory[editIndex], ...newItem };
+                saveToDB(updatedItem, () => {
+                    loadInventoryFromDB();
+                });
+                editIndex = -1;
+            }
             e.target.reset();
             document.getElementById('imagePreview').style.display = 'none';
-            editIndex = -1;
-            renderTable();
-            calculateTotal();
         });
 
         function editItem(index) {
             const item = inventory[index];
-            Object.keys(item).forEach(k => document.getElementById(k).value = item[k]);
+            Object.keys(item).forEach(k => {
+                if (document.getElementById(k)) document.getElementById(k).value = item[k];
+            });
             if (item.imageData) {
                 document.getElementById('imagePreview').src = item.imageData;
                 document.getElementById('imagePreview').style.display = 'block';
@@ -213,24 +269,24 @@
 
         function deleteItem(index) {
             if (confirm('¿Eliminar producto?')) {
-                inventory.splice(index, 1);
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                renderTable();
-                calculateTotal();
+                deleteFromDB(inventory[index].id, () => {
+                    loadInventoryFromDB();
+                });
             }
         }
 
         function vaciarInventario() {
             if (confirm('¿Vaciar todo el inventario?')) {
-                inventory = [];
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                renderTable();
-                calculateTotal();
+                clearDB(() => {
+                    inventory = [];
+                    renderTable();
+                    calculateTotal();
+                });
             }
         }
 
         function exportToExcel() {
-            const ws = XLSX.utils.json_to_sheet(inventory.map(({imageData, ...rest}) => rest));
+            const ws = XLSX.utils.json_to_sheet(inventory.map(({ imageData, id, ...rest }) => rest));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Inventario");
             XLSX.writeFile(wb, "inventario.xlsx");
@@ -295,26 +351,19 @@
                 const wb = XLSX.read(e.target.result, { type: 'binary' });
                 const sheet = wb.Sheets[wb.SheetNames[0]];
                 const json = XLSX.utils.sheet_to_json(sheet);
-                const withImages = json.map(item => {
-                    const existing = inventory.find(p => p.code === item.code);
-                    return {
+                json.forEach(item => {
+                    const newItem = {
                         ...item,
-                        imageData: existing ? existing.imageData : ''
+                        imageData: '',
+                        discount: item.discount || 0
                     };
+                    saveToDB(newItem);
                 });
-                inventory = inventory.concat(withImages);
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                renderTable();
-                calculateTotal();
+                setTimeout(() => loadInventoryFromDB(), 500);
                 alert("Importación completada");
             };
             reader.readAsBinaryString(file);
         }
-
-        window.addEventListener("beforeunload", () => localStorage.setItem('inventory', JSON.stringify(inventory)));
-
-        renderTable();
-        calculateTotal();
     </script>
 
 </body>
