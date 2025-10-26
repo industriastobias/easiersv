@@ -142,7 +142,9 @@
           return `
             <tr id="product-${index}">
               <td>${index + 1}</td>
-              <td>${item.imageData ? `<img src="${item.imageData}" alt="${item.name}">` : '—'}</td>
+              <td>${item.imageData
+                  ? `<a href="${item.imageData}" target="_blank"><img src="${item.imageData}" alt="${item.name}"></a>`
+                  : '—'}</td>
               <td>${item.name}</td>
               <td>${item.code}</td>
               <td>${item.barcode}</td>
@@ -228,7 +230,9 @@
         document.getElementById('inventoryList').innerHTML = `
           <tr id="product-${foundIndex}" class="highlight">
             <td>${foundIndex + 1}</td>
-            <td>${item.imageData ? `<img src="${item.imageData}" alt="${item.name}">` : '—'}</td>
+            <td>${item.imageData
+                ? `<a href="${item.imageData}" target="_blank"><img src="${item.imageData}" alt="${item.name}"></a>`
+                : '—'}</td>
             <td>${item.name}</td>
             <td>${item.code}</td>
             <td>${item.barcode}</td>
