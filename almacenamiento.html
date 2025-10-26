@@ -49,6 +49,43 @@
             box-shadow: 0 2px 8px rgba(0,0,0,.05);
         }
 
+        .search-block {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-end;
+        }
+
+        label {
+            font-weight: 700;
+            font-size: .9rem;
+        }
+
+        input, select {
+            padding: .5rem .7rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: .95rem;
+        }
+
+        button.stamp {
+            padding: .5rem 1rem;
+            border: 1px solid var(--accent);
+            background: var(--accent);
+            color: var(--white);
+            font-weight: 700;
+            font-size: .85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background .2s ease;
+        }
+
+        button.stamp:hover {
+            background: var(--accent-hover);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -94,6 +131,39 @@
     <h1>Almacenamiento</h1>
 
     <div class="container">
+        <div class="search-block">
+            <div>
+                <label for="searchCategory">Filtrar por categoría:</label>
+                <select id="searchCategory">
+                    <option value="">Todas las categorías</option>
+                    <option value="Aritos">Aritos</option>
+                    <option value="Billeteras">Billeteras</option>
+                    <option value="Carteras">Carteras</option>
+                    <option value="Chokers">Chokers</option>
+                    <option value="Collares">Collares</option>
+                    <option value="Lentes de sol">Lentes de sol</option>
+                    <option value="Pulseras">Pulseras</option>
+                    <option value="Relojes">Relojes</option>
+                    <option value="Anillos">Anillos</option>
+                    <option value="Accesorios para el cabello">Accesorios para el cabello</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div>
+                <label for="searchCode">Buscar por código:</label>
+                <input type="text" id="searchCode" placeholder="Ej: P001">
+            </div>
+            <button class="stamp" onclick="filterInventory()">Buscar</button>
+        </div>
+
+        <div style="display:flex; gap:1rem; align-items:center; flex-wrap: wrap;">
+            <label for="goToRow">Ir a fila:</label>
+            <input type="number" id="goToRow" min="1" style="width:80px;">
+            <button class="stamp" onclick="goToRow()">Ir</button>
+            <button class="stamp" onclick="clearFilters()" style="margin-left:auto;">Limpiar filtros</button>
+            <button class="stamp" onclick="exportToExcel()">Exportar Excel</button>
+        </div>
+
         <table>
             <thead>
                 <tr>
@@ -112,26 +182,28 @@
             <tbody id="almacenList"></tbody>
         </table>
 
-        <div id="noResultsMessage" class="no-results" style="display:none;">No hay productos en almacén.</div>
+        <div id="noResultsMessage" class="no-results" style="display:none;">No se encontraron productos.</div>
+        <div id="resultMessage" class="result-message"></div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
         // ✅ Usamos la misma clave que compra.html: 'inventory'
         let almacen = JSON.parse(localStorage.getItem('inventory')) || [];
 
-        function loadAlmacen() {
+        function loadAlmacen(filtered = almacen) {
             const list = document.getElementById('almacenList');
             const noResults = document.getElementById('noResultsMessage');
 
-            if (almacen.length === 0) {
+            if (filtered.length === 0) {
                 list.innerHTML = '';
                 noResults.style.display = 'block';
             } else {
                 noResults.style.display = 'none';
-                list.innerHTML = almacen.map((item, index) => {
+                list.innerHTML = filtered.map((item, index) => {
                     const priceWithDiscount = (item.price * (1 - item.discount / 100)).toFixed(2);
                     return `
-                        <tr id="product-${index}">
+                        <tr id="product-${index}" data-code="${item.code.trim().toLowerCase()}">
                             <td>${index + 1}</td>
                             <td>${item.name}</td>
                             <td>${item.code}</td>
@@ -148,11 +220,64 @@
             }
         }
 
-        // Cargar al iniciar
-        loadAlmacen();
+        function filterInventory() {
+            const category = document.getElementById('searchCategory').value.trim().toLowerCase();
+            const code = document.getElementById('searchCode').value.trim().toLowerCase();
+            const filtered = almacen.filter(item => {
+                const matchesCategory = category === '' || item.category.trim().toLowerCase() === category;
+                const matchesCode = code === '' || item.code.trim().toLowerCase().includes(code);
+                return matchesCategory && matchesCode;
+            });
+            loadAlmacen(filtered);
+
+            if (code) {
+                const first = document.querySelector(`tr[data-code*="${code}"]`);
+                if (first) {
+                    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    first.classList.add('highlight');
+                }
+            }
+        }
+
+        function goToRow() {
+            const row = parseInt(document.getElementById('goToRow').value);
+            const rows = document.querySelectorAll('#almacenList tr');
+            document.querySelectorAll('.highlight').forEach(r => r.classList.remove('highlight'));
+            if (row >= 1 && row <= rows.length) {
+                rows[row - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                rows[row - 1].classList.add('highlight');
+            } else {
+                alert('Fila fuera de rango.');
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('searchCategory').value = '';
+            document.getElementById('searchCode').value = '';
+            document.getElementById('goToRow').value = '';
+            loadAlmacen();
+        }
+
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(almacen.map(({imageData, ...rest}) => rest));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Almacen");
+            XLSX.writeFile(wb, "almacen.xlsx");
+        }
 
         // Escuchar cambios en localStorage (por si compras desde otra pestaña)
-        window.addEventListener('storage', loadAlmacen);
+        window.addEventListener('storage', () => {
+            almacen = JSON.parse(localStorage.getItem('inventory')) || [];
+            loadAlmacen();
+        });
+
+        // Permitir buscar con ENTER
+        document.getElementById('searchCode').addEventListener('keydown', e => {
+            if (e.key === 'Enter') filterInventory();
+        });
+
+        // Cargar al iniciar
+        loadAlmacen();
     </script>
 </body>
 </html>
