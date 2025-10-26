@@ -32,17 +32,16 @@
     th, td { padding: .55rem .65rem; border: 1px solid var(--border); text-align: left; font-size: .9rem; }
     th { font-weight: 700; letter-spacing: .5px; }
     tbody tr:nth-child(odd) { background: var(--highlight); }
-    td img { max-height: 48px; border-radius: 4px; object-fit: cover; }
+    td img { max-height: 48px; border-radius: 4px; object-fit: cover; cursor: pointer; }
     .no-results, .result-message, .confirmation-message { font-weight: 700; text-align: center; margin-top: .6rem; font-size: .9rem; }
     .no-results { color: var(--danger); }
     .result-message { color: var(--text); }
     .confirmation-message { color: var(--accent); }
-    .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); }
-    .modal-content { background: var(--white); border: 1px solid var(--border); margin: 10% auto; padding: 1.8rem; width: 90%; max-width: 420px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.1); position: relative; }
-    .close { position: absolute; top: .5rem; right: .7rem; font-size: 1.5rem; cursor: pointer; }
-    .highlight { background: var(--accent) !important; color: var(--white); font-weight: 700; }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+    .modal { display: none; position: fixed; z-index: 20; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.7); }
+    .modal-content { position: relative; margin: 5% auto; padding: 0; width: auto; max-width: 90%; }
+    .close { position: absolute; top: -10px; right: -40px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
+    .close:hover { color: #ccc; }
+    #modalImage { display: block; max-width: 90vw; max-height: 80vh; border-radius: 8px; }
   </style>
 </head>
 
@@ -121,6 +120,14 @@
     </div>
   </div>
 
+  <!-- Modal imagen grande -->
+  <div id="imageModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeImageModal()">&times;</span>
+      <img id="modalImage" src="" alt="Imagen grande">
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
   <script>
     let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
@@ -143,7 +150,7 @@
             <tr id="product-${index}">
               <td>${index + 1}</td>
               <td>${item.imageData
-                  ? `<a href="${item.imageData}" target="_blank"><img src="${item.imageData}" alt="${item.name}"></a>`
+                  ? `<img src="${item.imageData}" alt="${item.name}" onclick="openImageModal('${item.imageData}')">`
                   : '—'}</td>
               <td>${item.name}</td>
               <td>${item.code}</td>
@@ -231,7 +238,7 @@
           <tr id="product-${foundIndex}" class="highlight">
             <td>${foundIndex + 1}</td>
             <td>${item.imageData
-                ? `<a href="${item.imageData}" target="_blank"><img src="${item.imageData}" alt="${item.name}"></a>`
+                ? `<img src="${item.imageData}" alt="${item.name}" onclick="openImageModal('${item.imageData}')">`
                 : '—'}</td>
             <td>${item.name}</td>
             <td>${item.code}</td>
@@ -297,6 +304,15 @@
         clearTimeout(t);
         t = setTimeout(() => fn.apply(this, args), d);
       };
+    }
+
+    /* ---------- FUNCIONES MODAL IMAGEN ---------- */
+    function openImageModal(src) {
+      document.getElementById('modalImage').src = src;
+      document.getElementById('imageModal').style.display = 'block';
+    }
+    function closeImageModal() {
+      document.getElementById('imageModal').style.display = 'none';
     }
   </script>
 </body>
