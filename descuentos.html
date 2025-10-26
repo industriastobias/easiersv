@@ -88,7 +88,6 @@
       font-weight: bold;
     }
 
-    /* CAJAS DE TOTALES */
     .summary-box {
       position: fixed;
       bottom: 20px;
@@ -142,7 +141,6 @@
   </table>
 </div>
 
-<!-- CAJAS DE TOTALES -->
 <div class="summary-box">
   <div>Precio Total Normal: $<span id="totalNormal">0.00</span></div>
   <div>Precio Total con Descuento: $<span id="totalDescuento">0.00</span></div>
@@ -223,11 +221,12 @@
 
     inventory.forEach(item => {
       const precio = parseFloat(item.price) || 0;
+      const cantidad = parseInt(item.quantity) || 0;
       const descuento = parseFloat(item.discount) || 0;
       const precioFinal = precio - (precio * descuento / 100);
 
-      totalNormal += precio;
-      totalDescuento += precioFinal;
+      totalNormal += precio * cantidad;
+      totalDescuento += precioFinal * cantidad;
     });
 
     document.getElementById('totalNormal').textContent = totalNormal.toFixed(2);
