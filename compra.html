@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js "></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg: #f8f9fa;
@@ -57,36 +57,37 @@
         <div class="bubble">
             <form id="purchaseForm" class="form-grid">
                 <div>
-                    <label>Nombre del Producto:</label>
-                    <input type="text" id="name" name="name" required />
+                    <label>Nombre del Producto *</label>
+                    <input type="text" id="name" name="name" required enterkeyhint="next"/>
                 </div>
                 <div>
-                    <label>Código:</label>
-                    <input type="text" id="code" name="code" required />
+                    <label>Código *</label>
+                    <input type="text" id="code" name="code" required enterkeyhint="next"/>
                 </div>
                 <div>
-                    <label>Código de Barras:</label>
-                    <input type="text" id="barcode" name="barcode" />
+                    <label>Código de Barras *</label>
+                    <input type="text" id="barcode" name="barcode" required enterkeyhint="next"/>
                 </div>
                 <div>
-                    <label>Precio:</label>
-                    <input type="number" id="price" name="price" step="0.01" required />
+                    <label>Precio *</label>
+                    <input type="number" id="price" name="price" step="0.01" required enterkeyhint="next"/>
                 </div>
                 <div>
                     <label>Descuento (%):</label>
-                    <input type="number" id="discount" name="discount" step="0.01" value="0" />
+                    <input type="number" id="discount" name="discount" step="0.01" value="0" enterkeyhint="next"/>
                 </div>
                 <div>
-                    <label>Cantidad en Stock:</label>
-                    <input type="number" id="quantity" name="quantity" required />
+                    <label>Cantidad en Stock *</label>
+                    <input type="number" id="quantity" name="quantity" required enterkeyhint="next"/>
                 </div>
                 <div style="grid-column: 1 / -1;">
-                    <label>Descripción:</label>
-                    <textarea id="description" name="description" rows="2"></textarea>
+                    <label>Descripción *</label>
+                    <textarea id="description" name="description" rows="2" required enterkeyhint="next"></textarea>
                 </div>
                 <div>
-                    <label>Categoría:</label>
-                    <select id="category" name="category">
+                    <label>Categoría *</label>
+                    <select id="category" name="category" required enterkeyhint="next">
+                        <option value="">-- Seleccione --</option>
                         <option value="Aritos">Aritos</option>
                         <option value="Billeteras">Billeteras</option>
                         <option value="Carteras">Carteras</option>
@@ -102,7 +103,7 @@
                 </div>
                 <div style="grid-column: 1 / -1;">
                     <label>Imagen del producto:</label>
-                    <input type="file" id="imageFile" accept="image/*" onchange="previewImage(event)" />
+                    <input type="file" id="imageFile" accept="image/*" onchange="previewImage(event)" enterkeyhint="next"/>
                     <div style="margin-top: .5rem;">
                         <img id="imagePreview" src="" alt="Vista previa" style="max-height: 160px; border-radius: 16px; display: none;" />
                     </div>
@@ -127,10 +128,22 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let editIndex = -1;
+
+        // NAVEGACIÓN CON ENTER
+        document.querySelectorAll('#purchaseForm input, #purchaseForm select, #purchaseForm textarea').forEach(el=>{
+            el.addEventListener('keydown', e=>{
+                if(e.key==='Enter' && e.target.id!=='imageFile'){
+                    e.preventDefault();
+                    const inputs = Array.from(document.querySelectorAll('#purchaseForm input:not([type=hidden]), #purchaseForm select, #purchaseForm textarea'));
+                    const idx = inputs.indexOf(e.target);
+                    if(idx>-1 && idx+1<inputs.length) inputs[idx+1].focus();
+                }
+            });
+        });
 
         function calculateTotal() {
             const total = inventory.reduce((sum, item) => {
@@ -281,19 +294,17 @@
                 const sheet = wb.Sheets[wb.SheetNames[0]];
                 const json = XLSX.utils.sheet_to_json(sheet);
 
-                /* --- corrección: adaptar nombres de columna --- */
                 const adapted = json.map(row => ({
                     name        : row.name        ?? '',
                     code        : row.code        ?? '',
                     barcode     : row.barcode     ?? '',
                     price       : row.price       ?? 0,
                     discount    : row.discount    ?? 0,
-                    quantity    : row.stock       ?? 0,   // <- aquí se traduce "stock" → "quantity"
+                    quantity    : row.stock       ?? 0,
                     description : row.description ?? '',
                     category    : row.category    ?? ''
                 }));
 
-                /* conservar imagen si ya existía */
                 const withImages = adapted.map(item => {
                     const existing = inventory.find(p => p.code === item.code);
                     return { ...item, imageData: existing ? existing.imageData : '' };
@@ -313,6 +324,5 @@
         renderTable();
         calculateTotal();
     </script>
-
 </body>
 </html>
