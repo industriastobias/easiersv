@@ -38,14 +38,14 @@
     .pagination button{padding:8px 16px;border:none;border-radius:var(--radius);background:var(--card);color:var(--text);box-shadow:var(--shadow);cursor:pointer;font-weight:600}
     .pagination button:hover{background:var(--accent);color:#fff}
 
-    /* ---------- MODAL FACTURA ---------- */
+    /* Modal Factura */
     #facturaModal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999}
     .factura-card{width:90vw;max-width:420px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto}
     .factura-card h2{margin-bottom:6px;font-size:1.2rem}
     .factura-card label{font-size:.8rem}
     .factura-card input{padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%;background:transparent;color:var(--text)}
 
-    /* ---------- TICKET ---------- */
+    /* Ticket */
     .ticket-preview {
       background:#fff;color:#000;font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.3;
       padding:8px 6px;border:1px dashed #999;width:100%;max-width:360px;margin:0 auto;box-sizing:border-box;
@@ -97,7 +97,6 @@
     <button onclick="generateDocx()">📄 Exportar DOCX</button>
     <button onclick="exportExcel()">📊 Exportar Excel</button>
     <button onclick="abrirFactura()">🧾 Generar Factura</button>
-    <!-- ⬇️ BOTÓN NUEVO -->
     <button onclick="location.href='Total.html'">📊 Total</button>
   </div>
 
@@ -162,18 +161,11 @@
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-  // INVENTARIO DE EJEMPLO (BORRAR EN PRODUCCIÓN)
-  if(!localStorage.getItem('soldInventory')){
-    localStorage.setItem('soldInventory',JSON.stringify([
-      {name:'Chocolate Hersheys 500g',code:'CH500',price:'12.50',quantity:2,total:25.00},
-      {name:'Café Santo Domingo 1kg',code:'CSD1K',price:'8.75',quantity:1,total:8.75},
-      {name:'Galletas Oreo 154g',code:'GO154',price:'1.99',quantity:5,total:9.95}
-    ]));
-  }
-
+  // Cargar ventas reales
   let soldInventory = JSON.parse(localStorage.getItem('soldInventory')) || [];
+
   let currentPage = 1;
   let rowsPerPage = 10;
 
@@ -246,7 +238,10 @@
   document.getElementById('filterName').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
   document.getElementById('filterCode').addEventListener('input', () => { currentPage = 1; loadSoldInventory(); });
 
-  loadSoldInventory();
+  // Cargar ventas apenas carga la página
+  window.addEventListener('DOMContentLoaded', () => {
+    loadSoldInventory();
+  });
 
   function abrirFactura(){
     const seleccionados = [...document.querySelectorAll('.factCheck:checked')];
