@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Gestión de Compras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -149,7 +149,9 @@
             const total = inventory.reduce((sum, item) => {
                 const price = parseFloat(item.price) || 0;
                 const quantity = parseFloat(item.quantity) || 0;
-                return sum + price * quantity;
+                const discount = parseFloat(item.discount) || 0;
+                const finalPrice = price * (1 - discount / 100);
+                return sum + finalPrice * quantity;
             }, 0);
             document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
         }
