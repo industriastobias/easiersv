@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Inventario</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400 ;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
 
         :root {
             --bg: #f5f7fa;
@@ -211,14 +211,14 @@
                     <option value="Relojes">Relojes</option>
                     <option value="Anillos">Anillos</option>
                     <option value="Accesorios para el cabello">Accesorios para el cabello</option>
-                    <option value="otros">Otros</option>
+                    <option value="Otros">Otros</option>
                 </select>
             </div>
             <div>
                 <label for="searchCode">Buscar por código:</label>
-                <input type="text" id="searchCode">
+                <input type="text" id="searchCode" placeholder="Ej: P001">
             </div>
-            <button class="stamp" onclick="openSoldModal()">Registrar Venta</button>
+            <button class="stamp" onclick="filterInventory()">Buscar</button>
         </div>
 
         <div style="display:flex; gap:1rem; align-items:center; flex-wrap: wrap;">
@@ -260,7 +260,6 @@
             <label for="soldQuantity">Cantidad vendida:</label>
             <input type="number" id="soldQuantity" min="1">
 
-            <!-- NUEVO CAMPO -->
             <label for="soldPrice" style="margin-top:1rem;display:block;">Precio vendido (unidad):</label>
             <input type="number" id="soldPrice" min="0" step="0.01" placeholder="Ej: 1500">
 
@@ -269,9 +268,8 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
-        /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentSoldIndex = -1;
 
@@ -286,7 +284,7 @@
                 list.innerHTML = filteredInventory.map((item, index) => {
                     const priceWithDiscount = item.price * (1 - item.discount / 100);
                     return `
-                        <tr id="product-${index}">
+                        <tr id="product-${index}" data-code="${item.code.trim().toLowerCase()}">
                             <td>${index + 1}</td>
                             <td>${item.name}</td>
                             <td>${item.code}</td>
@@ -318,9 +316,8 @@
             document.getElementById('confirmationMessage').style.display = 'none';
         }
 
-        /* ==========  NUEVA VERSIÓN: PIDE Y GUARDA PRECIO VENDIDO  ========== */
         function processSale() {
-            const soldQty   = parseInt(document.getElementById('soldQuantity').value);
+            const soldQty = parseInt(document.getElementById('soldQuantity').value);
             const soldPrice = parseFloat(document.getElementById('soldPrice').value);
 
             if (isNaN(soldQty) || soldQty <= 0) {
@@ -338,34 +335,31 @@
                 return;
             }
 
-            /* ----------  actualizamos stock  ---------- */
             item.quantity -= soldQty;
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
-            /* ----------  guardamos la venta con el precio anotado  ---------- */
             const soldItem = {
-                name:     item.name,
-                code:     item.code,
-                price:    soldPrice,          // <-- precio que el usuario escribió
+                name: item.name,
+                code: item.code,
+                price: soldPrice,
                 quantity: soldQty,
-                total:    soldPrice * soldQty
+                total: soldPrice * soldQty
             };
             let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
-            /* ----------  refrescamos tabla  ---------- */
             filterInventory();
-
-            /* ----------  cerramos modal y avisamos  ---------- */
             closeSoldModal();
             document.getElementById('resultMessage').textContent = '¡Venta registrada!';
             document.getElementById('resultMessage').style.display = 'block';
             setTimeout(() => document.getElementById('resultMessage').style.display = 'none', 3000);
 
-            /* ----------  limpiamos campos para la próxima  ---------- */
             document.getElementById('soldQuantity').value = '';
-            document.getElementById('soldPrice').value    = '';
+            document.getElementById('soldPrice').value = '';
+
+            // Redirigir a ventas.html
+            window.location.href = 'ventas.html';
         }
 
         function filterInventory() {
@@ -377,12 +371,14 @@
                 return matchesCategory && matchesCode;
             });
             loadInventory(filtered);
-            const productIndex = code ? inventory.findIndex(item => item.code.trim().toLowerCase() === code) : -1;
-            if (productIndex !== -1) {
-                document.getElementById('resultMessage').textContent = `Producto encontrado en la posición ${productIndex + 1} de ${inventory.length} productos.`;
-                document.getElementById('resultMessage').style.display = 'block';
-            } else {
-                document.getElementById('resultMessage').style.display = 'none';
+
+            // Si hay un código escrito, lleva y remarca la 1ª coincidencia
+            if (code) {
+                const first = document.querySelector(`tr[data-code*="${code}"]`);
+                if (first) {
+                    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    first.classList.add('highlight');
+                }
             }
         }
 
@@ -406,18 +402,12 @@
             document.getElementById('resultMessage').style.display = 'none';
         }
 
-        document.getElementById('searchCategory').addEventListener('change', debounce(filterInventory, 300));
-        document.getElementById('searchCode').addEventListener('input', debounce(filterInventory, 300));
+        // Permitir buscar con ENTER en el campo de código
+        document.getElementById('searchCode').addEventListener('keydown', e => {
+            if (e.key === 'Enter') filterInventory();
+        });
 
         loadInventory();
-
-        function debounce(func, delay) {
-            let timer;
-            return function () {
-                clearTimeout(timer);
-                timer = setTimeout(() => func.apply(this, arguments), delay);
-            };
-        }
     </script>
 </body>
 </html>
