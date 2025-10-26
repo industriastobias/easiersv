@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Inventario</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400 ;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
         :root {
             --bg: #f5f7fa;
             --text: #1f2937;
@@ -26,11 +26,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            font-size: 16px; /* ← base más grande */
+            font-size: 16px;
         }
 
         h1 {
-            font-size: 1.8rem; /* ← un poco más grande */
+            font-size: 1.8rem;
             font-weight: 700;
             text-align: center;
             margin: .8rem 0 .6rem;
@@ -38,13 +38,12 @@
             text-transform: uppercase;
         }
 
-        /* ======  CONTENEDOR 98 % × 96 %  ====== */
         .container {
             width: 98vw;
             height: 96vh;
             background: var(--white);
             border: 1px solid var(--border);
-            padding: 1.2rem; /* ← algo más de aire interno */
+            padding: 1.2rem;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
             display: flex;
@@ -114,7 +113,6 @@
 <body>
     <h1>Gestión de Inventario</h1>
 
-    <!-- 98 % × 96 % de la pantalla -->
     <div class="container">
         <div class="search-block">
             <div>
@@ -138,7 +136,7 @@
                 <label for="searchCode">Buscar por código:</label>
                 <input type="text" id="searchCode">
             </div>
-            <button class="stamp" onclick="openSoldModal()">Registrar Venta</button>
+            <button class="stamp" onclick="filterInventory()">Buscar</button>
         </div>
 
         <div style="display:flex; gap:.6rem; align-items:center; flex-wrap: wrap;">
@@ -187,7 +185,7 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentSoldIndex = -1;
@@ -266,6 +264,9 @@
 
             document.getElementById('soldQuantity').value = '';
             document.getElementById('soldPrice').value = '';
+
+            // REDIRIGIR A Venta.html
+            window.location.href = 'Venta.html';
         }
 
         function filterInventory() {
