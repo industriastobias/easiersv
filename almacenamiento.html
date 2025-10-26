@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Inventario</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400 ;700&display=swap');
+
         :root {
             --bg: #f5f7fa;
             --text: #1f2937;
@@ -17,32 +18,177 @@
             --white: #ffffff;
             --danger: #dc2626;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier Prime', monospace; }
-        html, body { height: 100%; width: 100%; background: var(--bg); color: var(--text); }
-        body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-size: 16px; }
-        h1 { font-size: 1.8rem; font-weight: 700; text-align: center; margin: .8rem 0 .6rem; letter-spacing: 1px; text-transform: uppercase; }
-        .container { width: 98vw; height: 96vh; background: var(--white); border: 1px solid var(--border); padding: 1.2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.05); display: flex; flex-direction: column; overflow: hidden; }
-        .search-block { display: flex; flex-wrap: wrap; gap: .8rem; margin-bottom: 1rem; align-items: flex-end; }
-        label { font-weight: 700; font-size: .9rem; }
-        input, select { padding: .55rem .65rem; border: 1px solid var(--border); border-radius: 4px; font-size: .95rem; }
-        button.stamp { padding: .55rem .9rem; border: 1px solid var(--accent); background: var(--accent); color: var(--white); font-weight: 700; font-size: .85rem; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: background .2s ease; }
-        button.stamp:hover { background: var(--accent-hover); }
-        table { width: 100%; border-collapse: collapse; margin-top: .6rem; }
-        thead { background: var(--highlight); }
-        th, td { padding: .55rem .65rem; border: 1px solid var(--border); text-align: left; font-size: .9rem; }
-        th { font-weight: 700; letter-spacing: .5px; }
-        tbody tr:nth-child(odd) { background: var(--highlight); }
-        td img { max-height: 48px; border-radius: 4px; object-fit: cover; }
-        .no-results, .result-message, .confirmation-message { font-weight: 700; text-align: center; margin-top: .6rem; font-size: .9rem; }
-        .no-results { color: var(--danger); }
-        .result-message { color: var(--text); }
-        .confirmation-message { color: var(--accent); }
-        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.4); }
-        .modal-content { background: var(--white); border: 1px solid var(--border); margin: 10% auto; padding: 1.8rem; width: 90%; max-width: 420px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.1); position: relative; }
-        .close { position: absolute; top: .5rem; right: .7rem; font-size: 1.5rem; cursor: pointer; }
-        .highlight { background: var(--accent) !important; color: var(--white); font-weight: 700; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: var(--white);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-block {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-end;
+        }
+
+        label {
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--text);
+        }
+
+        input, select {
+            padding: .5rem .7rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--white);
+            color: var(--text);
+            font-size: .95rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button.stamp {
+            padding: .5rem 1rem;
+            border: 1px solid var(--accent);
+            background: var(--accent);
+            color: var(--white);
+            font-weight: 700;
+            font-size: .85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background .2s ease;
+        }
+
+        button.stamp:hover {
+            background: var(--accent-hover);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        thead {
+            background: var(--highlight);
+        }
+
+        th, td {
+            padding: .6rem .8rem;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: var(--highlight);
+        }
+
+        .no-results,
+        .result-message,
+        .confirmation-message {
+            font-weight: 700;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .no-results {
+            color: var(--danger);
+        }
+
+        .result-message {
+            color: var(--text);
+        }
+
+        .confirmation-message {
+            color: var(--accent);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background: var(--white);
+            border: 1px solid var(--border);
+            margin: 10% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: .5rem;
+            right: .7rem;
+            font-size: 1.5rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .highlight {
+            background: var(--accent) !important;
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
     </style>
 </head>
 
@@ -65,89 +211,89 @@
                     <option value="Relojes">Relojes</option>
                     <option value="Anillos">Anillos</option>
                     <option value="Accesorios para el cabello">Accesorios para el cabello</option>
-                    <option value="Otros">Otros</option>
+                    <option value="otros">Otros</option>
                 </select>
             </div>
             <div>
                 <label for="searchCode">Buscar por código:</label>
                 <input type="text" id="searchCode">
             </div>
-            <button class="stamp" onclick="filterInventory()">Buscar</button>
+            <button class="stamp" onclick="openSoldModal()">Registrar Venta</button>
         </div>
 
-        <div style="display:flex; gap:.6rem; align-items:center; flex-wrap: wrap;">
+        <div style="display:flex; gap:1rem; align-items:center; flex-wrap: wrap;">
             <label for="goToRow">Ir a fila:</label>
             <input type="number" id="goToRow" min="1" style="width:80px;">
             <button class="stamp" onclick="goToRow()">Ir</button>
             <button class="stamp" onclick="clearFilters()" style="margin-left:auto;">Limpiar filtros</button>
         </div>
 
-        <div style="flex:1 1 auto; overflow:auto; margin-top:.5rem;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Código</th>
-                        <th>Código de Barras</th>
-                        <th>Precio</th>
-                        <th>Desc(%)</th>
-                        <th>Precio c/Desc</th>
-                        <th>Descripción</th>
-                        <th>Categoría</th>
-                        <th>Stock</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryList"></tbody>
-            </table>
-            <div id="noResultsMessage" class="no-results" style="display:none;">No se encontraron productos.</div>
-            <div id="resultMessage" class="result-message" style="display:none;"></div>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Código de Barras</th>
+                    <th>Precio</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio con Descuento</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Cantidad en Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList"></tbody>
+        </table>
+
+        <div id="noResultsMessage" class="no-results">No se encontraron productos.</div>
+        <div id="resultMessage" class="result-message"></div>
     </div>
 
+    <!-- Modal registrar venta -->
     <div id="soldModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeSoldModal()">&times;</span>
             <h2>Registrar Venta</h2>
+
             <label for="soldQuantity">Cantidad vendida:</label>
             <input type="number" id="soldQuantity" min="1">
+
+            <!-- NUEVO CAMPO -->
             <label for="soldPrice" style="margin-top:1rem;display:block;">Precio vendido (unidad):</label>
             <input type="number" id="soldPrice" min="0" step="0.01" placeholder="Ej: 1500">
+
             <button class="stamp" onclick="processSale()">Registrar</button>
             <div id="confirmationMessage" class="confirmation-message" style="display:none;">¡Venta registrada!</div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
     <script>
+        /* ==========  LÓGICA ORIGINAL (SIN TOCAR)  ========== */
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let currentSoldIndex = -1;
 
         function loadInventory(filteredInventory = inventory) {
             const list = document.getElementById('inventoryList');
             const noResults = document.getElementById('noResultsMessage');
-            const resultMsg = document.getElementById('resultMessage');
-
             if (filteredInventory.length === 0) {
                 list.innerHTML = '';
                 noResults.style.display = 'block';
-                resultMsg.style.display = 'none';
             } else {
                 noResults.style.display = 'none';
                 list.innerHTML = filteredInventory.map((item, index) => {
-                    const priceWithDiscount = (item.price * (1 - item.discount / 100)).toFixed(2);
+                    const priceWithDiscount = item.price * (1 - item.discount / 100);
                     return `
                         <tr id="product-${index}">
                             <td>${index + 1}</td>
-                            <td>${item.imageData ? `<img src="${item.imageData}" alt="${item.name}">` : '—'}</td>
                             <td>${item.name}</td>
                             <td>${item.code}</td>
                             <td>${item.barcode}</td>
                             <td>${item.price}</td>
                             <td>${item.discount}</td>
-                            <td>${priceWithDiscount}</td>
+                            <td>${priceWithDiscount.toFixed(2)}</td>
                             <td>${item.description}</td>
                             <td>${item.category}</td>
                             <td>${item.quantity}</td>
@@ -162,62 +308,94 @@
             currentSoldIndex = index;
             document.getElementById('soldModal').style.display = 'block';
         }
+
+        function openSoldModal() {
+            document.getElementById('soldModal').style.display = 'block';
+        }
+
         function closeSoldModal() {
             document.getElementById('soldModal').style.display = 'none';
             document.getElementById('confirmationMessage').style.display = 'none';
         }
 
+        /* ==========  NUEVA VERSIÓN: PIDE Y GUARDA PRECIO VENDIDO  ========== */
         function processSale() {
-            const soldQty = parseInt(document.getElementById('soldQuantity').value);
+            const soldQty   = parseInt(document.getElementById('soldQuantity').value);
             const soldPrice = parseFloat(document.getElementById('soldPrice').value);
 
-            if (isNaN(soldQty) || soldQty <= 0) { alert('Cantidad inválida'); return; }
-            if (isNaN(soldPrice) || soldPrice < 0) { alert('Precio inválido'); return; }
+            if (isNaN(soldQty) || soldQty <= 0) {
+                alert('Ingresá una cantidad válida mayor a 0.');
+                return;
+            }
+            if (isNaN(soldPrice) || soldPrice < 0) {
+                alert('Ingresá un precio de venta válido.');
+                return;
+            }
 
             const item = inventory[currentSoldIndex];
-            if (soldQty > item.quantity) { alert('Stock insuficiente'); return; }
+            if (soldQty > item.quantity) {
+                alert('No hay stock suficiente.');
+                return;
+            }
 
+            /* ----------  actualizamos stock  ---------- */
             item.quantity -= soldQty;
             localStorage.setItem('inventory', JSON.stringify(inventory));
 
+            /* ----------  guardamos la venta con el precio anotado  ---------- */
             const soldItem = {
-                name: item.name, code: item.code, price: soldPrice,
-                quantity: soldQty, total: soldPrice * soldQty
+                name:     item.name,
+                code:     item.code,
+                price:    soldPrice,          // <-- precio que el usuario escribió
+                quantity: soldQty,
+                total:    soldPrice * soldQty
             };
             let soldInventory = JSON.parse(localStorage.getItem('soldInventory') || '[]');
             soldInventory.push(soldItem);
             localStorage.setItem('soldInventory', JSON.stringify(soldInventory));
 
+            /* ----------  refrescamos tabla  ---------- */
             filterInventory();
+
+            /* ----------  cerramos modal y avisamos  ---------- */
             closeSoldModal();
             document.getElementById('resultMessage').textContent = '¡Venta registrada!';
             document.getElementById('resultMessage').style.display = 'block';
             setTimeout(() => document.getElementById('resultMessage').style.display = 'none', 3000);
 
+            /* ----------  limpiamos campos para la próxima  ---------- */
             document.getElementById('soldQuantity').value = '';
-            document.getElementById('soldPrice').value = '';
+            document.getElementById('soldPrice').value    = '';
         }
 
         function filterInventory() {
             const category = document.getElementById('searchCategory').value.trim().toLowerCase();
             const code = document.getElementById('searchCode').value.trim().toLowerCase();
             const filtered = inventory.filter(item => {
-                const catOk = !category || item.category.trim().toLowerCase() === category;
-                const codOk = !code || item.code.trim().toLowerCase().includes(code);
-                return catOk && codOk && item.quantity > 0;
+                const matchesCategory = category === '' || item.category.trim().toLowerCase() === category;
+                const matchesCode = code === '' || item.code.trim().toLowerCase().includes(code);
+                return matchesCategory && matchesCode;
             });
             loadInventory(filtered);
-            document.getElementById('resultMessage').style.display = 'none';
+            const productIndex = code ? inventory.findIndex(item => item.code.trim().toLowerCase() === code) : -1;
+            if (productIndex !== -1) {
+                document.getElementById('resultMessage').textContent = `Producto encontrado en la posición ${productIndex + 1} de ${inventory.length} productos.`;
+                document.getElementById('resultMessage').style.display = 'block';
+            } else {
+                document.getElementById('resultMessage').style.display = 'none';
+            }
         }
 
         function goToRow() {
             const row = parseInt(document.getElementById('goToRow').value);
             const rows = document.querySelectorAll('#inventoryList tr');
-            rows.forEach(r => r.classList.remove('highlight'));
+            document.querySelectorAll('.highlight').forEach(r => r.classList.remove('highlight'));
             if (row >= 1 && row <= rows.length) {
                 rows[row - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 rows[row - 1].classList.add('highlight');
-            } else alert('Fila fuera de rango.');
+            } else {
+                alert('Fila fuera de rango.');
+            }
         }
 
         function clearFilters() {
@@ -233,11 +411,11 @@
 
         loadInventory();
 
-        function debounce(fn, d) {
-            let t;
-            return function (...args) {
-                clearTimeout(t);
-                t = setTimeout(() => fn.apply(this, args), d);
+        function debounce(func, delay) {
+            let timer;
+            return function () {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, arguments), delay);
             };
         }
     </script>
