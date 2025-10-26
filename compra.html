@@ -156,8 +156,8 @@
 
         function renderTable() {
             const list = document.getElementById('inventoryList');
-            // ORDEN NORMAL: primero agregado → primero mostrado
-            list.innerHTML = inventory.map((item, idx) => `
+            // ORDEN: último agregado → primero mostrado
+            list.innerHTML = inventory.slice().reverse().map((item, idx) => `
                 <div class="card-item">
                     ${item.imageData ? `<img src="${item.imageData}" alt="${item.name}" />` : ''}
                     <h3>${item.name}</h3>
