@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SISTEMA DE DESCUENTOS</title>
   <style>
@@ -87,6 +87,25 @@
       margin-top: 10px;
       font-weight: bold;
     }
+
+    /* CAJAS DE TOTALES */
+    .summary-box {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 14px;
+      width: 200px;
+      z-index: 999;
+    }
+
+    .summary-box div {
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -123,6 +142,12 @@
   </table>
 </div>
 
+<!-- CAJAS DE TOTALES -->
+<div class="summary-box">
+  <div>Precio Total Normal: $<span id="totalNormal">0.00</span></div>
+  <div>Precio Total con Descuento: $<span id="totalDescuento">0.00</span></div>
+</div>
+
 <script>
   const tbody = document.getElementById('discountList');
   const searchInput = document.getElementById('searchInput');
@@ -147,6 +172,7 @@
       `;
       tbody.appendChild(row);
     });
+    updateTotals();
   }
 
   function updateDiscount(code, value) {
@@ -189,6 +215,23 @@
       target.scrollIntoView({ behavior: 'smooth', block: 'center' });
       lineInfo.textContent = `Producto encontrado en la línea ${line} de ${inventory.length}.`;
     }
+  }
+
+  function updateTotals() {
+    let totalNormal = 0;
+    let totalDescuento = 0;
+
+    inventory.forEach(item => {
+      const precio = parseFloat(item.price) || 0;
+      const descuento = parseFloat(item.discount) || 0;
+      const precioFinal = precio - (precio * descuento / 100);
+
+      totalNormal += precio;
+      totalDescuento += precioFinal;
+    });
+
+    document.getElementById('totalNormal').textContent = totalNormal.toFixed(2);
+    document.getElementById('totalDescuento').textContent = totalDescuento.toFixed(2);
   }
 
   searchInput.addEventListener('input', () => {
@@ -234,5 +277,3 @@
 
 </body>
 </html>
-
-
