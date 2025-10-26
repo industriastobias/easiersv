@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gestión de Compras</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css " />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js "></script>
     <style>
         :root {
             --bg: #f8f9fa;
@@ -127,7 +127,7 @@
         <p id="totalAmount">$0.00</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js "></script>
     <script>
         let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
         let editIndex = -1;
@@ -280,18 +280,30 @@
                 const wb = XLSX.read(e.target.result, { type: 'binary' });
                 const sheet = wb.Sheets[wb.SheetNames[0]];
                 const json = XLSX.utils.sheet_to_json(sheet);
-                const withImages = json.map(item => {
+
+                /* --- corrección: adaptar nombres de columna --- */
+                const adapted = json.map(row => ({
+                    name        : row.name        ?? '',
+                    code        : row.code        ?? '',
+                    barcode     : row.barcode     ?? '',
+                    price       : row.price       ?? 0,
+                    discount    : row.discount    ?? 0,
+                    quantity    : row.stock       ?? 0,   // <- aquí se traduce "stock" → "quantity"
+                    description : row.description ?? '',
+                    category    : row.category    ?? ''
+                }));
+
+                /* conservar imagen si ya existía */
+                const withImages = adapted.map(item => {
                     const existing = inventory.find(p => p.code === item.code);
-                    return {
-                        ...item,
-                        imageData: existing ? existing.imageData : ''
-                    };
+                    return { ...item, imageData: existing ? existing.imageData : '' };
                 });
+
                 inventory = inventory.concat(withImages);
                 localStorage.setItem('inventory', JSON.stringify(inventory));
                 renderTable();
                 calculateTotal();
-                alert("Importación completada");
+                alert('Importación completada');
             };
             reader.readAsBinaryString(file);
         }
@@ -304,4 +316,3 @@
 
 </body>
 </html>
-
