@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Contabilidad</title>
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
-      background-color: #f4f6f9;
+      background: #f4f6f9;
       margin: 0;
       padding: 0;
     }
     header {
-      background-color: #0a9396;
+      background: #0a9396;
       color: white;
-      padding: 1rem 2rem;
       text-align: center;
+      padding: 1rem;
     }
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 2rem auto;
       background: white;
       border-radius: 12px;
@@ -32,8 +32,8 @@
     .dashboard {
       display: flex;
       justify-content: space-around;
-      text-align: center;
       margin-bottom: 2rem;
+      text-align: center;
     }
     .card {
       background: #e9ecef;
@@ -56,7 +56,10 @@
 
     .section {
       margin-top: 2rem;
+      border-top: 2px solid #ddd;
+      padding-top: 1rem;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -65,20 +68,19 @@
     th, td {
       padding: 8px;
       border-bottom: 1px solid #ccc;
-      text-align: left;
     }
     th {
-      background-color: #0a9396;
+      background: #0a9396;
       color: white;
     }
     input, select {
-      padding: 5px;
-      margin-right: 10px;
+      padding: 6px;
+      margin-right: 8px;
       border-radius: 5px;
       border: 1px solid #ccc;
     }
     button {
-      background-color: #0a9396;
+      background: #0a9396;
       color: white;
       border: none;
       border-radius: 5px;
@@ -86,7 +88,7 @@
       cursor: pointer;
     }
     button:hover {
-      background-color: #007f5f;
+      background: #007f5f;
     }
   </style>
 </head>
@@ -96,7 +98,7 @@
   </header>
 
   <div class="container">
-    <!-- Dashboard resumen -->
+    <!-- Dashboard -->
     <h2>Resumen del mes</h2>
     <div class="dashboard">
       <div class="card">
@@ -113,7 +115,7 @@
       </div>
     </div>
 
-    <!-- Sección Ingresos -->
+    <!-- INGRESOS -->
     <div class="section">
       <h2>🟢 Ingresos</h2>
       <input type="date" id="fechaIngreso">
@@ -129,7 +131,7 @@
       </table>
     </div>
 
-    <!-- Sección Gastos -->
+    <!-- GASTOS -->
     <div class="section">
       <h2>🔴 Gastos</h2>
       <input type="date" id="fechaGasto">
@@ -144,93 +146,121 @@
         <tbody></tbody>
       </table>
     </div>
+
+    <!-- PROVEEDORES -->
+    <div class="section">
+      <h2>🏢 Proveedores</h2>
+      <input type="text" id="nombreProv" placeholder="Nombre">
+      <input type="text" id="contactoProv" placeholder="Contacto">
+      <input type="text" id="servicioProv" placeholder="Servicio o Producto">
+      <button onclick="agregarProveedor()">Agregar</button>
+
+      <table id="tablaProveedores">
+        <thead>
+          <tr><th>Nombre</th><th>Contacto</th><th>Servicio</th><th>Acciones</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- CUENTAS -->
+    <div class="section">
+      <h2>💰 Cuentas por cobrar / 💸 por pagar</h2>
+      <select id="tipoCuenta">
+        <option value="cobrar">Por cobrar</option>
+        <option value="pagar">Por pagar</option>
+      </select>
+      <input type="text" id="descCuenta" placeholder="Descripción">
+      <input type="number" id="montoCuenta" placeholder="Monto">
+      <button onclick="agregarCuenta()">Agregar</button>
+
+      <table id="tablaCuentas">
+        <thead>
+          <tr><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Acciones</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 
   <script>
     let ingresos = JSON.parse(localStorage.getItem("ingresos")) || [];
     let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
+    let proveedores = JSON.parse(localStorage.getItem("proveedores")) || [];
+    let cuentas = JSON.parse(localStorage.getItem("cuentas")) || [];
 
-    function guardarDatos() {
+    function guardar() {
       localStorage.setItem("ingresos", JSON.stringify(ingresos));
       localStorage.setItem("gastos", JSON.stringify(gastos));
+      localStorage.setItem("proveedores", JSON.stringify(proveedores));
+      localStorage.setItem("cuentas", JSON.stringify(cuentas));
       actualizarDashboard();
     }
 
+    // INGRESOS
     function agregarIngreso() {
-      const fecha = document.getElementById("fechaIngreso").value;
-      const desc = document.getElementById("descIngreso").value;
-      const monto = parseFloat(document.getElementById("montoIngreso").value);
-      if (!fecha || !desc || isNaN(monto)) return alert("Completa todos los campos.");
-      ingresos.push({ fecha, desc, monto });
-      renderIngresos();
-      guardarDatos();
+      const f = fechaIngreso.value, d = descIngreso.value, m = parseFloat(montoIngreso.value);
+      if (!f || !d || isNaN(m)) return alert("Completa todos los campos.");
+      ingresos.push({ f, d, m });
+      renderIngresos(); guardar();
     }
-
-    function agregarGasto() {
-      const fecha = document.getElementById("fechaGasto").value;
-      const desc = document.getElementById("descGasto").value;
-      const monto = parseFloat(document.getElementById("montoGasto").value);
-      if (!fecha || !desc || isNaN(monto)) return alert("Completa todos los campos.");
-      gastos.push({ fecha, desc, monto });
-      renderGastos();
-      guardarDatos();
-    }
-
-    function eliminarIngreso(i) {
-      ingresos.splice(i, 1);
-      renderIngresos();
-      guardarDatos();
-    }
-
-    function eliminarGasto(i) {
-      gastos.splice(i, 1);
-      renderGastos();
-      guardarDatos();
-    }
-
+    function eliminarIngreso(i){ ingresos.splice(i,1); renderIngresos(); guardar(); }
     function renderIngresos() {
-      const tbody = document.querySelector("#tablaIngresos tbody");
-      tbody.innerHTML = "";
-      ingresos.forEach((ing, i) => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${ing.fecha}</td>
-            <td>${ing.desc}</td>
-            <td>$${ing.monto.toFixed(2)}</td>
-            <td><button onclick="eliminarIngreso(${i})">🗑️</button></td>
-          </tr>`;
-      });
+      let html = ""; ingresos.forEach((x,i)=> html+=`<tr><td>${x.f}</td><td>${x.d}</td><td>$${x.m.toFixed(2)}</td><td><button onclick="eliminarIngreso(${i})">🗑️</button></td></tr>`);
+      tablaIngresos.querySelector("tbody").innerHTML = html;
       actualizarDashboard();
     }
 
+    // GASTOS
+    function agregarGasto() {
+      const f = fechaGasto.value, d = descGasto.value, m = parseFloat(montoGasto.value);
+      if (!f || !d || isNaN(m)) return alert("Completa todos los campos.");
+      gastos.push({ f, d, m });
+      renderGastos(); guardar();
+    }
+    function eliminarGasto(i){ gastos.splice(i,1); renderGastos(); guardar(); }
     function renderGastos() {
-      const tbody = document.querySelector("#tablaGastos tbody");
-      tbody.innerHTML = "";
-      gastos.forEach((gas, i) => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${gas.fecha}</td>
-            <td>${gas.desc}</td>
-            <td>$${gas.monto.toFixed(2)}</td>
-            <td><button onclick="eliminarGasto(${i})">🗑️</button></td>
-          </tr>`;
-      });
+      let html = ""; gastos.forEach((x,i)=> html+=`<tr><td>${x.f}</td><td>${x.d}</td><td>$${x.m.toFixed(2)}</td><td><button onclick="eliminarGasto(${i})">🗑️</button></td></tr>`);
+      tablaGastos.querySelector("tbody").innerHTML = html;
       actualizarDashboard();
     }
 
-    function actualizarDashboard() {
-      const totalIngresos = ingresos.reduce((acc, i) => acc + i.monto, 0);
-      const totalGastos = gastos.reduce((acc, g) => acc + g.monto, 0);
-      const saldo = totalIngresos - totalGastos;
-
-      document.getElementById("totalIngresos").textContent = `$${totalIngresos.toFixed(2)}`;
-      document.getElementById("totalGastos").textContent = `$${totalGastos.toFixed(2)}`;
-      document.getElementById("saldoNeto").textContent = `$${saldo.toFixed(2)}`;
+    // PROVEEDORES
+    function agregarProveedor() {
+      const n=nombreProv.value,c=contactoProv.value,s=servicioProv.value;
+      if(!n||!c||!s)return alert("Completa todos los campos.");
+      proveedores.push({n,c,s}); renderProveedores(); guardar();
+    }
+    function eliminarProveedor(i){ proveedores.splice(i,1); renderProveedores(); guardar(); }
+    function renderProveedores(){
+      let html=""; proveedores.forEach((p,i)=> html+=`<tr><td>${p.n}</td><td>${p.c}</td><td>${p.s}</td><td><button onclick="eliminarProveedor(${i})">🗑️</button></td></tr>`);
+      tablaProveedores.querySelector("tbody").innerHTML=html;
     }
 
-    // Cargar datos guardados
-    renderIngresos();
-    renderGastos();
+    // CUENTAS
+    function agregarCuenta(){
+      const t=tipoCuenta.value,d=descCuenta.value,m=parseFloat(montoCuenta.value);
+      if(!d||isNaN(m))return alert("Completa todos los campos.");
+      cuentas.push({t,d,m}); renderCuentas(); guardar();
+    }
+    function eliminarCuenta(i){ cuentas.splice(i,1); renderCuentas(); guardar(); }
+    function renderCuentas(){
+      let html=""; cuentas.forEach((c,i)=> html+=`<tr><td>${c.t=="cobrar"?"💰 Cobrar":"💸 Pagar"}</td><td>${c.d}</td><td>$${c.m.toFixed(2)}</td><td><button onclick="eliminarCuenta(${i})">🗑️</button></td></tr>`);
+      tablaCuentas.querySelector("tbody").innerHTML=html;
+    }
+
+    // DASHBOARD
+    function actualizarDashboard(){
+      const totalI=ingresos.reduce((a,b)=>a+b.m,0);
+      const totalG=gastos.reduce((a,b)=>a+b.m,0);
+      const saldo=totalI-totalG;
+      totalIngresos.textContent=`$${totalI.toFixed(2)}`;
+      totalGastos.textContent=`$${totalG.toFixed(2)}`;
+      saldoNeto.textContent=`$${saldo.toFixed(2)}`;
+    }
+
+    // Cargar al inicio
+    renderIngresos(); renderGastos(); renderProveedores(); renderCuentas();
   </script>
 </body>
 </html>
