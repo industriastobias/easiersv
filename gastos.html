@@ -1,114 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gastos</title>
-
-  <script>
-    // Mantener el tema
-    (function(){
-      const tema = localStorage.getItem("tema");
-      if (tema === "dark") document.documentElement.setAttribute("data-theme", "dark");
-    })();
-  </script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Gastos</title>
   <style>
-    :root {
-      --bg: #ffffff;
-      --text: #222222;
-      --line: #dddddd;
-      --accent: #007bff;
-      --table-header: #f3f3f3;
-    }
-
-    [data-theme="dark"] {
-      --bg: #0f0f0f;
-      --text: #f5f5f5;
-      --line: #333333;
-      --accent: #4da3ff;
-      --table-header: #1a1a1a;
-    }
-
-    * {
-      box-sizing: border-box;
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      transition: background .3s, color .3s;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      padding: 2rem;
-      gap: 1rem;
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    h1 {
-      font-size: 1.6rem;
+      background-color: #007bff;
+      color: #fff;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.5rem;
       font-weight: 600;
+      letter-spacing: 1px;
     }
 
-    .toggle {
-      background: none;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      width: 2.2rem;
-      height: 2.2rem;
-      cursor: pointer;
-      color: var(--text);
-      font-size: 1.1rem;
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .input-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      align-items: center;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.2rem;
     }
 
-    input, select {
-      padding: 0.7rem 1rem;
-      border: 1px solid var(--line);
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #007bff;
       outline: none;
-      transition: border .2s;
+      box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
     }
 
-    input:focus, select:focus {
-      border-color: var(--accent);
-    }
-
-    button.agregar {
-      grid-column: 1 / -1;
-      padding: 0.9rem;
+    button {
+      background-color: #007bff;
+      color: white;
       border: none;
-      border-radius: 6px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 1rem;
+      font-weight: bold;
       cursor: pointer;
-      transition: opacity .3s;
     }
 
-    button.agregar:hover {
-      opacity: 0.85;
+    button:hover {
+      background-color: #0056b3;
     }
 
     table {
@@ -118,186 +73,163 @@
     }
 
     th, td {
-      padding: 0.75rem 0.5rem;
-      border: 1px solid var(--line);
+      border: 1px solid #ccc;
+      padding: 8px;
       text-align: left;
-      font-size: 0.95rem;
     }
 
     th {
-      background: var(--table-header);
+      background-color: #e9eef6;
       font-weight: 600;
+      text-transform: uppercase;
+      font-size: 13px;
     }
 
-    tr:hover td {
-      background: rgba(0,0,0,0.04);
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
     }
 
-    button.delete {
-      background: none;
-      border: none;
-      color: var(--accent);
-      font-size: 1.1rem;
-      cursor: pointer;
+    tr:hover {
+      background-color: #f1f6ff;
     }
 
-    .total {
-      text-align: right;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-top: 1rem;
-      color: var(--accent);
+    .acciones button {
+      margin-right: 4px;
+      padding: 5px 8px;
+      font-size: 12px;
+      border-radius: 4px;
     }
+
+    .acciones .editar {
+      background-color: #ffc107;
+      color: #fff;
+    }
+
+    .acciones .eliminar {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .acciones .editar:hover { background-color: #e0a800; }
+    .acciones .eliminar:hover { background-color: #c82333; }
+
   </style>
 </head>
 <body>
+  <header>Registro de Gastos</header>
 
-<header>
-  <h1>Control de Gastos</h1>
-  <button class="toggle" onclick="toggleTheme()">☀️</button>
-</header>
+  <div class="container">
+    <div class="input-row">
+      <input type="date" id="fecha" />
+      <input type="text" id="proveedor" placeholder="Proveedor" />
+      <input type="text" id="categoria" placeholder="Categoría" />
+      <input type="text" id="descripcion" placeholder="Descripción" />
+      <input type="number" id="monto" placeholder="Monto $" step="0.01" />
+      <input type="text" id="metodo" placeholder="Método de Pago" />
+      <input type="text" id="comprobante" placeholder="N° de Comprobante" />
+      <input type="text" id="responsable" placeholder="Responsable" />
+      <input type="text" id="observaciones" placeholder="Observaciones" />
+    </div>
+    <button onclick="agregarGasto()">Agregar Gasto</button>
 
-<div class="input-row">
-  <input type="date" id="fecha" />
-  <input type="text" id="proveedor" placeholder="Proveedor" />
-  <select id="categoria">
-    <option value="">Categoría</option>
-    <option>Alimentos</option>
-    <option>Transporte</option>
-    <option>Servicios</option>
-    <option>Oficina</option>
-    <option>Otros</option>
-  </select>
-  <input type="text" id="descripcion" placeholder="Descripción" />
-  <input type="number" id="monto" placeholder="Monto ($)" step="0.01" />
-  <input type="text" id="metodo" placeholder="Método de pago" />
-  <input type="text" id="comprobante" placeholder="Comprobante (URL o nombre)" />
-  <input type="text" id="responsable" placeholder="Responsable" />
-  <input type="text" id="observaciones" placeholder="Observaciones" />
-  <button class="agregar" onclick="agregarGasto()">+ Agregar gasto</button>
-</div>
+    <table id="tablaGastos">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Proveedor</th>
+          <th>Categoría</th>
+          <th>Descripción</th>
+          <th>Monto ($)</th>
+          <th>Método</th>
+          <th>Comprobante</th>
+          <th>Responsable</th>
+          <th>Observaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<table id="tabla">
-  <thead>
-    <tr>
-      <th>Fecha</th>
-      <th>Proveedor</th>
-      <th>Categoría</th>
-      <th>Descripción</th>
-      <th>Monto ($)</th>
-      <th>Método</th>
-      <th>Comprobante</th>
-      <th>Responsable</th>
-      <th>Observaciones</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody id="tabla-body"></tbody>
-</table>
+  <script>
+    let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
-<div class="total" id="total">Total: $0.00</div>
-
-<script>
-  let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-
-  function toggleTheme() {
-    const html = document.documentElement;
-    const actual = html.getAttribute("data-theme");
-    const nuevo = actual === "dark" ? "light" : "dark";
-    html.setAttribute("data-theme", nuevo);
-    localStorage.setItem("tema", nuevo);
-  }
-
-  function agregarGasto() {
-    const montoValor = parseFloat(document.getElementById("monto").value);
-    if (isNaN(montoValor) || montoValor <= 0) {
-      alert("Por favor ingresa un monto válido mayor a 0.");
-      return;
+    function render() {
+      const tbody = document.querySelector("#tablaGastos tbody");
+      tbody.innerHTML = "";
+      gastos.forEach((g, index) => {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${g.fecha}</td>
+          <td>${g.proveedor}</td>
+          <td>${g.categoria}</td>
+          <td>${g.descripcion}</td>
+          <td>${g.monto.toFixed(2)}</td>
+          <td>${g.metodo}</td>
+          <td>${g.comprobante}</td>
+          <td>${g.responsable}</td>
+          <td>${g.observaciones}</td>
+          <td class="acciones">
+            <button class="editar" onclick="editarGasto(${index})">Editar</button>
+            <button class="eliminar" onclick="eliminarGasto(${index})">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(fila);
+      });
     }
 
-    const gasto = {
-      fecha: document.getElementById("fecha").value,
-      proveedor: document.getElementById("proveedor").value.trim(),
-      categoria: document.getElementById("categoria").value,
-      descripcion: document.getElementById("descripcion").value.trim(),
-      monto: montoValor,
-      metodo: document.getElementById("metodo").value.trim(),
-      comprobante: document.getElementById("comprobante").value.trim(),
-      responsable: document.getElementById("responsable").value.trim(),
-      observaciones: document.getElementById("observaciones").value.trim()
-    };
+    function agregarGasto() {
+      const montoValor = parseFloat(document.getElementById("monto").value);
+      if (isNaN(montoValor) || montoValor <= 0) {
+        alert("Por favor ingresa un monto válido mayor a 0.");
+        return;
+      }
 
-    if (!gasto.fecha || !gasto.proveedor || !gasto.categoria || !gasto.descripcion || !gasto.metodo) {
-      alert("Completa los campos obligatorios: Fecha, Proveedor, Categoría, Descripción y Método.");
-      return;
+      const nuevoGasto = {
+        fecha: document.getElementById("fecha").value,
+        proveedor: document.getElementById("proveedor").value,
+        categoria: document.getElementById("categoria").value,
+        descripcion: document.getElementById("descripcion").value,
+        monto: montoValor,
+        metodo: document.getElementById("metodo").value,
+        comprobante: document.getElementById("comprobante").value,
+        responsable: document.getElementById("responsable").value,
+        observaciones: document.getElementById("observaciones").value
+      };
+
+      gastos.push(nuevoGasto);
+      localStorage.setItem("gastos", JSON.stringify(gastos));
+      limpiarCampos();
+      render();
     }
 
-    gastos.push(gasto);
-    guardarYRender();
-
-    document.querySelectorAll(".input-row input, .input-row select").forEach(el => el.value = "");
-  }
-
-  function eliminarGasto(index) {
-    if (confirm("¿Eliminar este gasto?")) {
-      gastos.splice(index, 1);
-      guardarYRender();
-    }
-  }
-
-  function editarGasto(index, campo) {
-    const valorActual = gastos[index][campo];
-    const nuevoValor = prompt(`Editar ${campo}:`, valorActual);
-    if (nuevoValor === null || nuevoValor.trim() === "") return;
-
-    if (campo === "monto") {
-      const num = parseFloat(nuevoValor);
-      if (isNaN(num)) return;
-      gastos[index][campo] = num;
-    } else {
-      gastos[index][campo] = nuevoValor.trim();
+    function limpiarCampos() {
+      document.querySelectorAll("input").forEach(i => i.value = "");
     }
 
-    guardarYRender();
-  }
+    function eliminarGasto(i) {
+      if (confirm("¿Seguro que deseas eliminar este gasto?")) {
+        gastos.splice(i, 1);
+        localStorage.setItem("gastos", JSON.stringify(gastos));
+        render();
+      }
+    }
 
-  function guardarYRender() {
-    localStorage.setItem("gastos", JSON.stringify(gastos));
+    function editarGasto(i) {
+      const g = gastos[i];
+      document.getElementById("fecha").value = g.fecha;
+      document.getElementById("proveedor").value = g.proveedor;
+      document.getElementById("categoria").value = g.categoria;
+      document.getElementById("descripcion").value = g.descripcion;
+      document.getElementById("monto").value = g.monto;
+      document.getElementById("metodo").value = g.metodo;
+      document.getElementById("comprobante").value = g.comprobante;
+      document.getElementById("responsable").value = g.responsable;
+      document.getElementById("observaciones").value = g.observaciones;
+      eliminarGasto(i);
+    }
+
     render();
-  }
-
-  function render() {
-    const tbody = document.getElementById("tabla-body");
-    tbody.innerHTML = "";
-    let total = 0;
-
-    gastos.forEach((g, i) => {
-      total += Number(g.monto) || 0;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td onclick="editarGasto(${i}, 'fecha')">${g.fecha}</td>
-        <td onclick="editarGasto(${i}, 'proveedor')">${g.proveedor}</td>
-        <td onclick="editarGasto(${i}, 'categoria')">${g.categoria}</td>
-        <td onclick="editarGasto(${i}, 'descripcion')">${g.descripcion}</td>
-        <td onclick="editarGasto(${i}, 'monto')">$${g.monto.toFixed(2)}</td>
-        <td onclick="editarGasto(${i}, 'metodo')">${g.metodo}</td>
-        <td onclick="editarGasto(${i}, 'comprobante')">${g.comprobante}</td>
-        <td onclick="editarGasto(${i}, 'responsable')">${g.responsable}</td>
-        <td onclick="editarGasto(${i}, 'observaciones')">${g.observaciones}</td>
-        <td><button class="delete" onclick="eliminarGasto(${i})">🗑️</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById("total").textContent = `Total: $${total.toFixed(2)}`;
-  }
-
-  document.addEventListener("keydown", e => {
-    if (e.key === "Enter") agregarGasto();
-  });
-
-  render();
-</script>
-
+  </script>
 </body>
 </html>
