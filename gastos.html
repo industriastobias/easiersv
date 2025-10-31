@@ -3,134 +3,160 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Gastos</title>
+  <title>Panel de Gastos</title>
   <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #f3f4f6;
+      --text: #111827;
+      --white: #fff;
+      --border: #e5e7eb;
+      --hover: #e0e7ff;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f5f7fa;
-      color: #333;
+      font-family: "Inter", sans-serif;
+      background-color: #f9fafb;
       margin: 0;
-      padding: 0;
+      color: var(--text);
     }
 
     header {
-      background-color: #007bff;
-      color: #fff;
+      background-color: var(--white);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
       padding: 1rem 2rem;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
       font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 1px;
+      color: var(--primary);
+      margin: 0;
+      font-weight: 700;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 2rem auto;
-      background: white;
-      padding: 2rem;
+      background-color: var(--white);
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
     }
 
-    .input-row {
+    .input-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-bottom: 1.2rem;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 1rem;
     }
 
-    input, select, textarea, button {
-      width: 100%;
+    input, select, textarea {
       padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      background-color: var(--secondary);
       transition: all 0.2s ease;
     }
 
-    input:focus, textarea:focus, select:focus {
-      border-color: #007bff;
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background-color: var(--white);
       outline: none;
-      box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
     }
 
     button {
-      background-color: #007bff;
-      color: white;
+      background-color: var(--primary);
+      color: var(--white);
       border: none;
-      font-weight: bold;
+      border-radius: 8px;
+      padding: 10px 16px;
       cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background-color 0.2s;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #1d4ed8;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
     th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
+      border-bottom: 1px solid var(--border);
       text-align: left;
+      padding: 10px;
+      font-size: 14px;
     }
 
     th {
-      background-color: #e9eef6;
+      background-color: var(--secondary);
       font-weight: 600;
       text-transform: uppercase;
       font-size: 13px;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
+      color: #374151;
     }
 
     tr:hover {
-      background-color: #f1f6ff;
+      background-color: var(--hover);
     }
 
     .acciones button {
-      margin-right: 4px;
+      margin-right: 5px;
       padding: 5px 8px;
       font-size: 12px;
-      border-radius: 4px;
+      border-radius: 6px;
     }
 
-    .acciones .editar {
-      background-color: #ffc107;
-      color: #fff;
+    .editar {
+      background-color: #f59e0b;
+      color: white;
     }
 
-    .acciones .eliminar {
-      background-color: #dc3545;
-      color: #fff;
+    .eliminar {
+      background-color: #ef4444;
+      color: white;
     }
 
-    .acciones .editar:hover { background-color: #e0a800; }
-    .acciones .eliminar:hover { background-color: #c82333; }
+    .editar:hover { background-color: #d97706; }
+    .eliminar:hover { background-color: #dc2626; }
 
   </style>
 </head>
 <body>
-  <header>Registro de Gastos</header>
+  <header>
+    <h1>Gestión de Gastos</h1>
+    <button onclick="limpiarCampos()">Nuevo Registro</button>
+  </header>
 
   <div class="container">
-    <div class="input-row">
+    <div class="input-grid">
       <input type="date" id="fecha" />
       <input type="text" id="proveedor" placeholder="Proveedor" />
       <input type="text" id="categoria" placeholder="Categoría" />
       <input type="text" id="descripcion" placeholder="Descripción" />
       <input type="number" id="monto" placeholder="Monto $" step="0.01" />
       <input type="text" id="metodo" placeholder="Método de Pago" />
-      <input type="text" id="comprobante" placeholder="N° de Comprobante" />
+      <input type="text" id="comprobante" placeholder="N° Comprobante" />
       <input type="text" id="responsable" placeholder="Responsable" />
       <input type="text" id="observaciones" placeholder="Observaciones" />
     </div>
-    <button onclick="agregarGasto()">Agregar Gasto</button>
+
+    <button onclick="agregarGasto()">Guardar Gasto</button>
 
     <table id="tablaGastos">
       <thead>
@@ -160,15 +186,15 @@
       gastos.forEach((g, index) => {
         const fila = document.createElement("tr");
         fila.innerHTML = `
-          <td>${g.fecha}</td>
-          <td>${g.proveedor}</td>
-          <td>${g.categoria}</td>
-          <td>${g.descripcion}</td>
-          <td>${g.monto.toFixed(2)}</td>
-          <td>${g.metodo}</td>
-          <td>${g.comprobante}</td>
-          <td>${g.responsable}</td>
-          <td>${g.observaciones}</td>
+          <td>${g.fecha || ""}</td>
+          <td>${g.proveedor || ""}</td>
+          <td>${g.categoria || ""}</td>
+          <td>${g.descripcion || ""}</td>
+          <td>${g.monto ? g.monto.toFixed(2) : ""}</td>
+          <td>${g.metodo || ""}</td>
+          <td>${g.comprobante || ""}</td>
+          <td>${g.responsable || ""}</td>
+          <td>${g.observaciones || ""}</td>
           <td class="acciones">
             <button class="editar" onclick="editarGasto(${index})">Editar</button>
             <button class="eliminar" onclick="eliminarGasto(${index})">Eliminar</button>
@@ -179,18 +205,12 @@
     }
 
     function agregarGasto() {
-      const montoValor = parseFloat(document.getElementById("monto").value);
-      if (isNaN(montoValor) || montoValor <= 0) {
-        alert("Por favor ingresa un monto válido mayor a 0.");
-        return;
-      }
-
       const nuevoGasto = {
         fecha: document.getElementById("fecha").value,
         proveedor: document.getElementById("proveedor").value,
         categoria: document.getElementById("categoria").value,
         descripcion: document.getElementById("descripcion").value,
-        monto: montoValor,
+        monto: parseFloat(document.getElementById("monto").value) || 0,
         metodo: document.getElementById("metodo").value,
         comprobante: document.getElementById("comprobante").value,
         responsable: document.getElementById("responsable").value,
@@ -205,6 +225,7 @@
 
     function limpiarCampos() {
       document.querySelectorAll("input").forEach(i => i.value = "");
+      document.getElementById("fecha").focus();
     }
 
     function eliminarGasto(i) {
