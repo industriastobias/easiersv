@@ -1,266 +1,241 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Contabilidad</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista Contable</title>
   <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 0;
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f5f6fa; margin: 0; padding: 0; color: #333; }
+    header { background: #2f3640; color: white; padding: 15px; text-align: center; font-size: 1.5em; }
+    nav { display: flex; justify-content: center; background: #353b48; }
+    nav button {
+      background: none; border: none; color: #dcdde1; padding: 14px 20px;
+      cursor: pointer; font-size: 1em; transition: 0.3s;
     }
-    header {
-      background: #0a9396;
-      color: white;
-      text-align: center;
-      padding: 1rem;
+    nav button:hover, nav button.active { background: #718093; color: white; }
+    section { display: none; padding: 20px; }
+    section.active { display: block; }
+
+    .container { max-width: 1000px; margin: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #40739e; color: white; }
+    tr:hover { background: #f1f2f6; }
+
+    form { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+    form input, form select, form textarea {
+      padding: 8px; border: 1px solid #ccc; border-radius: 5px;
     }
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 2rem;
+    form button {
+      grid-column: span 2;
+      background: #44bd32; color: white; border: none; padding: 10px;
+      border-radius: 5px; cursor: pointer; transition: 0.3s;
     }
-    h2 {
-      color: #005f73;
-      margin-bottom: 0.5rem;
-    }
-    .dashboard {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 2rem;
-      text-align: center;
+    form button:hover { background: #4cd137; }
+
+    .summary {
+      display: flex; gap: 15px; justify-content: space-around;
+      flex-wrap: wrap; margin-top: 20px;
     }
     .card {
-      background: #e9ecef;
-      border-radius: 10px;
-      padding: 1rem 2rem;
-      flex: 1;
-      margin: 0 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex: 1; min-width: 220px; padding: 20px; text-align: center;
     }
-    .card h3 {
-      margin-bottom: 0.5rem;
-    }
-    .card p {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .income { color: #007f5f; }
-    .expense { color: #d62828; }
-    .balance { color: #023e8a; }
-
-    .section {
-      margin-top: 2rem;
-      border-top: 2px solid #ddd;
-      padding-top: 1rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      padding: 8px;
-      border-bottom: 1px solid #ccc;
-    }
-    th {
-      background: #0a9396;
-      color: white;
-    }
-    input, select {
-      padding: 6px;
-      margin-right: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #0a9396;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 6px 12px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #007f5f;
-    }
+    .card h2 { margin: 5px 0; }
+    .ingreso { color: #44bd32; }
+    .gasto { color: #e84118; }
+    .balance { color: #273c75; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>📊 Panel de Contabilidad</h1>
-  </header>
+  <header>📘 Sistema Contable - Lista Única</header>
+  <nav>
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="ingresos">Ingresos</button>
+    <button class="tab" data-tab="gastos">Gastos</button>
+    <button class="tab" data-tab="proveedores">Proveedores</button>
+    <button class="tab" data-tab="cuentas">Cuentas Pendientes</button>
+  </nav>
 
   <div class="container">
-    <!-- Dashboard -->
-    <h2>Resumen del mes</h2>
-    <div class="dashboard">
-      <div class="card">
-        <h3>Total Ingresos</h3>
-        <p id="totalIngresos" class="income">$0.00</p>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="active">
+      <h2>Resumen General</h2>
+      <div class="summary">
+        <div class="card"><h4>Total Ingresos</h4><h2 id="totalIngresos" class="ingreso">$0.00</h2></div>
+        <div class="card"><h4>Total Gastos</h4><h2 id="totalGastos" class="gasto">$0.00</h2></div>
+        <div class="card"><h4>Balance Neto</h4><h2 id="balance" class="balance">$0.00</h2></div>
       </div>
-      <div class="card">
-        <h3>Total Gastos</h3>
-        <p id="totalGastos" class="expense">$0.00</p>
-      </div>
-      <div class="card">
-        <h3>Saldo Neto</h3>
-        <p id="saldoNeto" class="balance">$0.00</p>
-      </div>
-    </div>
+    </section>
 
     <!-- INGRESOS -->
-    <div class="section">
-      <h2>🟢 Ingresos</h2>
-      <input type="date" id="fechaIngreso">
-      <input type="text" id="descIngreso" placeholder="Descripción">
-      <input type="number" id="montoIngreso" placeholder="Monto">
-      <button onclick="agregarIngreso()">Agregar</button>
-
+    <section id="ingresos">
+      <h2>Registro de Ingresos</h2>
+      <form id="formIngreso">
+        <input type="date" name="fecha" required />
+        <input type="text" name="descripcion" placeholder="Descripción" required />
+        <input type="text" name="categoria" placeholder="Categoría" required />
+        <input type="number" step="0.01" name="monto" placeholder="Monto" required />
+        <select name="metodo_pago">
+          <option>Efectivo</option>
+          <option>Transferencia</option>
+          <option>Tarjeta</option>
+        </select>
+        <input type="text" name="responsable" placeholder="Responsable" />
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Agregar Ingreso</button>
+      </form>
       <table id="tablaIngresos">
         <thead>
-          <tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Acciones</th></tr>
+          <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Método</th><th>Responsable</th><th>Obs.</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-    </div>
+    </section>
 
     <!-- GASTOS -->
-    <div class="section">
-      <h2>🔴 Gastos</h2>
-      <input type="date" id="fechaGasto">
-      <input type="text" id="descGasto" placeholder="Descripción">
-      <input type="number" id="montoGasto" placeholder="Monto">
-      <button onclick="agregarGasto()">Agregar</button>
-
+    <section id="gastos">
+      <h2>Registro de Gastos</h2>
+      <form id="formGasto">
+        <input type="date" name="fecha" required />
+        <input type="text" name="proveedor" placeholder="Proveedor" required />
+        <input type="text" name="categoria" placeholder="Categoría" required />
+        <input type="text" name="descripcion" placeholder="Descripción" />
+        <input type="number" step="0.01" name="monto" placeholder="Monto" required />
+        <select name="metodo_pago">
+          <option>Efectivo</option>
+          <option>Transferencia</option>
+          <option>Tarjeta</option>
+        </select>
+        <input type="text" name="responsable" placeholder="Responsable" />
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Agregar Gasto</button>
+      </form>
       <table id="tablaGastos">
         <thead>
-          <tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Acciones</th></tr>
+          <tr><th>Fecha</th><th>Proveedor</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método</th><th>Responsable</th><th>Obs.</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-    </div>
+    </section>
 
     <!-- PROVEEDORES -->
-    <div class="section">
-      <h2>🏢 Proveedores</h2>
-      <input type="text" id="nombreProv" placeholder="Nombre">
-      <input type="text" id="contactoProv" placeholder="Contacto">
-      <input type="text" id="servicioProv" placeholder="Servicio o Producto">
-      <button onclick="agregarProveedor()">Agregar</button>
-
+    <section id="proveedores">
+      <h2>Lista de Proveedores</h2>
+      <form id="formProveedor">
+        <input type="text" name="nombre" placeholder="Nombre del Proveedor" required />
+        <input type="text" name="nit" placeholder="NIT/DUI" />
+        <input type="text" name="telefono" placeholder="Teléfono" />
+        <input type="email" name="email" placeholder="Correo" />
+        <input type="text" name="direccion" placeholder="Dirección" />
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Agregar Proveedor</button>
+      </form>
       <table id="tablaProveedores">
         <thead>
-          <tr><th>Nombre</th><th>Contacto</th><th>Servicio</th><th>Acciones</th></tr>
+          <tr><th>Nombre</th><th>NIT</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Obs.</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-    </div>
+    </section>
 
     <!-- CUENTAS -->
-    <div class="section">
-      <h2>💰 Cuentas por cobrar / 💸 por pagar</h2>
-      <select id="tipoCuenta">
-        <option value="cobrar">Por cobrar</option>
-        <option value="pagar">Por pagar</option>
-      </select>
-      <input type="text" id="descCuenta" placeholder="Descripción">
-      <input type="number" id="montoCuenta" placeholder="Monto">
-      <button onclick="agregarCuenta()">Agregar</button>
-
+    <section id="cuentas">
+      <h2>Cuentas por Cobrar / Pagar</h2>
+      <form id="formCuenta">
+        <select name="tipo">
+          <option value="por cobrar">Por Cobrar</option>
+          <option value="por pagar">Por Pagar</option>
+        </select>
+        <input type="text" name="cliente_proveedor" placeholder="Cliente o Proveedor" required />
+        <input type="text" name="concepto" placeholder="Concepto" required />
+        <input type="number" step="0.01" name="monto" placeholder="Monto" required />
+        <input type="date" name="fecha_vencimiento" />
+        <select name="estado">
+          <option>Pendiente</option>
+          <option>Pagado</option>
+          <option>Vencido</option>
+        </select>
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Agregar Cuenta</button>
+      </form>
       <table id="tablaCuentas">
         <thead>
-          <tr><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Acciones</th></tr>
+          <tr><th>Tipo</th><th>Cliente/Proveedor</th><th>Concepto</th><th>Monto</th><th>Vencimiento</th><th>Estado</th><th>Obs.</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-    </div>
+    </section>
   </div>
 
   <script>
-    let ingresos = JSON.parse(localStorage.getItem("ingresos")) || [];
-    let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-    let proveedores = JSON.parse(localStorage.getItem("proveedores")) || [];
-    let cuentas = JSON.parse(localStorage.getItem("cuentas")) || [];
+    // ---- Función general para manejar tabs ----
+    const tabs = document.querySelectorAll('.tab');
+    const sections = document.querySelectorAll('section');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.getAttribute('data-tab');
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+      });
+    });
 
-    function guardar() {
-      localStorage.setItem("ingresos", JSON.stringify(ingresos));
-      localStorage.setItem("gastos", JSON.stringify(gastos));
-      localStorage.setItem("proveedores", JSON.stringify(proveedores));
-      localStorage.setItem("cuentas", JSON.stringify(cuentas));
+    // ---- LocalStorage ----
+    const data = {
+      ingresos: JSON.parse(localStorage.getItem('ingresos') || '[]'),
+      gastos: JSON.parse(localStorage.getItem('gastos') || '[]'),
+      proveedores: JSON.parse(localStorage.getItem('proveedores') || '[]'),
+      cuentas: JSON.parse(localStorage.getItem('cuentas') || '[]')
+    };
+
+    // ---- Función de guardado ----
+    const saveData = () => {
+      for (let key in data) localStorage.setItem(key, JSON.stringify(data[key]));
       actualizarDashboard();
-    }
+    };
 
-    // INGRESOS
-    function agregarIngreso() {
-      const f = fechaIngreso.value, d = descIngreso.value, m = parseFloat(montoIngreso.value);
-      if (!f || !d || isNaN(m)) return alert("Completa todos los campos.");
-      ingresos.push({ f, d, m });
-      renderIngresos(); guardar();
-    }
-    function eliminarIngreso(i){ ingresos.splice(i,1); renderIngresos(); guardar(); }
-    function renderIngresos() {
-      let html = ""; ingresos.forEach((x,i)=> html+=`<tr><td>${x.f}</td><td>${x.d}</td><td>$${x.m.toFixed(2)}</td><td><button onclick="eliminarIngreso(${i})">🗑️</button></td></tr>`);
-      tablaIngresos.querySelector("tbody").innerHTML = html;
+    // ---- Dashboard ----
+    const actualizarDashboard = () => {
+      const totalIngresos = data.ingresos.reduce((acc, i) => acc + parseFloat(i.monto), 0);
+      const totalGastos = data.gastos.reduce((acc, g) => acc + parseFloat(g.monto), 0);
+      document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toFixed(2);
+      document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
+      document.getElementById('balance').textContent = '$' + (totalIngresos - totalGastos).toFixed(2);
+    };
+
+    // ---- Render funciones ----
+    const renderTable = (id, arr, keys) => {
+      const tbody = document.querySelector(`#${id} tbody`);
+      tbody.innerHTML = arr.map(item => `<tr>${keys.map(k => `<td>${item[k] || ''}</td>`).join('')}</tr>`).join('');
       actualizarDashboard();
-    }
+    };
 
-    // GASTOS
-    function agregarGasto() {
-      const f = fechaGasto.value, d = descGasto.value, m = parseFloat(montoGasto.value);
-      if (!f || !d || isNaN(m)) return alert("Completa todos los campos.");
-      gastos.push({ f, d, m });
-      renderGastos(); guardar();
-    }
-    function eliminarGasto(i){ gastos.splice(i,1); renderGastos(); guardar(); }
-    function renderGastos() {
-      let html = ""; gastos.forEach((x,i)=> html+=`<tr><td>${x.f}</td><td>${x.d}</td><td>$${x.m.toFixed(2)}</td><td><button onclick="eliminarGasto(${i})">🗑️</button></td></tr>`);
-      tablaGastos.querySelector("tbody").innerHTML = html;
-      actualizarDashboard();
-    }
+    // ---- Formularios ----
+    const forms = [
+      { id: 'formIngreso', key: 'ingresos', table: 'tablaIngresos', fields: ['fecha','descripcion','categoria','monto','metodo_pago','responsable','observaciones'] },
+      { id: 'formGasto', key: 'gastos', table: 'tablaGastos', fields: ['fecha','proveedor','categoria','descripcion','monto','metodo_pago','responsable','observaciones'] },
+      { id: 'formProveedor', key: 'proveedores', table: 'tablaProveedores', fields: ['nombre','nit','telefono','email','direccion','observaciones'] },
+      { id: 'formCuenta', key: 'cuentas', table: 'tablaCuentas', fields: ['tipo','cliente_proveedor','concepto','monto','fecha_vencimiento','estado','observaciones'] }
+    ];
 
-    // PROVEEDORES
-    function agregarProveedor() {
-      const n=nombreProv.value,c=contactoProv.value,s=servicioProv.value;
-      if(!n||!c||!s)return alert("Completa todos los campos.");
-      proveedores.push({n,c,s}); renderProveedores(); guardar();
-    }
-    function eliminarProveedor(i){ proveedores.splice(i,1); renderProveedores(); guardar(); }
-    function renderProveedores(){
-      let html=""; proveedores.forEach((p,i)=> html+=`<tr><td>${p.n}</td><td>${p.c}</td><td>${p.s}</td><td><button onclick="eliminarProveedor(${i})">🗑️</button></td></tr>`);
-      tablaProveedores.querySelector("tbody").innerHTML=html;
-    }
+    forms.forEach(f => {
+      const form = document.getElementById(f.id);
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const item = {};
+        f.fields.forEach(k => item[k] = form[k].value);
+        data[f.key].push(item);
+        saveData();
+        renderTable(f.table, data[f.key], f.fields);
+        form.reset();
+      });
+      renderTable(f.table, data[f.key], f.fields);
+    });
 
-    // CUENTAS
-    function agregarCuenta(){
-      const t=tipoCuenta.value,d=descCuenta.value,m=parseFloat(montoCuenta.value);
-      if(!d||isNaN(m))return alert("Completa todos los campos.");
-      cuentas.push({t,d,m}); renderCuentas(); guardar();
-    }
-    function eliminarCuenta(i){ cuentas.splice(i,1); renderCuentas(); guardar(); }
-    function renderCuentas(){
-      let html=""; cuentas.forEach((c,i)=> html+=`<tr><td>${c.t=="cobrar"?"💰 Cobrar":"💸 Pagar"}</td><td>${c.d}</td><td>$${c.m.toFixed(2)}</td><td><button onclick="eliminarCuenta(${i})">🗑️</button></td></tr>`);
-      tablaCuentas.querySelector("tbody").innerHTML=html;
-    }
-
-    // DASHBOARD
-    function actualizarDashboard(){
-      const totalI=ingresos.reduce((a,b)=>a+b.m,0);
-      const totalG=gastos.reduce((a,b)=>a+b.m,0);
-      const saldo=totalI-totalG;
-      totalIngresos.textContent=`$${totalI.toFixed(2)}`;
-      totalGastos.textContent=`$${totalG.toFixed(2)}`;
-      saldoNeto.textContent=`$${saldo.toFixed(2)}`;
-    }
-
-    // Cargar al inicio
-    renderIngresos(); renderGastos(); renderProveedores(); renderCuentas();
+    actualizarDashboard();
   </script>
 </body>
 </html>
