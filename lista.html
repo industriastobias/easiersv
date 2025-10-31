@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CONTABILIDAD A FAMILY COMPANY </title>
+  <title>CONTABILIDAD A FAMILY COMPANY</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
@@ -351,22 +351,19 @@
 </div>
 
 <script>
-  // UTILIDADES
   function $(id) { return document.getElementById(id); }
+
   function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     $(id).classList.add('active');
     if (id === 'dashboard') actualizarDashboard();
   }
 
-  // LOCALSTORAGE
   function save(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
   function load(key) { return JSON.parse(localStorage.getItem(key) || '[]'); }
 
-  // VARIABLES GLOBALES
   let editing = { key: null, index: null, data: null };
 
-  // AGREGAR DATOS
   function agregarIngreso(e) {
     e.preventDefault();
     const ingreso = {
@@ -443,7 +440,6 @@
     actualizarTabla('tablaCuentas', data, ['tipo','fecha','ente','concepto','monto','vence','estado','observaciones']);
   }
 
-  // ACTUALIZAR TABLAS
   function actualizarTabla(idTable, data, cols) {
     const tbody = $(idTable).querySelector('tbody');
     tbody.innerHTML = '';
@@ -464,7 +460,6 @@
     });
   }
 
-  // ELIMINAR
   function eliminarFila(tableId, idx) {
     const key = tableId.replace('tabla', '').toLowerCase();
     const data = load(key);
@@ -474,7 +469,6 @@
     actualizarDashboard();
   }
 
-  // MODAL EDICIÓN
   function abrirModal(tableId, idx) {
     const key = tableId.replace('tabla', '').toLowerCase();
     const data = load(key);
@@ -513,7 +507,6 @@
     actualizarDashboard();
   }
 
-  // DASHBOARD
   function actualizarDashboard() {
     const ingresos = load('ingresos');
     const gastos = load('gastos');
@@ -523,23 +516,29 @@
     $('totalGastos').textContent = totalGastos.toFixed(2);
     $('saldoNeto').textContent = (totalIngresos - totalGastos).toFixed(2);
 
-    const ctx = $('chartCategorias').getContext('2d');
     const cats = {};
     gastos.forEach(g => {
       cats[g.categoria] = (cats[g.categoria] || 0) + g.monto;
     });
-    if (window.chartCats) window.chartCats.destroy();
-    window.chartCats = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: Object.keys(cats),
-        datasets: [{
-          data: Object.values(cats),
-          backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0']
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-    });
+
+    const ctx = $('chartCategorias').getContext('2d');
+    if (window.chartCats) {
+      window.chartCats.data.labels = Object.keys(cats);
+      window.chartCats.data.datasets[0].data = Object.values(cats);
+      window.chartCats.update();
+    } else {
+      window.chartCats = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(cats),
+          datasets: [{
+            data: Object.values(cats),
+            backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0']
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+    }
 
     const ultimos = []
       .concat(ingresos.map(i => ({ ...i, tipo: 'Ingreso' })))
@@ -555,7 +554,6 @@
     });
   }
 
-  // REPORTES
   function generarReporte() {
     const mes = $('reporteMes').value;
     if (!mes) return;
@@ -578,13 +576,11 @@
     });
   }
 
-  // EXPORTAR
   function exportTable(tableId, filename) {
     const wb = XLSX.utils.table_to_book($(tableId));
     XLSX.writeFile(wb, filename);
   }
 
-  // INICIALIZAR
   window.onload = () => {
     actualizarTabla('tablaIngresos', load('ingresos'), ['fecha','descripcion','categoria','monto','metodo','responsable','observaciones']);
     actualizarTabla('tablaGastos', load('gastos'), ['fecha','proveedor','categoria','descripcion','monto','metodo','comprobante','responsable','observaciones']);
@@ -596,6 +592,3 @@
 
 </body>
 </html>
-
-
-
