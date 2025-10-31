@@ -3,33 +3,203 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard de Finanzas</title>
+  <title>Panel Financiero Empresarial</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f5f6fa; }
-    header { background: #273c75; color: #fff; text-align: center; padding: 15px; }
-    nav { display: flex; background: #40739e; }
-    .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #fff; }
-    .tab.active { background: #192a56; font-weight: bold; }
-    section { display: none; padding: 20px; }
-    section.active { display: block; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #dcdde1; padding: 8px; text-align: left; }
-    th { background: #718093; color: white; }
-    button { background: #273c75; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; }
-    button:hover { background: #40739e; }
-    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 15px; background: #fff; padding: 15px; border-radius: 10px; }
-    input, select, textarea { padding: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    .acciones button { margin-right: 5px; }
-    .dashboard { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
-    .card { flex: 1; min-width: 200px; background: #fff; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    canvas { max-width: 300px; margin-top: 20px; }
+    :root {
+      --color-bg: #f4f6f8;
+      --color-primary: #1a73e8;
+      --color-secondary: #0d47a1;
+      --color-text: #2c3e50;
+      --color-card: #ffffff;
+      --radius: 12px;
+      --shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: var(--color-primary);
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: var(--shadow);
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: var(--color-primary);
+      border-bottom: 3px solid var(--color-primary);
+      background: #f9fafc;
+    }
+
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--color-card);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .card:hover { transform: translateY(-3px); }
+
+    .card h3 {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--color-secondary);
+    }
+
+    canvas {
+      display: block;
+      margin: 2rem auto;
+      max-width: 350px;
+    }
+
+    /* Formularios */
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    textarea { resize: vertical; min-height: 60px; }
+
+    button {
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--color-secondary);
+    }
+
+    /* Tablas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8f9fa;
+      color: #555;
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background: #f3f6fa;
+    }
+
+    .acciones button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 0 5px;
+    }
+
+    .acciones .editar { color: #1a73e8; }
+    .acciones .eliminar { color: #e53935; }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #999;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>📊 Dashboard de Finanzas</h1>
-  </header>
+
+  <header>📊 Panel Financiero Empresarial</header>
 
   <nav>
     <div class="tab active" data-tab="dashboard">Dashboard</div>
@@ -39,130 +209,143 @@
     <div class="tab" data-tab="cuentas">Cuentas Pendientes</div>
   </nav>
 
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="active">
-    <h2>Resumen del Mes</h2>
-    <div class="dashboard">
-      <div class="card"><h3>Total Ingresos</h3><p id="totalIngresos">$0.00</p></div>
-      <div class="card"><h3>Total Gastos</h3><p id="totalGastos">$0.00</p></div>
-      <div class="card"><h3>Saldo Neto</h3><p id="balance">$0.00</p></div>
-    </div>
-    <canvas id="chartResumen"></canvas>
-  </section>
+  <main>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="active">
+      <h2>Resumen General</h2>
+      <div class="dashboard">
+        <div class="card">
+          <h3>Total Ingresos</h3>
+          <p id="totalIngresos">$0.00</p>
+        </div>
+        <div class="card">
+          <h3>Total Gastos</h3>
+          <p id="totalGastos">$0.00</p>
+        </div>
+        <div class="card">
+          <h3>Saldo Neto</h3>
+          <p id="balance">$0.00</p>
+        </div>
+      </div>
+      <canvas id="chartResumen"></canvas>
+    </section>
 
-  <!-- INGRESOS -->
-  <section id="ingresos">
-    <h2>Ingresos</h2>
-    <form id="formIngreso">
-      <input name="fecha" type="date" required />
-      <input name="descripcion" placeholder="Descripción" required />
-      <input name="categoria" placeholder="Categoría" />
-      <input name="monto" type="number" step="0.01" placeholder="Monto" required />
-      <input name="metodo_pago" placeholder="Método de pago" />
-      <input name="responsable" placeholder="Responsable" />
-      <textarea name="observaciones" placeholder="Observaciones"></textarea>
-      <button type="submit">Guardar</button>
-    </form>
-    <table id="tablaIngresos">
-      <thead>
-        <tr>
-          <th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Método Pago</th><th>Responsable</th><th>Observaciones</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+    <!-- INGRESOS -->
+    <section id="ingresos">
+      <h2>Ingresos</h2>
+      <form id="formIngreso">
+        <input name="fecha" type="date" required />
+        <input name="descripcion" placeholder="Descripción" required />
+        <input name="categoria" placeholder="Categoría" />
+        <input name="monto" type="number" step="0.01" placeholder="Monto" required />
+        <input name="metodo_pago" placeholder="Método de pago" />
+        <input name="responsable" placeholder="Responsable" />
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Guardar</button>
+      </form>
+      <table id="tablaIngresos">
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Método Pago</th><th>Responsable</th><th>Observaciones</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-  <!-- GASTOS -->
-  <section id="gastos">
-    <h2>Gastos</h2>
-    <form id="formGasto">
-      <input name="fecha" type="date" required />
-      <input name="proveedor" placeholder="Proveedor" />
-      <input name="categoria" placeholder="Categoría" />
-      <input name="descripcion" placeholder="Descripción" />
-      <input name="monto" type="number" step="0.01" placeholder="Monto" required />
-      <input name="metodo_pago" placeholder="Método de pago" />
-      <input name="responsable" placeholder="Responsable" />
-      <textarea name="observaciones" placeholder="Observaciones"></textarea>
-      <button type="submit">Guardar</button>
-    </form>
-    <table id="tablaGastos">
-      <thead>
-        <tr>
-          <th>Fecha</th><th>Proveedor</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método Pago</th><th>Responsable</th><th>Observaciones</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+    <!-- GASTOS -->
+    <section id="gastos">
+      <h2>Gastos</h2>
+      <form id="formGasto">
+        <input name="fecha" type="date" required />
+        <input name="proveedor" placeholder="Proveedor" />
+        <input name="categoria" placeholder="Categoría" />
+        <input name="descripcion" placeholder="Descripción" />
+        <input name="monto" type="number" step="0.01" placeholder="Monto" required />
+        <input name="metodo_pago" placeholder="Método de pago" />
+        <input name="responsable" placeholder="Responsable" />
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Guardar</button>
+      </form>
+      <table id="tablaGastos">
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Proveedor</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método Pago</th><th>Responsable</th><th>Observaciones</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-  <!-- PROVEEDORES -->
-  <section id="proveedores">
-    <h2>Proveedores</h2>
-    <form id="formProveedor">
-      <input name="nombre" placeholder="Nombre" required />
-      <input name="nit" placeholder="NIT" />
-      <input name="telefono" placeholder="Teléfono" />
-      <input name="email" type="email" placeholder="Email" />
-      <input name="direccion" placeholder="Dirección" />
-      <textarea name="observaciones" placeholder="Observaciones"></textarea>
-      <button type="submit">Guardar</button>
-    </form>
-    <table id="tablaProveedores">
-      <thead>
-        <tr>
-          <th>Nombre</th><th>NIT</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Observaciones</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+    <!-- PROVEEDORES -->
+    <section id="proveedores">
+      <h2>Proveedores</h2>
+      <form id="formProveedor">
+        <input name="nombre" placeholder="Nombre" required />
+        <input name="nit" placeholder="NIT" />
+        <input name="telefono" placeholder="Teléfono" />
+        <input name="email" type="email" placeholder="Email" />
+        <input name="direccion" placeholder="Dirección" />
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Guardar</button>
+      </form>
+      <table id="tablaProveedores">
+        <thead>
+          <tr>
+            <th>Nombre</th><th>NIT</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Observaciones</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-  <!-- CUENTAS PENDIENTES -->
-  <section id="cuentas">
-    <h2>Cuentas Pendientes</h2>
-    <form id="formCuenta">
-      <select name="tipo">
-        <option>Por cobrar</option>
-        <option>Por pagar</option>
-      </select>
-      <input name="cliente_proveedor" placeholder="Cliente / Proveedor" />
-      <input name="concepto" placeholder="Concepto" />
-      <input name="monto" type="number" step="0.01" placeholder="Monto" required />
-      <input name="fecha_vencimiento" type="date" />
-      <select name="estado">
-        <option>Pendiente</option>
-        <option>Pagado</option>
-      </select>
-      <textarea name="observaciones" placeholder="Observaciones"></textarea>
-      <button type="submit">Guardar</button>
-    </form>
-    <table id="tablaCuentas">
-      <thead>
-        <tr>
-          <th>Tipo</th><th>Cliente/Proveedor</th><th>Concepto</th><th>Monto</th><th>Fecha Vencimiento</th><th>Estado</th><th>Observaciones</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+    <!-- CUENTAS -->
+    <section id="cuentas">
+      <h2>Cuentas Pendientes</h2>
+      <form id="formCuenta">
+        <select name="tipo">
+          <option>Por cobrar</option>
+          <option>Por pagar</option>
+        </select>
+        <input name="cliente_proveedor" placeholder="Cliente / Proveedor" />
+        <input name="concepto" placeholder="Concepto" />
+        <input name="monto" type="number" step="0.01" placeholder="Monto" required />
+        <input name="fecha_vencimiento" type="date" />
+        <select name="estado">
+          <option>Pendiente</option>
+          <option>Pagado</option>
+        </select>
+        <textarea name="observaciones" placeholder="Observaciones"></textarea>
+        <button type="submit">Guardar</button>
+      </form>
+      <table id="tablaCuentas">
+        <thead>
+          <tr>
+            <th>Tipo</th><th>Cliente/Proveedor</th><th>Concepto</th><th>Monto</th><th>Fecha Vencimiento</th><th>Estado</th><th>Observaciones</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>© 2025 Panel Financiero Empresarial</footer>
 
   <script>
-    // ---- Tabs ----
+    // Navegación entre secciones
     const tabs = document.querySelectorAll('.tab');
     const sections = document.querySelectorAll('section');
     tabs.forEach(btn => {
       btn.addEventListener('click', () => {
         tabs.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const id = btn.getAttribute('data-tab');
-        sections.forEach(sec => sec.classList.remove('active'));
+        const id = btn.dataset.tab;
+        sections.forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
       });
     });
 
-    // ---- LocalStorage ----
+    // LocalStorage
     const data = {
       ingresos: JSON.parse(localStorage.getItem('ingresos') || '[]'),
       gastos: JSON.parse(localStorage.getItem('gastos') || '[]'),
@@ -171,19 +354,26 @@
     };
 
     const saveData = () => {
-      for (let key in data) localStorage.setItem(key, JSON.stringify(data[key]));
+      for (let k in data) localStorage.setItem(k, JSON.stringify(data[k]));
       actualizarDashboard();
     };
 
-    // ---- Chart.js ----
+    // Gráfico
     const ctx = document.getElementById('chartResumen').getContext('2d');
     const chart = new Chart(ctx, {
-      type: 'pie',
+      type: 'doughnut',
       data: {
-        labels: ['Ingresos', 'Gastos', 'Balance Neto'],
-        datasets: [{ data: [0, 0, 0], backgroundColor: ['#44bd32', '#e84118', '#273c75'] }]
+        labels: ['Ingresos', 'Gastos', 'Saldo Neto'],
+        datasets: [{
+          data: [0, 0, 0],
+          backgroundColor: ['#1a73e8', '#e53935', '#43a047'],
+          hoverOffset: 10
+        }]
       },
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
     });
 
     const actualizarDashboard = () => {
@@ -197,7 +387,7 @@
       chart.update();
     };
 
-    // ---- Render tablas ----
+    // Render de tablas
     const renderTable = (id, arr, keys, keyName) => {
       const tbody = document.querySelector(`#${id} tbody`);
       tbody.innerHTML = arr.map((item, i) => `
@@ -207,7 +397,8 @@
             <button class="editar" data-key="${keyName}" data-index="${i}">✏️</button>
             <button class="eliminar" data-key="${keyName}" data-index="${i}">🗑️</button>
           </td>
-        </tr>`).join('');
+        </tr>
+      `).join('');
       actualizarDashboard();
     };
 
@@ -218,7 +409,7 @@
       { id: 'formCuenta', key: 'cuentas', table: 'tablaCuentas', fields: ['tipo','cliente_proveedor','concepto','monto','fecha_vencimiento','estado','observaciones'] }
     ];
 
-    // ---- Eventos de eliminar / editar ----
+    // Eliminar / Editar
     document.addEventListener('click', e => {
       if (e.target.classList.contains('eliminar')) {
         const { key, index } = e.target.dataset;
@@ -241,7 +432,7 @@
       }
     });
 
-    // ---- Guardar formularios ----
+    // Guardar formularios
     forms.forEach(f => {
       const form = document.getElementById(f.id);
       form.addEventListener('submit', e => {
