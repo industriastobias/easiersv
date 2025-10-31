@@ -180,9 +180,9 @@
     <section id="dashboard" class="section active">
       <div class="card">
         <h2>Resumen del mes</h2>
-        <p><strong>Total Ingresos:</strong> $<span id="totalIngresos">0</span></p>
-        <p><strong>Total Gastos:</strong> $<span id="totalGastos">0</span></p>
-        <p><strong>Saldo Neto:</strong> $<span id="saldoNeto">0</span></p>
+        <p><strong>Total Ingresos:</strong> $<span id="totalIngresos">0.00</span></p>
+        <p><strong>Total Gastos:</strong> $<span id="totalGastos">0.00</span></p>
+        <p><strong>Saldo Neto:</strong> $<span id="saldoNeto">0.00</span></p>
       </div>
       <div class="card">
         <canvas id="chartCategorias"></canvas>
@@ -370,7 +370,7 @@
       fecha: $('ingFecha').value,
       descripcion: $('ingDesc').value,
       categoria: $('ingCat').value,
-      monto: parseFloat($('ingMonto').value),
+      monto: parseFloat($('ingMonto').value) || 0,
       metodo: $('ingPago').value,
       responsable: $('ingResp').value,
       observaciones: $('ingObs').value
@@ -390,7 +390,7 @@
       proveedor: $('gasProv').value,
       categoria: $('gasCat').value,
       descripcion: $('gasDesc').value,
-      monto: parseFloat($('gasMonto').value),
+      monto: parseFloat($('gasMonto').value) || 0,
       metodo: $('gasPago').value,
       comprobante: $('gasComp').value,
       responsable: $('gasResp').value,
@@ -428,7 +428,7 @@
       fecha: $('cuentaFecha').value,
       ente: $('cuentaEnte').value,
       concepto: $('cuentaConcepto').value,
-      monto: parseFloat($('cuentaMonto').value),
+      monto: parseFloat($('cuentaMonto').value) || 0,
       vence: $('cuentaVence').value,
       estado: $('cuentaEstado').value,
       observaciones: $('cuentaObs').value
@@ -510,34 +510,48 @@
   function actualizarDashboard() {
     const ingresos = load('ingresos');
     const gastos = load('gastos');
-    const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
-    const totalGastos = gastos.reduce((s, i) => s + i.monto, 0);
+
+    const totalIngresos = ingresos.reduce((sum, i) => {
+      const val = parseFloat(i.monto);
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+
+    const totalGastos = gastos.reduce((sum, g) => {
+      const val = parseFloat(g.monto);
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+
     $('totalIngresos').textContent = totalIngresos.toFixed(2);
     $('totalGastos').textContent = totalGastos.toFixed(2);
     $('saldoNeto').textContent = (totalIngresos - totalGastos).toFixed(2);
 
     const cats = {};
     gastos.forEach(g => {
-      cats[g.categoria] = (cats[g.categoria] || 0) + g.monto;
+      const val = parseFloat(g.monto);
+      if (!isNaN(val)) {
+        cats[g.categoria] = (cats[g.categoria] || 0) + val;
+      }
     });
 
-    const ctx = $('chartCategorias').getContext('2d');
-    if (window.chartCats) {
-      window.chartCats.data.labels = Object.keys(cats);
-      window.chartCats.data.datasets[0].data = Object.values(cats);
-      window.chartCats.update();
-    } else {
-      window.chartCats = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: Object.keys(cats),
-          datasets: [{
-            data: Object.values(cats),
-            backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0']
-          }]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-      });
+    const ctx = $('chartCategorias')?.getContext('2d');
+    if (ctx) {
+      if (window.chartCats) {
+        window.chartCats.data.labels = Object.keys(cats);
+        window.chartCats.data.datasets[0].data = Object.values(cats);
+        window.chartCats.update();
+      } else {
+        window.chartCats = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(cats),
+            datasets: [{
+              data: Object.values(cats),
+              backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0']
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+      }
     }
 
     const ultimos = []
@@ -545,27 +559,33 @@
       .concat(gastos.map(g => ({ ...g, tipo: 'Gasto' })))
       .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
       .slice(0, 5);
+
     const tbl = $('tablaUltimos');
-    tbl.innerHTML = '';
-    ultimos.forEach(u => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${u.tipo}</td><td>${u.fecha}</td><td>${u.descripcion||u.concepto}</td><td>$${u.monto}</td>`;
-      tbl.appendChild(tr);
-    });
+    if (tbl) {
+      tbl.innerHTML = '';
+      ultimos.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${u.tipo}</td><td>${u.fecha}</td><td>${u.descripcion||u.concepto}</td><td>$${parseFloat(u.monto).toFixed(2)}</td>`;
+        tbl.appendChild(tr);
+      });
+    }
   }
 
   function generarReporte() {
     const mes = $('reporteMes').value;
     if (!mes) return;
-    const [y, m] = mes.split('-');
     const ingresos = load('ingresos').filter(i => i.fecha.startsWith(mes));
     const gastos = load('gastos').filter(g => g.fecha.startsWith(mes));
     const res = {};
     ingresos.forEach(i => {
-      res['Ingreso: ' + i.categoria] = (res['Ingreso: ' + i.categoria] || 0) + i.monto;
+      const key = 'Ingreso: ' + i.categoria;
+      const val = parseFloat(i.monto) || 0;
+      res[key] = (res[key] || 0) + val;
     });
     gastos.forEach(g => {
-      res['Gasto: ' + g.categoria] = (res['Gasto: ' + g.categoria] || 0) + g.monto;
+      const key = 'Gasto: ' + g.categoria;
+      const val = parseFloat(g.monto) || 0;
+      res[key] = (res[key] || 0) + val;
     });
     const tbody = $('tablaReporte').querySelector('tbody');
     tbody.innerHTML = '';
@@ -586,7 +606,8 @@
     actualizarTabla('tablaGastos', load('gastos'), ['fecha','proveedor','categoria','descripcion','monto','metodo','comprobante','responsable','observaciones']);
     actualizarTabla('tablaProveedores', load('proveedores'), ['nombre','nit','telefono','email','direccion','observaciones']);
     actualizarTabla('tablaCuentas', load('cuentas'), ['tipo','fecha','ente','concepto','monto','vence','estado','observaciones']);
-    actualizarDashboard();
+    showSection('dashboard');
+    setTimeout(() => actualizarDashboard(), 200);
   };
 </script>
 
