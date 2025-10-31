@@ -6,6 +6,7 @@
   <title>Gastos</title>
 
   <script>
+    // Mantiene el tema oscuro o claro
     (function(){
       const tema = localStorage.getItem("tema");
       if (tema === "dark") {
@@ -18,13 +19,15 @@
     :root {
       --bg: #ffffff;
       --text: #222222;
-      --line: #eeeeee;
+      --line: #e5e5e5;
+      --accent: #007bff;
     }
 
     [data-theme="dark"] {
-      --bg: #000000;
+      --bg: #0e0e0e;
       --text: #f5f5f5;
-      --line: #222222;
+      --line: #333333;
+      --accent: #4da3ff;
     }
 
     * {
@@ -45,75 +48,94 @@
       display: flex;
       flex-direction: column;
       padding: 2rem;
+      gap: 1rem;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
     }
 
     h1 {
       font-size: 1.5rem;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .toggle {
       background: none;
-      border: none;
-      font-size: 1.2rem;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      font-size: 1.1rem;
+      width: 2.2rem;
+      height: 2.2rem;
       cursor: pointer;
       color: var(--text);
     }
 
     .input-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
     }
 
     input, select {
-      flex: 1 1 180px;
-      padding: 1rem 1.25rem;
+      padding: 0.9rem 1.2rem;
       border: 1px solid var(--line);
       border-radius: 999px;
       background: var(--bg);
       color: var(--text);
-      font-size: 1rem;
+      font-size: 0.95rem;
       outline: none;
-      transition: border .2s;
+      transition: border .2s, background .3s;
     }
 
     input:focus, select:focus {
-      border-color: var(--text);
+      border-color: var(--accent);
+    }
+
+    button.agregar {
+      grid-column: 1 / -1;
+      padding: 1rem;
+      border: none;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity .3s;
+    }
+
+    button.agregar:hover {
+      opacity: 0.85;
     }
 
     .list {
       flex: 1;
       overflow-y: auto;
+      margin-top: 1rem;
+      border-top: 1px solid var(--line);
     }
 
     .item {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       padding: 1rem 0;
       border-bottom: 1px solid var(--line);
       animation: fadeIn .3s ease;
-      flex-wrap: wrap;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .item span {
       flex: 1 1 120px;
-      cursor: pointer;
       font-size: 0.9rem;
+      cursor: pointer;
     }
 
     .item button {
@@ -122,7 +144,7 @@
       color: var(--text);
       font-size: 1.2rem;
       cursor: pointer;
-      opacity: .4;
+      opacity: .5;
       transition: opacity .2s;
     }
 
@@ -135,18 +157,19 @@
       bottom: 0;
       background: var(--bg);
       padding: 1rem 0;
-      font-size: 1.25rem;
-      font-weight: 500;
+      font-size: 1.2rem;
+      font-weight: 600;
       text-align: right;
-      border-top: 1px solid var(--line);
+      border-top: 2px solid var(--line);
+      color: var(--accent);
     }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>Gastos</h1>
-  <button class="toggle" onclick="toggleTheme()">○</button>
+  <h1>Registro de Gastos</h1>
+  <button class="toggle" onclick="toggleTheme()">☀️</button>
 </header>
 
 <div class="input-row">
@@ -161,11 +184,12 @@
     <option>Otros</option>
   </select>
   <input type="text" id="descripcion" placeholder="Descripción" />
-  <input type="number" id="monto" placeholder="Monto" step="0.01" />
+  <input type="number" id="monto" placeholder="Monto ($)" step="0.01" />
   <input type="text" id="metodo" placeholder="Método de pago" />
   <input type="text" id="comprobante" placeholder="Comprobante (URL o nombre)" />
   <input type="text" id="responsable" placeholder="Responsable" />
   <input type="text" id="observaciones" placeholder="Observaciones" />
+  <button class="agregar" onclick="agregarGasto()">+ Agregar gasto</button>
 </div>
 
 <div class="list" id="lista"></div>
@@ -184,25 +208,32 @@
   }
 
   function agregarGasto() {
+    const montoValor = parseFloat(document.getElementById("monto").value);
+    if (isNaN(montoValor) || montoValor <= 0) {
+      alert("Por favor ingresa un monto válido mayor a 0.");
+      return;
+    }
+
     const gasto = {
       fecha: document.getElementById("fecha").value,
       proveedor: document.getElementById("proveedor").value.trim(),
       categoria: document.getElementById("categoria").value,
       descripcion: document.getElementById("descripcion").value.trim(),
-      monto: parseFloat(document.getElementById("monto").value),
+      monto: montoValor,
       metodo: document.getElementById("metodo").value.trim(),
       comprobante: document.getElementById("comprobante").value.trim(),
       responsable: document.getElementById("responsable").value.trim(),
       observaciones: document.getElementById("observaciones").value.trim()
     };
 
-    if (!gasto.fecha || !gasto.proveedor || !gasto.categoria || !gasto.descripcion || isNaN(gasto.monto) || !gasto.metodo) {
-      alert("Completa los campos obligatorios: Fecha, Proveedor, Categoría, Descripción, Monto y Método.");
+    if (!gasto.fecha || !gasto.proveedor || !gasto.categoria || !gasto.descripcion || !gasto.metodo) {
+      alert("Completa los campos obligatorios: Fecha, Proveedor, Categoría, Descripción y Método.");
       return;
     }
 
     gastos.push(gasto);
     guardarYRender();
+
     document.querySelectorAll(".input-row input, .input-row select").forEach(el => el.value = "");
   }
 
@@ -240,7 +271,7 @@
     let total = 0;
 
     gastos.forEach((g, i) => {
-      total += g.monto;
+      total += Number(g.monto) || 0;
       const div = document.createElement("div");
       div.className = "item";
       div.innerHTML = `
@@ -261,6 +292,7 @@
     document.getElementById("total").textContent = `Total: $${total.toFixed(2)}`;
   }
 
+  // Permitir presionar Enter para agregar
   document.addEventListener("keydown", e => {
     if (e.key === "Enter") agregarGasto();
   });
