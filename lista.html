@@ -2,242 +2,396 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lista Contable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema Contable Simple</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: #f5f6fa; margin: 0; padding: 0; color: #333; }
-    header { background: #2f3640; color: white; padding: 15px; text-align: center; font-size: 1.5em; }
-    nav { display: flex; justify-content: center; background: #353b48; }
-    nav button {
-      background: none; border: none; color: #dcdde1; padding: 14px 20px;
-      cursor: pointer; font-size: 1em; transition: 0.3s;
-    }
-    nav button:hover, nav button.active { background: #718093; color: white; }
-    section { display: none; padding: 20px; }
-    section.active { display: block; }
-
-    .container { max-width: 1000px; margin: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 8px; overflow: hidden; }
-    th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
-    th { background: #40739e; color: white; }
-    tr:hover { background: #f1f2f6; }
-
-    form { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-    form input, form select, form textarea {
-      padding: 8px; border: 1px solid #ccc; border-radius: 5px;
-    }
-    form button {
-      grid-column: span 2;
-      background: #44bd32; color: white; border: none; padding: 10px;
-      border-radius: 5px; cursor: pointer; transition: 0.3s;
-    }
-    form button:hover { background: #4cd137; }
-
-    .summary {
-      display: flex; gap: 15px; justify-content: space-around;
-      flex-wrap: wrap; margin-top: 20px;
-    }
-    .card {
-      background: white; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      flex: 1; min-width: 220px; padding: 20px; text-align: center;
-    }
-    .card h2 { margin: 5px 0; }
-    .ingreso { color: #44bd32; }
-    .gasto { color: #e84118; }
-    .balance { color: #273c75; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f4; }
+    header { background: #004080; color: white; padding: 1rem; text-align: center; }
+    nav { background: #0059b3; color: white; display: flex; flex-wrap: wrap; justify-content: center; }
+    nav button { background: none; border: none; color: white; padding: 1rem; cursor: pointer; }
+    nav button:hover { background: #0073e6; }
+    .section { display: none; padding: 1rem; max-width: 1200px; margin: auto; background: white; margin-top: 1rem; border-radius: 8px; }
+    .active { display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.5rem; border: 1px solid #ccc; text-align: center; }
+    th { background: #f0f0f0; }
+    input, select, textarea { width: 100%; padding: 0.4rem; margin: 0.2rem 0; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 250px; }
+    canvas { max-height: 300px; }
   </style>
 </head>
 <body>
-  <header>📘 Sistema Contable - Lista Única</header>
-  <nav>
-    <button class="tab active" data-tab="dashboard">Dashboard</button>
-    <button class="tab" data-tab="ingresos">Ingresos</button>
-    <button class="tab" data-tab="gastos">Gastos</button>
-    <button class="tab" data-tab="proveedores">Proveedores</button>
-    <button class="tab" data-tab="cuentas">Cuentas Pendientes</button>
-  </nav>
 
-  <div class="container">
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="active">
-      <h2>Resumen General</h2>
-      <div class="summary">
-        <div class="card"><h4>Total Ingresos</h4><h2 id="totalIngresos" class="ingreso">$0.00</h2></div>
-        <div class="card"><h4>Total Gastos</h4><h2 id="totalGastos" class="gasto">$0.00</h2></div>
-        <div class="card"><h4>Balance Neto</h4><h2 id="balance" class="balance">$0.00</h2></div>
+<header>
+  <h1>Sistema Contable Simple</h1>
+</header>
+
+<nav>
+  <button onclick="showSection('dashboard')">Dashboard</button>
+  <button onclick="showSection('ingresos')">Ingresos</button>
+  <button onclick="showSection('gastos')">Gastos</button>
+  <button onclick="showSection('proveedores')">Proveedores</button>
+  <button onclick="showSection('cuentas')">Cuentas por cobrar/pagar</button>
+  <button onclick="showSection('reportes')">Reportes</button>
+</nav>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section active">
+  <h2>Dashboard</h2>
+  <div class="row">
+    <div class="col">
+      <h3>Resumen del mes</h3>
+      <p><strong>Total Ingresos:</strong> $<span id="totalIngresos">0</span></p>
+      <p><strong>Total Gastos:</strong> $<span id="totalGastos">0</span></p>
+      <p><strong>Saldo Neto:</strong> $<span id="saldoNeto">0</span></p>
+    </div>
+    <div class="col">
+      <canvas id="chartCategorias"></canvas>
+    </div>
+  </div>
+  <h3>Últimos movimientos</h3>
+  <table id="tablaUltimos"></table>
+</section>
+
+<!-- INGRESOS -->
+<section id="ingresos" class="section">
+  <h2>Ingresos</h2>
+  <button onclick="exportTable('tablaIngresos', 'ingresos.xlsx')">Exportar a Excel</button>
+  <form onsubmit="agregarIngreso(event)">
+    <div class="row">
+      <div class="col"><input type="date" id="ingFecha" required/></div>
+      <div class="col"><input type="text" id="ingDesc" placeholder="Descripción" required/></div>
+      <div class="col"><input type="text" id="ingCat" placeholder="Categoría" required/></div>
+      <div class="col"><input type="number" step="0.01" id="ingMonto" placeholder="Monto" required/></div>
+      <div class="col"><input type="text" id="ingPago" placeholder="Método de pago" required/></div>
+      <div class="col"><input type="text" id="ingResp" placeholder="Responsable" required/></div>
+      <div class="col"><textarea id="ingObs" placeholder="Observaciones"></textarea></div>
+    </div>
+    <button type="submit">Agregar Ingreso</button>
+  </form>
+  <table id="tablaIngresos">
+    <thead>
+      <tr>
+        <th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Método</th><th>Responsable</th><th>Observaciones</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- GASTOS -->
+<section id="gastos" class="section">
+  <h2>Gastos</h2>
+  <button onclick="exportTable('tablaGastos', 'gastos.xlsx')">Exportar a Excel</button>
+  <form onsubmit="agregarGasto(event)">
+    <div class="row">
+      <div class="col"><input type="date" id="gasFecha" required/></div>
+      <div class="col"><input type="text" id="gasProv" placeholder="Proveedor" required/></div>
+      <div class="col"><input type="text" id="gasCat" placeholder="Categoría" required/></div>
+      <div class="col"><input type="text" id="gasDesc" placeholder="Descripción" required/></div>
+      <div class="col"><input type="number" step="0.01" id="gasMonto" placeholder="Monto" required/></div>
+      <div class="col"><input type="text" id="gasPago" placeholder="Método de pago" required/></div>
+      <div class="col"><input type="text" id="gasComp" placeholder="Comprobante"/></div>
+      <div class="col"><input type="text" id="gasResp" placeholder="Responsable" required/></div>
+      <div class="col"><textarea id="gasObs" placeholder="Observaciones"></textarea></div>
+    </div>
+    <button type="submit">Agregar Gasto</button>
+  </form>
+  <table id="tablaGastos">
+    <thead>
+      <tr>
+        <th>Fecha</th><th>Proveedor</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método</th><th>Comprobante</th><th>Responsable</th><th>Observaciones</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- PROVEEDORES -->
+<section id="proveedores" class="section">
+  <h2>Proveedores</h2>
+  <button onclick="exportTable('tablaProveedores', 'proveedores.xlsx')">Exportar a Excel</button>
+  <form onsubmit="agregarProveedor(event)">
+    <div class="row">
+      <div class="col"><input type="text" id="provNombre" placeholder="Nombre" required/></div>
+      <div class="col"><input type="text" id="provNIT" placeholder="NIT/DUI"/></div>
+      <div class="col"><input type="text" id="provTel" placeholder="Teléfono"/></div>
+      <div class="col"><input type="email" id="provEmail" placeholder="Email"/></div>
+      <div class="col"><input type="text" id="provDir" placeholder="Dirección"/></div>
+      <div class="col"><textarea id="provObs" placeholder="Observaciones"></textarea></div>
+    </div>
+    <button type="submit">Agregar Proveedor</button>
+  </form>
+  <table id="tablaProveedores">
+    <thead>
+      <tr>
+        <th>Nombre</th><th>NIT</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Observaciones</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<!-- CUENTAS -->
+<section id="cuentas" class="section">
+  <h2>Cuentas por cobrar / pagar</h2>
+  <button onclick="exportTable('tablaCuentas', 'cuentas.xlsx')">Exportar a Excel</button>
+  <form onsubmit="agregarCuenta(event)">
+    <div class="row">
+      <div class="col">
+        <select id="cuentaTipo" required>
+          <option value="">Tipo</option>
+          <option>Por cobrar</option>
+          <option>Por pagar</option>
+        </select>
       </div>
-    </section>
-
-    <!-- INGRESOS -->
-    <section id="ingresos">
-      <h2>Registro de Ingresos</h2>
-      <form id="formIngreso">
-        <input type="date" name="fecha" required />
-        <input type="text" name="descripcion" placeholder="Descripción" required />
-        <input type="text" name="categoria" placeholder="Categoría" required />
-        <input type="number" step="0.01" name="monto" placeholder="Monto" required />
-        <select name="metodo_pago">
-          <option>Efectivo</option>
-          <option>Transferencia</option>
-          <option>Tarjeta</option>
-        </select>
-        <input type="text" name="responsable" placeholder="Responsable" />
-        <textarea name="observaciones" placeholder="Observaciones"></textarea>
-        <button type="submit">Agregar Ingreso</button>
-      </form>
-      <table id="tablaIngresos">
-        <thead>
-          <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Método</th><th>Responsable</th><th>Obs.</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <!-- GASTOS -->
-    <section id="gastos">
-      <h2>Registro de Gastos</h2>
-      <form id="formGasto">
-        <input type="date" name="fecha" required />
-        <input type="text" name="proveedor" placeholder="Proveedor" required />
-        <input type="text" name="categoria" placeholder="Categoría" required />
-        <input type="text" name="descripcion" placeholder="Descripción" />
-        <input type="number" step="0.01" name="monto" placeholder="Monto" required />
-        <select name="metodo_pago">
-          <option>Efectivo</option>
-          <option>Transferencia</option>
-          <option>Tarjeta</option>
-        </select>
-        <input type="text" name="responsable" placeholder="Responsable" />
-        <textarea name="observaciones" placeholder="Observaciones"></textarea>
-        <button type="submit">Agregar Gasto</button>
-      </form>
-      <table id="tablaGastos">
-        <thead>
-          <tr><th>Fecha</th><th>Proveedor</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método</th><th>Responsable</th><th>Obs.</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <!-- PROVEEDORES -->
-    <section id="proveedores">
-      <h2>Lista de Proveedores</h2>
-      <form id="formProveedor">
-        <input type="text" name="nombre" placeholder="Nombre del Proveedor" required />
-        <input type="text" name="nit" placeholder="NIT/DUI" />
-        <input type="text" name="telefono" placeholder="Teléfono" />
-        <input type="email" name="email" placeholder="Correo" />
-        <input type="text" name="direccion" placeholder="Dirección" />
-        <textarea name="observaciones" placeholder="Observaciones"></textarea>
-        <button type="submit">Agregar Proveedor</button>
-      </form>
-      <table id="tablaProveedores">
-        <thead>
-          <tr><th>Nombre</th><th>NIT</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th>Obs.</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <!-- CUENTAS -->
-    <section id="cuentas">
-      <h2>Cuentas por Cobrar / Pagar</h2>
-      <form id="formCuenta">
-        <select name="tipo">
-          <option value="por cobrar">Por Cobrar</option>
-          <option value="por pagar">Por Pagar</option>
-        </select>
-        <input type="text" name="cliente_proveedor" placeholder="Cliente o Proveedor" required />
-        <input type="text" name="concepto" placeholder="Concepto" required />
-        <input type="number" step="0.01" name="monto" placeholder="Monto" required />
-        <input type="date" name="fecha_vencimiento" />
-        <select name="estado">
+      <div class="col"><input type="date" id="cuentaFecha" required/></div>
+      <div class="col"><input type="text" id="cuentaEnte" placeholder="Cliente o Proveedor" required/></div>
+      <div class="col"><input type="text" id="cuentaConcepto" placeholder="Concepto" required/></div>
+      <div class="col"><input type="number" step="0.01" id="cuentaMonto" placeholder="Monto" required/></div>
+      <div class="col"><input type="date" id="cuentaVence" required/></div>
+      <div class="col">
+        <select id="cuentaEstado" required>
           <option>Pendiente</option>
           <option>Pagado</option>
           <option>Vencido</option>
         </select>
-        <textarea name="observaciones" placeholder="Observaciones"></textarea>
-        <button type="submit">Agregar Cuenta</button>
-      </form>
-      <table id="tablaCuentas">
-        <thead>
-          <tr><th>Tipo</th><th>Cliente/Proveedor</th><th>Concepto</th><th>Monto</th><th>Vencimiento</th><th>Estado</th><th>Obs.</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-  </div>
+      </div>
+      <div class="col"><textarea id="cuentaObs" placeholder="Observaciones"></textarea></div>
+    </div>
+    <button type="submit">Agregar Cuenta</button>
+  </form>
+  <table id="tablaCuentas">
+    <thead>
+      <tr>
+        <th>Tipo</th><th>Fecha</th><th>Ente</th><th>Concepto</th><th>Monto</th><th>Vence</th><th>Estado</th><th>Observaciones</th><th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
 
-  <script>
-    // ---- Función general para manejar tabs ----
-    const tabs = document.querySelectorAll('.tab');
-    const sections = document.querySelectorAll('section');
-    tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabs.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const id = btn.getAttribute('data-tab');
-        sections.forEach(sec => sec.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-      });
-    });
+<!-- REPORTES -->
+<section id="reportes" class="section">
+  <h2>Reportes</h2>
+  <label>Filtrar por mes: <input type="month" id="reporteMes" onchange="generarReporte()"/></label>
+  <button onclick="exportTable('tablaReporte', 'reporte.xlsx')">Exportar Reporte</button>
+  <table id="tablaReporte">
+    <thead>
+      <tr>
+        <th>Tipo</th><th>Categoría</th><th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
 
-    // ---- LocalStorage ----
-    const data = {
-      ingresos: JSON.parse(localStorage.getItem('ingresos') || '[]'),
-      gastos: JSON.parse(localStorage.getItem('gastos') || '[]'),
-      proveedores: JSON.parse(localStorage.getItem('proveedores') || '[]'),
-      cuentas: JSON.parse(localStorage.getItem('cuentas') || '[]')
+<script>
+  // UTILIDADES
+  function $(id) { return document.getElementById(id); }
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    $(id).classList.add('active');
+    if (id === 'dashboard') actualizarDashboard();
+  }
+
+  // LOCALSTORAGE
+  function save(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+  function load(key) { return JSON.parse(localStorage.getItem(key) || '[]'); }
+
+  // INGRESOS
+  function agregarIngreso(e) {
+    e.preventDefault();
+    const ingreso = {
+      fecha: $('ingFecha').value,
+      descripcion: $('ingDesc').value,
+      categoria: $('ingCat').value,
+      monto: parseFloat($('ingMonto').value),
+      metodo: $('ingPago').value,
+      responsable: $('ingResp').value,
+      observaciones: $('ingObs').value
     };
-
-    // ---- Función de guardado ----
-    const saveData = () => {
-      for (let key in data) localStorage.setItem(key, JSON.stringify(data[key]));
-      actualizarDashboard();
-    };
-
-    // ---- Dashboard ----
-    const actualizarDashboard = () => {
-      const totalIngresos = data.ingresos.reduce((acc, i) => acc + parseFloat(i.monto), 0);
-      const totalGastos = data.gastos.reduce((acc, g) => acc + parseFloat(g.monto), 0);
-      document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toFixed(2);
-      document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
-      document.getElementById('balance').textContent = '$' + (totalIngresos - totalGastos).toFixed(2);
-    };
-
-    // ---- Render funciones ----
-    const renderTable = (id, arr, keys) => {
-      const tbody = document.querySelector(`#${id} tbody`);
-      tbody.innerHTML = arr.map(item => `<tr>${keys.map(k => `<td>${item[k] || ''}</td>`).join('')}</tr>`).join('');
-      actualizarDashboard();
-    };
-
-    // ---- Formularios ----
-    const forms = [
-      { id: 'formIngreso', key: 'ingresos', table: 'tablaIngresos', fields: ['fecha','descripcion','categoria','monto','metodo_pago','responsable','observaciones'] },
-      { id: 'formGasto', key: 'gastos', table: 'tablaGastos', fields: ['fecha','proveedor','categoria','descripcion','monto','metodo_pago','responsable','observaciones'] },
-      { id: 'formProveedor', key: 'proveedores', table: 'tablaProveedores', fields: ['nombre','nit','telefono','email','direccion','observaciones'] },
-      { id: 'formCuenta', key: 'cuentas', table: 'tablaCuentas', fields: ['tipo','cliente_proveedor','concepto','monto','fecha_vencimiento','estado','observaciones'] }
-    ];
-
-    forms.forEach(f => {
-      const form = document.getElementById(f.id);
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        const item = {};
-        f.fields.forEach(k => item[k] = form[k].value);
-        data[f.key].push(item);
-        saveData();
-        renderTable(f.table, data[f.key], f.fields);
-        form.reset();
-      });
-      renderTable(f.table, data[f.key], f.fields);
-    });
-
+    const data = load('ingresos');
+    data.push(ingreso);
+    save('ingresos', data);
+    e.target.reset();
+    actualizarTabla('tablaIngresos', data, ['fecha','descripcion','categoria','monto','metodo','responsable','observaciones']);
     actualizarDashboard();
-  </script>
+  }
+
+  // GASTOS
+  function agregarGasto(e) {
+    e.preventDefault();
+    const gasto = {
+      fecha: $('gasFecha').value,
+      proveedor: $('gasProv').value,
+      categoria: $('gasCat').value,
+      descripcion: $('gasDesc').value,
+      monto: parseFloat($('gasMonto').value),
+      metodo: $('gasPago').value,
+      comprobante: $('gasComp').value,
+      responsable: $('gasResp').value,
+      observaciones: $('gasObs').value
+    };
+    const data = load('gastos');
+    data.push(gasto);
+    save('gastos', data);
+    e.target.reset();
+    actualizarTabla('tablaGastos', data, ['fecha','proveedor','categoria','descripcion','monto','metodo','comprobante','responsable','observaciones']);
+    actualizarDashboard();
+  }
+
+  // PROVEEDORES
+  function agregarProveedor(e) {
+    e.preventDefault();
+    const prov = {
+      nombre: $('provNombre').value,
+      nit: $('provNIT').value,
+      telefono: $('provTel').value,
+      email: $('provEmail').value,
+      direccion: $('provDir').value,
+      observaciones: $('provObs').value
+    };
+    const data = load('proveedores');
+    data.push(prov);
+    save('proveedores', data);
+    e.target.reset();
+    actualizarTabla('tablaProveedores', data, ['nombre','nit','telefono','email','direccion','observaciones']);
+  }
+
+  // CUENTAS
+  function agregarCuenta(e) {
+    e.preventDefault();
+    const cuenta = {
+      tipo: $('cuentaTipo').value,
+      fecha: $('cuentaFecha').value,
+      ente: $('cuentaEnte').value,
+      concepto: $('cuentaConcepto').value,
+      monto: parseFloat($('cuentaMonto').value),
+      vence: $('cuentaVence').value,
+      estado: $('cuentaEstado').value,
+      observaciones: $('cuentaObs').value
+    };
+    const data = load('cuentas');
+    data.push(cuenta);
+    save('cuentas', data);
+    e.target.reset();
+    actualizarTabla('tablaCuentas', data, ['tipo','fecha','ente','concepto','monto','vence','estado','observaciones']);
+  }
+
+  // ACTUALIZAR TABLAS
+  function actualizarTabla(idTable, data, cols) {
+    const tbody = $(idTable).querySelector('tbody');
+    tbody.innerHTML = '';
+    data.forEach((row, idx) => {
+      const tr = document.createElement('tr');
+      cols.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = row[c];
+        tr.appendChild(td);
+      });
+      const tdAcc = document.createElement('td');
+      tdAcc.innerHTML = `<button onclick="eliminarFila('${idTable}',${idx})">Eliminar</button>`;
+      tr.appendChild(tdAcc);
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ELIMINAR
+  function eliminarFila(tableId, idx) {
+    const key = tableId.replace('tabla', '').toLowerCase();
+    const data = load(key);
+    data.splice(idx, 1);
+    save(key, data);
+    actualizarTabla(tableId, data, Object.keys(data[0] || {}));
+    actualizarDashboard();
+  }
+
+  // DASHBOARD
+  function actualizarDashboard() {
+    const ingresos = load('ingresos');
+    const gastos = load('gastos');
+    const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
+    const totalGastos = gastos.reduce((s, i) => s + i.monto, 0);
+    $('totalIngresos').textContent = totalIngresos.toFixed(2);
+    $('totalGastos').textContent = totalGastos.toFixed(2);
+    $('saldoNeto').textContent = (totalIngresos - totalGastos).toFixed(2);
+
+    // Gráfico
+    const ctx = $('chartCategorias').getContext('2d');
+    const cats = {};
+    gastos.forEach(g => {
+      cats[g.categoria] = (cats[g.categoria] || 0) + g.monto;
+    });
+    if (window.chartCats) window.chartCats.destroy();
+    window.chartCats = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(cats),
+        datasets: [{
+          data: Object.values(cats),
+          backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0']
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Últimos movimientos
+    const ultimos = []
+      .concat(ingresos.map(i => ({ ...i, tipo: 'Ingreso' })))
+      .concat(gastos.map(g => ({ ...g, tipo: 'Gasto' })))
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+      .slice(0, 5);
+    const tbl = $('tablaUltimos');
+    tbl.innerHTML = '';
+    ultimos.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${u.tipo}</td><td>${u.fecha}</td><td>${u.descripcion||u.concepto}</td><td>$${u.monto}</td>`;
+      tbl.appendChild(tr);
+    });
+  }
+
+  // REPORTES
+  function generarReporte() {
+    const mes = $('reporteMes').value;
+    if (!mes) return;
+    const [y, m] = mes.split('-');
+    const ingresos = load('ingresos').filter(i => i.fecha.startsWith(mes));
+    const gastos = load('gastos').filter(g => g.fecha.startsWith(mes));
+    const res = {};
+    ingresos.forEach(i => {
+      res['Ingreso: ' + i.categoria] = (res['Ingreso: ' + i.categoria] || 0) + i.monto;
+    });
+    gastos.forEach(g => {
+      res['Gasto: ' + g.categoria] = (res['Gasto: ' + g.categoria] || 0) + g.monto;
+    });
+    const tbody = $('tablaReporte').querySelector('tbody');
+    tbody.innerHTML = '';
+    Object.entries(res).forEach(([k, v]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${k.split(':')[0]}</td><td>${k.split(':')[1]}</td><td>$${v.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // EXPORTAR
+  function exportTable(tableId, filename) {
+    const wb = XLSX.utils.table_to_book($(tableId));
+    XLSX.writeFile(wb, filename);
+  }
+
+  // INICIALIZAR
+  window.onload = () => {
+    actualizarTabla('tablaIngresos', load('ingresos'), ['fecha','descripcion','categoria','monto','metodo','responsable','observaciones']);
+    actualizarTabla('tablaGastos', load('gastos'), ['fecha','proveedor','categoria','descripcion','monto','metodo','comprobante','responsable','observaciones']);
+    actualizarTabla('tablaProveedores', load('proveedores'), ['nombre','nit','telefono','email','direccion','observaciones']);
+    actualizarTabla('tablaCuentas', load('cuentas'), ['tipo','fecha','ente','concepto','monto','vence','estado','observaciones']);
+    actualizarDashboard();
+  };
+</script>
+
 </body>
 </html>
-
-
