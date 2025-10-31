@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lista Contable</title>
+  <title>Contabilidad a Family Company</title>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
     body { background: #f5f6fa; margin: 0; padding: 0; color: #333; }
@@ -46,7 +46,23 @@
     .ingreso { color: #44bd32; }
     .gasto { color: #e84118; }
     .balance { color: #273c75; }
+
+    /* Gráfica */
+    .chart-container {
+      background: white;
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    canvas {
+      max-width: 400px;
+      margin: auto;
+    }
   </style>
+  <!-- Cargar Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>📘 Sistema Contable - Lista Única</header>
@@ -66,6 +82,12 @@
         <div class="card"><h4>Total Ingresos</h4><h2 id="totalIngresos" class="ingreso">$0.00</h2></div>
         <div class="card"><h4>Total Gastos</h4><h2 id="totalGastos" class="gasto">$0.00</h2></div>
         <div class="card"><h4>Balance Neto</h4><h2 id="balance" class="balance">$0.00</h2></div>
+      </div>
+
+      <!-- 📊 Gráfica de resumen -->
+      <div class="chart-container">
+        <h3>Distribución Financiera</h3>
+        <canvas id="chartResumen"></canvas>
       </div>
     </section>
 
@@ -170,7 +192,7 @@
   </div>
 
   <script>
-    // ---- Función general para manejar tabs ----
+    // ---- Tabs ----
     const tabs = document.querySelectorAll('.tab');
     const sections = document.querySelectorAll('section');
     tabs.forEach(btn => {
@@ -191,22 +213,43 @@
       cuentas: JSON.parse(localStorage.getItem('cuentas') || '[]')
     };
 
-    // ---- Función de guardado ----
+    // ---- Guardar ----
     const saveData = () => {
       for (let key in data) localStorage.setItem(key, JSON.stringify(data[key]));
       actualizarDashboard();
     };
 
+    // ---- Chart.js ----
+    const ctx = document.getElementById('chartResumen').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Ingresos', 'Gastos', 'Balance Neto'],
+        datasets: [{
+          data: [0, 0, 0],
+          backgroundColor: ['#44bd32', '#e84118', '#273c75'],
+          borderWidth: 1
+        }]
+      },
+      options: { responsive: true }
+    });
+
     // ---- Dashboard ----
     const actualizarDashboard = () => {
-      const totalIngresos = data.ingresos.reduce((acc, i) => acc + parseFloat(i.monto), 0);
-      const totalGastos = data.gastos.reduce((acc, g) => acc + parseFloat(g.monto), 0);
+      const totalIngresos = data.ingresos.reduce((a, i) => a + parseFloat(i.monto), 0);
+      const totalGastos = data.gastos.reduce((a, g) => a + parseFloat(g.monto), 0);
+      const balance = totalIngresos - totalGastos;
+
       document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toFixed(2);
       document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
-      document.getElementById('balance').textContent = '$' + (totalIngresos - totalGastos).toFixed(2);
+      document.getElementById('balance').textContent = '$' + balance.toFixed(2);
+
+      // Actualiza la gráfica
+      chart.data.datasets[0].data = [totalIngresos, totalGastos, Math.abs(balance)];
+      chart.update();
     };
 
-    // ---- Render funciones ----
+    // ---- Render de tablas ----
     const renderTable = (id, arr, keys) => {
       const tbody = document.querySelector(`#${id} tbody`);
       tbody.innerHTML = arr.map(item => `<tr>${keys.map(k => `<td>${item[k] || ''}</td>`).join('')}</tr>`).join('');
