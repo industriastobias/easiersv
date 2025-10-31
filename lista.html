@@ -6,19 +6,23 @@
   <title>CONTABILIDAD A FAMILY COMPANY</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <style>
     :root {
-      --primary: #2563eb;
-      --secondary: #64748b;
-      --background: #f1f5f9;
+      --primary: #0d47a1;
+      --secondary: #37474f;
+      --background: #f5f7fa;
       --card: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
+      --text: #263238;
+      --border: #cfd8dc;
+      --success: #2e7d32;
+      --danger: #c62828;
+      --warning: #f9a825;
     }
 
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
@@ -33,17 +37,20 @@
     }
 
     aside {
-      width: 220px;
+      width: 240px;
       background: var(--primary);
       color: white;
       display: flex;
       flex-direction: column;
-      padding: 1rem;
+      padding: 1.5rem 1rem;
     }
 
     aside h2 {
       margin-top: 0;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     aside button {
@@ -55,10 +62,14 @@
       cursor: pointer;
       border-radius: 6px;
       margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
     }
 
     aside button:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     main {
@@ -78,9 +89,9 @@
     .card {
       background: var(--card);
       padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      margin-bottom: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
     }
 
     table {
@@ -90,13 +101,13 @@
     }
 
     th, td {
-      padding: 0.6rem;
+      padding: 0.75rem;
       border: 1px solid var(--border);
       text-align: center;
     }
 
     th {
-      background: #f9fafb;
+      background: #f1f1f1;
     }
 
     input, select, textarea {
@@ -114,19 +125,20 @@
       padding: 0.5rem 1rem;
       border-radius: 6px;
       cursor: pointer;
+      transition: background 0.2s;
     }
 
     button:hover {
-      background: #1d4ed8;
+      background: #0b3d91;
     }
 
     .btn-edit {
-      background: #f59e0b;
+      background: var(--warning);
       margin-right: 0.25rem;
     }
 
     .btn-delete {
-      background: #ef4444;
+      background: var(--danger);
     }
 
     .modal {
@@ -142,7 +154,7 @@
     .modal-content {
       background: white;
       padding: 2rem;
-      border-radius: 8px;
+      border-radius: 12px;
       width: 90%;
       max-width: 500px;
     }
@@ -160,26 +172,34 @@
     canvas {
       max-height: 300px;
     }
+
+    /* Colores por sección */
+    body.dashboard { background: #e3f2fd; }
+    body.ingresos { background: #e8f5e9; }
+    body.gastos { background: #ffebee; }
+    body.proveedores { background: #fff8e1; }
+    body.cuentas { background: #f3e5f5; }
+    body.reportes { background: #e0f2f1; }
   </style>
 </head>
-<body>
+<body class="dashboard">
 
 <div class="layout">
   <aside>
-    <h2>Menú</h2>
-    <button onclick="showSection('dashboard')">Dashboard</button>
-    <button onclick="showSection('ingresos')">Ingresos</button>
-    <button onclick="showSection('gastos')">Gastos</button>
-    <button onclick="showSection('proveedores')">Proveedores</button>
-    <button onclick="showSection('cuentas')">Cuentas</button>
-    <button onclick="showSection('reportes')">Reportes</button>
+    <h2><i class="ri-calendar-line"></i> MENÚ</h2>
+    <button onclick="showSection('dashboard')"><i class="ri-dashboard-line"></i> Dashboard</button>
+    <button onclick="showSection('ingresos')"><i class="ri-arrow-up-circle-line"></i> Ingresos</button>
+    <button onclick="showSection('gastos')"><i class="ri-arrow-down-circle-line"></i> Gastos</button>
+    <button onclick="showSection('proveedores')"><i class="ri-truck-line"></i> Proveedores</button>
+    <button onclick="showSection('cuentas')"><i class="ri-money-dollar-circle-line"></i> Cuentas</button>
+    <button onclick="showSection('reportes')"><i class="ri-file-chart-line"></i> Reportes</button>
   </aside>
 
   <main>
     <!-- DASHBOARD -->
     <section id="dashboard" class="section active">
       <div class="card">
-        <h2>Resumen del mes</h2>
+        <h2><i class="ri-dashboard-line"></i> Resumen del mes</h2>
         <p><strong>Total Ingresos:</strong> $<span id="totalIngresos">0.00</span></p>
         <p><strong>Total Gastos:</strong> $<span id="totalGastos">0.00</span></p>
         <p><strong>Saldo Neto:</strong> $<span id="saldoNeto">0.00</span></p>
@@ -188,7 +208,7 @@
         <canvas id="chartCategorias"></canvas>
       </div>
       <div class="card">
-        <h3>Últimos movimientos</h3>
+        <h3><i class="ri-time-line"></i> Últimos movimientos</h3>
         <table id="tablaUltimos"></table>
       </div>
     </section>
@@ -196,7 +216,7 @@
     <!-- INGRESOS -->
     <section id="ingresos" class="section">
       <div class="card">
-        <h2>Ingresos</h2>
+        <h2><i class="ri-arrow-up-circle-line"></i> Ingresos</h2>
         <button onclick="exportTable('tablaIngresos', 'ingresos.xlsx')">Exportar a Excel</button>
         <form onsubmit="agregarIngreso(event)">
           <div class="row">
@@ -224,7 +244,7 @@
     <!-- GASTOS -->
     <section id="gastos" class="section">
       <div class="card">
-        <h2>Gastos</h2>
+        <h2><i class="ri-arrow-down-circle-line"></i> Gastos</h2>
         <button onclick="exportTable('tablaGastos', 'gastos.xlsx')">Exportar a Excel</button>
         <form onsubmit="agregarGasto(event)">
           <div class="row">
@@ -254,7 +274,7 @@
     <!-- PROVEEDORES -->
     <section id="proveedores" class="section">
       <div class="card">
-        <h2>Proveedores</h2>
+        <h2><i class="ri-truck-line"></i> Proveedores</h2>
         <button onclick="exportTable('tablaProveedores', 'proveedores.xlsx')">Exportar a Excel</button>
         <form onsubmit="agregarProveedor(event)">
           <div class="row">
@@ -281,7 +301,7 @@
     <!-- CUENTAS -->
     <section id="cuentas" class="section">
       <div class="card">
-        <h2>Cuentas por cobrar / pagar</h2>
+        <h2><i class="ri-money-dollar-circle-line"></i> Cuentas por cobrar / pagar</h2>
         <button onclick="exportTable('tablaCuentas', 'cuentas.xlsx')">Exportar a Excel</button>
         <form onsubmit="agregarCuenta(event)">
           <div class="row">
@@ -322,7 +342,7 @@
     <!-- REPORTES -->
     <section id="reportes" class="section">
       <div class="card">
-        <h2>Reportes</h2>
+        <h2><i class="ri-file-chart-line"></i> Reportes</h2>
         <label>Filtrar por mes: <input type="month" id="reporteMes" onchange="generarReporte()"/></label>
         <button onclick="exportTable('tablaReporte', 'reporte.xlsx')">Exportar Reporte</button>
         <table id="tablaReporte">
@@ -354,6 +374,7 @@
   function $(id) { return document.getElementById(id); }
 
   function showSection(id) {
+    document.body.className = id;
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     $(id).classList.add('active');
     if (id === 'dashboard') actualizarDashboard();
@@ -370,7 +391,7 @@
       fecha: $('ingFecha').value,
       descripcion: $('ingDesc').value,
       categoria: $('ingCat').value,
-      monto: parseFloat($('ingMonto').value) || 0,
+      monto: parseFloat($('ingMonto').value.replace(',', '.')) || 0,
       metodo: $('ingPago').value,
       responsable: $('ingResp').value,
       observaciones: $('ingObs').value
@@ -390,7 +411,7 @@
       proveedor: $('gasProv').value,
       categoria: $('gasCat').value,
       descripcion: $('gasDesc').value,
-      monto: parseFloat($('gasMonto').value) || 0,
+      monto: parseFloat($('gasMonto').value.replace(',', '.')) || 0,
       metodo: $('gasPago').value,
       comprobante: $('gasComp').value,
       responsable: $('gasResp').value,
@@ -428,7 +449,218 @@
       fecha: $('cuentaFecha').value,
       ente: $('cuentaEnte').value,
       concepto: $('cuentaConcepto').value,
-      monto: parseFloat($('cuentaMonto').value) || 0,
+      monto: parseFloat($('cuentaMonto').value.replace(',', '.')) || 0,
+      vence: $('cuentaVence').value,
+      estado: $('cuentaEstado').value,
+      observaciones: $('cuentaObs').value
+    };
+    const data = load('cuentas');
+    data.push(cuenta);
+    save('cuentas', data);
+    e.target.reset();
+    actualizarTabla('tablaCuentas', data, ['tipo','fecha','ente','concepto','monto','vence','estado','observaciones']);
+  }
+
+  function actualizarTabla(idTable, data, cols) {
+    const tbody = $(idTable).querySelector('tbody');
+    tbody.innerHTML = '';
+    data.forEach((row, idx) => {
+      const tr = document.createElement('tr');
+      cols.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = row[c];
+        tr.appendChild(td);
+      });
+      const tdAcc = document.createElement('td');
+      tdAcc.innerHTML = `
+        <button class="btn-edit" onclick="abrirModal('${idTable}', ${idx})">Editar</button>
+        <button class="btn-delete" onclick="eliminarFila('${idTable}', ${idx})">Eliminar</button>
+      `;
+      tr.appendChild(tdAcc);
+      tbody.appendChild(tr);
+    });
+  }
+
+  function eliminarFila(tableId, idx) {
+    const key = tableId.replace('tabla', '').toLowerCase();
+    const data = load(key);
+    data.splice(idx, 1);
+    save(key, data);
+    actualizarTabla(tableId, data, Object.keys(data[0] || {}));
+    actualizarDashboard();
+  }
+
+  function abrirModal(tableId, idx) {
+    const key = tableId.replace('tabla', '').toLowerCase();
+    const data = load(key);
+    editing = { key, index: idx, data: data[idx] };
+    $('modalTitle').textContent = 'Editar ' + key;
+    const fields = $('modalFields');
+    fields.innerHTML = '';
+    Object.entries(editing.data).forEach(([k, v]) => {
+      const label = document.createElement('label');
+      label.textContent = k.charAt(0).toUpperCase() + k.slice(1);
+      const input = document.createElement('input');
+      input.type = k === 'fecha' || k === 'vence' ? 'date' : (k === 'monto' ? 'number' : 'text');
+      input.value = v;
+      input.id = 'modal_' + k;
+      label.appendChild(input);
+      fields.appendChild(label);
+    });
+    $('modalEdit').style.display = 'flex';
+  }
+
+  function cerrarModal() {
+    $('modalEdit').style.display = 'none';
+  }
+
+  function guardarEdicion(e) {
+    e.preventDefault();
+    const updated = {};
+    Object.keys(editing.data).forEach(k => {
+      let val = $('modal_' + k).value;
+      if (k === 'monto') val = parseFloat(val.replace(',', '.')) || 0;
+      updated[k] = val;
+    });
+    const data = load(editing.key);
+    data[editing.index] = updated;
+    save(editing.key, data);
+    actualizarTabla('tabla' + editing.key.charAt(0).toUpperCase() + editing.key.slice(1), data, Object.keys(updated));
+    cerrarModal();
+    actualizarDashboard();
+  }
+
+  function actualizarDashboard() {
+    const ingresos = load('ingresos');
+    const gastos = load('gastos');
+
+    const totalIngresos = ingresos.reduce((sum, i) => {
+      const val = parseFloat(i.monto);
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+
+    const totalGastos = gastos.reduce((sum, g) => {
+      const val = parseFloat(g.monto);
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+
+    $('totalIngresos').textContent = totalIngresos.toFixed(2);
+    $('totalGastos').textContent = totalGastos.toFixed(2);
+    $('saldoNeto').textContent = (totalIngresos - totalGastos).toFixed(2);
+
+    const cats = {};
+    gastos.forEach(g => {
+      const val = parseFloat(g.monto);
+      if (!isNaN(val)) {
+        cats[g.categoria] = (cats[g.categoria] || 0) + val;
+      }
+    });
+
+    const ctx = $('chartCategorias')?.getContext('2d');
+    if (ctx) {
+      if (window.chartCats) {
+        window.chartCats.data.labels = Object.keys(cats);
+        window.chartCats.data.datasets[0].data = Object.values(cats);
+        window.chartCats.update();
+      } else {
+        window.chartCats = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: Object.keys(cats),
+            datasets: [{
+              data: Object.values(cats),
+              backgroundColor: ['#f44336','#2196f3','#4caf50','#ff9800','#9c27b0']
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+      }
+    }
+
+    const ultimos = []
+      .concat(ingresos.map(i => ({ ...i, tipo: 'Ingreso' })))
+      .concat(gastos.map(g => ({ ...g, tipo: 'Gasto' })))
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+      .slice(0, 5);
+
+    const tbl = $('tablaUltimos');
+    if (tbl) {
+      tbl.innerHTML = '';
+      ultimos.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${u.tipo}</td><td>${u.fecha}</td><td>${u.descripcion||u.concepto}</td><td>$${parseFloat(u.monto).toFixed(2)}</td>`;
+        tbl.appendChild(tr);
+      });
+    }
+  }
+
+  function generarReporte() {
+    const mes = $('reporteMes').value;
+    if (!mes) return;
+    const ingresos = load('ingresos').filter(i => i.fecha.startsWith(mes));
+    const gastos = load('gastos').filter(g => g.fecha.startsWith(mes));
+    const res = {};
+    ingresos.forEach(i => {
+      const key = 'Ingreso: ' + i.categoria;
+      const val = parseFloat(i.monto) || 0;
+      res[key] = (res[key] || 0) + val;
+    });
+    gastos.forEach(g => {
+      const key = 'Gasto: ' + g.categoria;
+      const val = parseFloat(g.monto) || 0;
+      res[key] = (res[key] || 0) + val;
+    });
+    const tbody = $('tablaReporte').querySelector('tbody');
+    tbody.innerHTML = '';
+    Object.entries(res).forEach(([k, v]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${k.split(':')[0]}</td><td>${k.split(':')[1]}</td><td>$${v.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function exportTable(tableId, filename      proveedor: $('gasProv').value,
+      categoria: $('gasCat').value,
+      descripcion: $('gasDesc').value,
+      monto: parseFloat($('gasMonto').value.replace(',', '.')) || 0,
+      metodo: $('gasPago').value,
+      comprobante: $('gasComp').value,
+      responsable: $('gasResp').value,
+      observaciones: $('gasObs').value
+    };
+    const data = load('gastos');
+    data.push(gasto);
+    save('gastos', data);
+    e.target.reset();
+    actualizarTabla('tablaGastos', data, ['fecha','proveedor','categoria','descripcion','monto','metodo','comprobante','responsable','observaciones']);
+    actualizarDashboard();
+  }
+
+  function agregarProveedor(e) {
+    e.preventDefault();
+    const prov = {
+      nombre: $('provNombre').value,
+      nit: $('provNIT').value,
+      telefono: $('provTel').value,
+      email: $('provEmail').value,
+      direccion: $('provDir').value,
+      observaciones: $('provObs').value
+    };
+    const data = load('proveedores');
+    data.push(prov);
+    save('proveedores', data);
+    e.target.reset();
+    actualizarTabla('tablaProveedores', data, ['nombre','nit','telefono','email','direccion','observaciones']);
+  }
+
+  function agregarCuenta(e) {
+    e.preventDefault();
+    const cuenta = {
+      tipo: $('cuentaTipo').value,
+      fecha: $('cuentaFecha').value,
+      ente: $('cuentaEnte').value,
+      concepto: $('cuentaConcepto').value,
+      monto: parseFloat($('cuentaMonto').value.replace(',', '.')) || 0,
       vence: $('cuentaVence').value,
       estado: $('cuentaEstado').value,
       observaciones: $('cuentaObs').value
