@@ -3,133 +3,223 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora de Gastos</title>
+  <title>Gestor de Gastos Empresariales</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f7fa;
-      color: #333;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f0f3f7;
       margin: 0;
       padding: 20px;
+      color: #333;
     }
 
     h1 {
       text-align: center;
-      color: #222;
+      color: #1e293b;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
       text-align: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
     }
 
     th {
-      background-color: #007bff;
+      background-color: #0d6efd;
       color: white;
     }
 
-    input[type="number"] {
-      width: 80px;
-      padding: 5px;
+    input[type="text"], input[type="number"] {
+      width: 90%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
       text-align: center;
     }
 
-    .total {
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-
-    #boton-calcular {
-      margin-top: 20px;
-      display: block;
-      width: 100%;
-      background-color: #28a745;
+    .btn {
+      background-color: #0d6efd;
       color: white;
       border: none;
-      padding: 12px;
-      font-size: 16px;
+      padding: 10px 16px;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
     }
 
-    #boton-calcular:hover {
-      background-color: #218838;
+    .btn:hover {
+      background-color: #0b5ed7;
     }
 
-    #total-general {
-      margin-top: 20px;
+    .btn-danger {
+      background-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background-color: #bb2d3b;
+    }
+
+    .summary {
+      margin-top: 30px;
       text-align: right;
-      font-size: 1.3em;
-      font-weight: bold;
+    }
+
+    .summary div {
+      margin: 6px 0;
+      font-size: 16px;
+    }
+
+    .summary strong {
+      font-size: 18px;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 700px) {
+      table, th, td {
+        font-size: 14px;
+      }
+      .btn {
+        font-size: 13px;
+        padding: 8px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Calculadora de Gastos</h1>
+  <div class="container">
+    <h1>💼 Gestor de Gastos Empresariales</h1>
 
-  <table id="tabla-productos">
-    <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Precio Unitario ($)</th>
-        <th>Cantidad</th>
-        <th>Precio Final ($)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Producto 1</td>
-        <td><input type="number" class="precio" value="10" min="0"></td>
-        <td><input type="number" class="cantidad" value="1" min="0"></td>
-        <td class="precio-final">$0.00</td>
-      </tr>
-      <tr>
-        <td>Producto 2</td>
-        <td><input type="number" class="precio" value="5" min="0"></td>
-        <td><input type="number" class="cantidad" value="2" min="0"></td>
-        <td class="precio-final">$0.00</td>
-      </tr>
-      <tr>
-        <td>Producto 3</td>
-        <td><input type="number" class="precio" value="3" min="0"></td>
-        <td><input type="number" class="cantidad" value="4" min="0"></td>
-        <td class="precio-final">$0.00</td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="actions">
+      <button id="add-row" class="btn">➕ Agregar Producto</button>
+      <button id="calculate" class="btn">💰 Calcular Totales</button>
+    </div>
 
-  <button id="boton-calcular">Calcular Total</button>
+    <table id="expense-table">
+      <thead>
+        <tr>
+          <th>Producto / Servicio</th>
+          <th>Precio Unitario ($)</th>
+          <th>Cantidad</th>
+          <th>Descuento (%)</th>
+          <th>IVA (%)</th>
+          <th>Total ($)</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" value="Producto A"></td>
+          <td><input type="number" class="precio" value="100"></td>
+          <td><input type="number" class="cantidad" value="2" min="0"></td>
+          <td><input type="number" class="descuento" value="5" min="0"></td>
+          <td><input type="number" class="iva" value="13" min="0"></td>
+          <td class="total">$0.00</td>
+          <td><button class="btn btn-danger delete-row">🗑️</button></td>
+        </tr>
+      </tbody>
+    </table>
 
-  <div id="total-general">Total General: $0.00</div>
+    <div class="summary">
+      <div>Subtotal: $<span id="subtotal">0.00</span></div>
+      <div>IVA Total: $<span id="iva-total">0.00</span></div>
+      <div>Descuento Total: $<span id="descuento-total">0.00</span></div>
+      <div><strong>Total General: $<span id="total-general">0.00</span></strong></div>
+    </div>
+  </div>
 
   <script>
-    document.getElementById("boton-calcular").addEventListener("click", function() {
-      const filas = document.querySelectorAll("#tabla-productos tbody tr");
-      let totalGeneral = 0;
+    const table = document.getElementById("expense-table").getElementsByTagName("tbody")[0];
+    const addRowBtn = document.getElementById("add-row");
+    const calculateBtn = document.getElementById("calculate");
 
+    // Función para calcular todos los totales
+    function calcularTotales() {
+      let subtotal = 0, ivaTotal = 0, descuentoTotal = 0, totalGeneral = 0;
+
+      const filas = table.querySelectorAll("tr");
       filas.forEach(fila => {
-        const precio = parseFloat(fila.querySelector(".precio").value) || 0;
-        const cantidad = parseFloat(fila.querySelector(".cantidad").value) || 0;
-        const precioFinal = precio * cantidad;
-        fila.querySelector(".precio-final").textContent = `$${precioFinal.toFixed(2)}`;
-        totalGeneral += precioFinal;
+        const precio = parseFloat(fila.querySelector(".precio")?.value) || 0;
+        const cantidad = parseFloat(fila.querySelector(".cantidad")?.value) || 0;
+        const descuento = parseFloat(fila.querySelector(".descuento")?.value) || 0;
+        const iva = parseFloat(fila.querySelector(".iva")?.value) || 0;
+
+        let totalProducto = precio * cantidad;
+        let montoDescuento = totalProducto * (descuento / 100);
+        let montoIVA = (totalProducto - montoDescuento) * (iva / 100);
+
+        let totalFinal = totalProducto - montoDescuento + montoIVA;
+
+        subtotal += totalProducto;
+        ivaTotal += montoIVA;
+        descuentoTotal += montoDescuento;
+        totalGeneral += totalFinal;
+
+        fila.querySelector(".total").textContent = `$${totalFinal.toFixed(2)}`;
       });
 
-      document.getElementById("total-general").textContent = `Total General: $${totalGeneral.toFixed(2)}`;
+      document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+      document.getElementById("iva-total").textContent = ivaTotal.toFixed(2);
+      document.getElementById("descuento-total").textContent = descuentoTotal.toFixed(2);
+      document.getElementById("total-general").textContent = totalGeneral.toFixed(2);
+    }
+
+    // Agregar nueva fila
+    addRowBtn.addEventListener("click", () => {
+      const nuevaFila = document.createElement("tr");
+      nuevaFila.innerHTML = `
+        <td><input type="text" value="Nuevo Producto"></td>
+        <td><input type="number" class="precio" value="0" min="0"></td>
+        <td><input type="number" class="cantidad" value="1" min="0"></td>
+        <td><input type="number" class="descuento" value="0" min="0"></td>
+        <td><input type="number" class="iva" value="13" min="0"></td>
+        <td class="total">$0.00</td>
+        <td><button class="btn btn-danger delete-row">🗑️</button></td>
+      `;
+      table.appendChild(nuevaFila);
     });
+
+    // Eliminar fila
+    table.addEventListener("click", (e) => {
+      if (e.target.classList.contains("delete-row")) {
+        e.target.closest("tr").remove();
+        calcularTotales();
+      }
+    });
+
+    // Calcular automáticamente al cambiar valores
+    table.addEventListener("input", (e) => {
+      if (["precio", "cantidad", "descuento", "iva"].some(cls => e.target.classList.contains(cls))) {
+        calcularTotales();
+      }
+    });
+
+    calculateBtn.addEventListener("click", calcularTotales);
+
+    // Calcular al inicio
+    calcularTotales();
   </script>
 
 </body>
 </html>
-
-
