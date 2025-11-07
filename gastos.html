@@ -1,1 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Gastos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    input[type="number"] {
+      width: 80px;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    #boton-calcular {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #boton-calcular:hover {
+      background-color: #218838;
+    }
+
+    #total-general {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Calculadora de Gastos</h1>
+
+  <table id="tabla-productos">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Precio Unitario ($)</th>
+        <th>Cantidad</th>
+        <th>Precio Final ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Producto 1</td>
+        <td><input type="number" class="precio" value="10" min="0"></td>
+        <td><input type="number" class="cantidad" value="1" min="0"></td>
+        <td class="precio-final">$0.00</td>
+      </tr>
+      <tr>
+        <td>Producto 2</td>
+        <td><input type="number" class="precio" value="5" min="0"></td>
+        <td><input type="number" class="cantidad" value="2" min="0"></td>
+        <td class="precio-final">$0.00</td>
+      </tr>
+      <tr>
+        <td>Producto 3</td>
+        <td><input type="number" class="precio" value="3" min="0"></td>
+        <td><input type="number" class="cantidad" value="4" min="0"></td>
+        <td class="precio-final">$0.00</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button id="boton-calcular">Calcular Total</button>
+
+  <div id="total-general">Total General: $0.00</div>
+
+  <script>
+    document.getElementById("boton-calcular").addEventListener("click", function() {
+      const filas = document.querySelectorAll("#tabla-productos tbody tr");
+      let totalGeneral = 0;
+
+      filas.forEach(fila => {
+        const precio = parseFloat(fila.querySelector(".precio").value) || 0;
+        const cantidad = parseFloat(fila.querySelector(".cantidad").value) || 0;
+        const precioFinal = precio * cantidad;
+        fila.querySelector(".precio-final").textContent = `$${precioFinal.toFixed(2)}`;
+        totalGeneral += precioFinal;
+      });
+
+      document.getElementById("total-general").textContent = `Total General: $${totalGeneral.toFixed(2)}`;
+    });
+  </script>
+
+</body>
+</html>
+
 
