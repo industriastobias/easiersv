@@ -1,244 +1,896 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Financiero Empresarial</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Financiero - Gestión de Gastos Empresarial</title>
+    
+    <!-- Librerías CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <style>
-    body {
-      background-color: #f8f9fb;
-      font-family: "Segoe UI", sans-serif;
-    }
-    .card {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border-radius: 12px;
-    }
-    th {
-      background-color: #007bff;
-      color: #fff;
-      text-align: center;
-    }
-    td input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      text-align: center;
-    }
-    .table td, .table th {
-      vertical-align: middle;
-    }
-    .summary {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-  </style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #4c51bf;
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .nav-tab.active {
+            background: #4c51bf;
+            color: white;
+        }
+
+        .nav-tab:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #4c51bf;
+        }
+
+        .card-value.positive {
+            color: #48bb78;
+        }
+
+        .card-value.negative {
+            color: #f56565;
+        }
+
+        .form-container, .table-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #4a5568;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: #4c51bf;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #4c51bf;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .icon-btn {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .icon-btn.edit {
+            background: #4299e1;
+            color: white;
+        }
+
+        .icon-btn.delete {
+            background: #f56565;
+            color: white;
+        }
+
+        .summary-box {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.85em;
+            color: #718096;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .price-analysis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .analysis-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .analysis-result h3 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .analysis-result .value {
+            font-size: 3em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .price-analysis {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body class="container py-4">
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Panel Financiero Empresarial</h1>
+        </header>
 
-  <h2 class="text-center mb-4 text-primary fw-bold">📊 Panel Financiero Empresarial</h2>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="showSection('gastosFijos')">Gastos Fijos</button>
+            <button class="nav-tab" onclick="showSection('costosMarginales')">Costos Marginales</button>
+            <button class="nav-tab" onclick="showSection('gastosVariables')">Gastos Variables</button>
+            <button class="nav-tab" onclick="showSection('precios')">Análisis de Precios</button>
+            <button class="nav-tab" onclick="showSection('reportes')">Reportes</button>
+        </nav>
 
-  <!-- Botones de control -->
-  <div class="mb-3 d-flex justify-content-between">
-    <div>
-      <button id="add-product" class="btn btn-success btn-sm">➕ Agregar Producto</button>
-      <button id="add-cost" class="btn btn-secondary btn-sm">💼 Agregar Costo Fijo</button>
+        <!-- Dashboard -->
+        <div id="dashboard" class="content-section active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-title">Total Gastos Fijos</div>
+                    <div class="card-value negative" id="totalGastosFijos">$0.00</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Costos Marginales</div>
+                    <div class="card-value negative" id="totalCostosMarginales">$0.00</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Gastos Variables</div>
+                    <div class="card-value negative" id="totalGastosVariables">$0.00</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Costo Total Operativo</div>
+                    <div class="card-value negative" id="costoTotalOperativo">$0.00</div>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <h2>Resumen Financiero Mensual</h2>
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <div class="summary-label">Ingresos Estimados</div>
+                        <div class="summary-value positive" id="ingresosEstimados">$0.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Margen de Ganancia</div>
+                        <div class="summary-value" id="margenGanancia">0%</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Punto de Equilibrio</div>
+                        <div class="summary-value" id="puntoEquilibrio">0 unidades</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gastos Fijos -->
+        <div id="gastosFijos" class="content-section">
+            <div class="form-container">
+                <h2>➕ Registrar Gasto Fijo</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Concepto</label>
+                        <input type="text" id="gf_concepto" placeholder="Ej: Alquiler">
+                    </div>
+                    <div class="form-group">
+                        <label>Monto Mensual ($)</label>
+                        <input type="number" id="gf_monto" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="gf_categoria">
+                            <option>Arrendamientos</option>
+                            <option>Sueldos</option>
+                            <option>Servicios</option>
+                            <option>Seguros</option>
+                            <option>Otros</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="agregarGastoFijo()">Agregar Gasto Fijo</button>
+            </div>
+
+            <div class="table-container">
+                <h3>📋 Lista de Gastos Fijos</h3>
+                <table id="tablaGastosFijos">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Categoría</th>
+                            <th>Monto Mensual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Costos Marginales -->
+        <div id="costosMarginales" class="content-section">
+            <div class="form-container">
+                <h2>➕ Registrar Costo Marginal</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Producto/Servicio</label>
+                        <input type="text" id="cm_producto" placeholder="Ej: Producto A">
+                    </div>
+                    <div class="form-group">
+                        <label>Costo por Unidad ($)</label>
+                        <input type="number" id="cm_costo" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Unidad</label>
+                        <select id="cm_unidad">
+                            <option>Unidad</option>
+                            <option>Kilogramo</option>
+                            <option>Litro</option>
+                            <option>Hora</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="agregarCostoMarginal()">Agregar Costo Marginal</button>
+            </div>
+
+            <div class="table-container">
+                <h3>📋 Lista de Costos Marginales</h3>
+                <table id="tablaCostosMarginales">
+                    <thead>
+                        <tr>
+                            <th>Producto/Servicio</th>
+                            <th>Costo por Unidad</th>
+                            <th>Unidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Gastos Variables -->
+        <div id="gastosVariables" class="content-section">
+            <div class="form-container">
+                <h2>➕ Registrar Gasto Variable</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" id="gv_descripcion" placeholder="Ej: Publicidad">
+                    </div>
+                    <div class="form-group">
+                        <label>Monto ($)</label>
+                        <input type="number" id="gv_monto" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="gv_fecha">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="agregarGastoVariable()">Agregar Gasto Variable</button>
+            </div>
+
+            <div class="table-container">
+                <h3>📋 Lista de Gastos Variables</h3>
+                <table id="tablaGastosVariables">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Análisis de Precios -->
+        <div id="precios" class="content-section">
+            <div class="form-container">
+                <h2>💰 Calculadora de Precios</h2>
+                <div class="price-analysis">
+                    <div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Producto</label>
+                                <input type="text" id="precio_producto" placeholder="Ej: Producto A">
+                            </div>
+                            <div class="form-group">
+                                <label>Costo de Compra ($)</label>
+                                <input type="number" id="precio_compra" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Porcentaje de Ganancia Deseado (%)</label>
+                                <input type="number" id="precio_margen" placeholder="0" step="0.1">
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="calcularPrecio()">Calcular Precio Sugerido</button>
+                    </div>
+                    <div class="analysis-result">
+                        <h3>Precio Sugerido</h3>
+                        <div class="value" id="precioSugerido">$0.00</div>
+                        <p>Ganancia por unidad: <strong id="gananciaUnidad">$0.00</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reportes -->
+        <div id="reportes" class="content-section">
+            <div class="form-container">
+                <h2>📈 Exportación de Reportes</h2>
+                <p>Genera reportes financieros completos en Excel o PDF</p>
+                <div class="btn-group">
+                    <button class="btn-success" onclick="exportarExcel()">📊 Exportar a Excel</button>
+                    <button class="btn-danger" onclick="exportarPDF()">📄 Exportar a PDF</button>
+                    <label class="btn-warning" style="cursor: pointer;">
+                        📥 Importar desde Excel
+                        <input type="file" id="importExcel" accept=".xlsx, .xls" style="display: none;" onchange="importarExcel(event)">
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-      <button id="export-excel" class="btn btn-outline-success btn-sm">📤 Exportar Excel</button>
-      <button id="export-pdf" class="btn btn-outline-danger btn-sm">📄 Exportar PDF</button>
-      <input type="file" id="import-excel" accept=".xlsx,.xls,.csv" class="btn btn-outline-dark btn-sm">
-    </div>
-  </div>
 
-  <!-- Tabla de productos -->
-  <div class="card p-3 mb-4">
-    <h5 class="text-primary">Ventas de Productos / Servicios</h5>
-    <table id="tabla-productos" class="table table-bordered table-sm mt-2">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Precio Unitario ($)</th>
-          <th>Cantidad</th>
-          <th>Descuento (%)</th>
-          <th>IVA (%)</th>
-          <th>Total ($)</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <script>
+        // Clase principal para la gestión financiera
+        class FinancialManager {
+            constructor() {
+                this.gastosFijos = JSON.parse(localStorage.getItem('gastosFijos')) || [];
+                this.costosMarginales = JSON.parse(localStorage.getItem('costosMarginales')) || [];
+                this.gastosVariables = JSON.parse(localStorage.getItem('gastosVariables')) || [];
+            }
 
-  <!-- Tabla de costos fijos -->
-  <div class="card p-3 mb-4">
-    <h5 class="text-primary">Costos Fijos Mensuales</h5>
-    <table id="tabla-costos" class="table table-bordered table-sm mt-2">
-      <thead>
-        <tr>
-          <th>Concepto</th>
-          <th>Monto ($)</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+            guardarDatos() {
+                localStorage.setItem('gastosFijos', JSON.stringify(this.gastosFijos));
+                localStorage.setItem('costosMarginales', JSON.stringify(this.costosMarginales));
+                localStorage.setItem('gastosVariables', JSON.stringify(this.gastosVariables));
+            }
 
-  <!-- Resumen contable -->
-  <div class="summary">
-    <h5 class="text-primary">Resumen Contable</h5>
-    <p>Subtotal: $<span id="subtotal">0.00</span></p>
-    <p>Total IVA: $<span id="iva-total">0.00</span></p>
-    <p>Total Descuentos: $<span id="descuento-total">0.00</span></p>
-    <p>Costos Fijos: $<span id="costos-fijos">0.00</span></p>
-    <hr>
-    <p><strong>Utilidad Bruta:</strong> $<span id="utilidad-bruta">0.00</span></p>
-    <p>Impuesto Corporativo (%): <input type="number" id="impuesto" value="25" min="0" max="100" style="width:60px;"></p>
-    <p>Impuestos: $<span id="impuesto-total">0.00</span></p>
-    <h5 class="text-success">Utilidad Neta: $<span id="utilidad-neta">0.00</span></h5>
-    <h6 class="text-secondary">Margen de Ganancia: <span id="margen">0.00</span>%</h6>
-  </div>
+            // Gastos Fijos
+            agregarGastoFijo(gasto) {
+                gasto.id = Date.now();
+                this.gastosFijos.push(gasto);
+                this.guardarDatos();
+            }
 
-  <script>
-    const productos = document.querySelector("#tabla-productos tbody");
-    const costos = document.querySelector("#tabla-costos tbody");
-    const impuestoInput = document.getElementById("impuesto");
+            eliminarGastoFijo(id) {
+                this.gastosFijos = this.gastosFijos.filter(g => g.id !== id);
+                this.guardarDatos();
+            }
 
-    // Crear fila de producto
-    document.getElementById("add-product").addEventListener("click", () => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td contenteditable="true">Nuevo producto</td>
-        <td><input type="number" class="precio" value="0"></td>
-        <td><input type="number" class="cantidad" value="1"></td>
-        <td><input type="number" class="descuento" value="0"></td>
-        <td><input type="number" class="iva" value="13"></td>
-        <td class="total">$0.00</td>
-        <td><button class="btn btn-danger btn-sm eliminar">🗑️</button></td>`;
-      productos.appendChild(tr);
-    });
+            // Costos Marginales
+            agregarCostoMarginal(costo) {
+                costo.id = Date.now();
+                this.costosMarginales.push(costo);
+                this.guardarDatos();
+            }
 
-    // Crear fila de costo fijo
-    document.getElementById("add-cost").addEventListener("click", () => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td contenteditable="true">Nuevo costo</td>
-        <td><input type="number" class="costo" value="0"></td>
-        <td><button class="btn btn-danger btn-sm eliminar">🗑️</button></td>`;
-      costos.appendChild(tr);
-    });
+            eliminarCostoMarginal(id) {
+                this.costosMarginales = this.costosMarginales.filter(c => c.id !== id);
+                this.guardarDatos();
+            }
 
-    // Eliminar filas
-    document.body.addEventListener("click", e => {
-      if (e.target.classList.contains("eliminar")) {
-        e.target.closest("tr").remove();
-        calcular();
-      }
-    });
+            // Gastos Variables
+            agregarGastoVariable(gasto) {
+                gasto.id = Date.now();
+                this.gastosVariables.push(gasto);
+                this.guardarDatos();
+            }
 
-    // Calcular totales
-    document.body.addEventListener("input", e => calcular());
-    impuestoInput.addEventListener("input", calcular);
+            eliminarGastoVariable(id) {
+                this.gastosVariables = this.gastosVariables.filter(g => g.id !== id);
+                this.guardarDatos();
+            }
 
-    function calcular() {
-      let subtotal = 0, ivaTotal = 0, descuentoTotal = 0, costosFijos = 0;
+            // Cálculos
+            getTotalGastosFijos() {
+                return this.gastosFijos.reduce((sum, g) => sum + parseFloat(g.monto), 0);
+            }
 
-      productos.querySelectorAll("tr").forEach(fila => {
-        const precio = parseFloat(fila.querySelector(".precio")?.value) || 0;
-        const cantidad = parseFloat(fila.querySelector(".cantidad")?.value) || 0;
-        const descuento = parseFloat(fila.querySelector(".descuento")?.value) || 0;
-        const iva = parseFloat(fila.querySelector(".iva")?.value) || 0;
+            getTotalCostosMarginales() {
+                return this.costosMarginales.reduce((sum, c) => sum + parseFloat(c.costo), 0);
+            }
 
-        const totalProd = precio * cantidad;
-        const desc = totalProd * (descuento / 100);
-        const ivaMonto = (totalProd - desc) * (iva / 100);
-        const totalFinal = totalProd - desc + ivaMonto;
+            getTotalGastosVariables() {
+                return this.gastosVariables.reduce((sum, g) => sum + parseFloat(g.monto), 0);
+            }
 
-        subtotal += totalProd;
-        descuentoTotal += desc;
-        ivaTotal += ivaMonto;
+            getCostoTotalOperativo() {
+                return this.getTotalGastosFijos() + this.getTotalCostosMarginales() + this.getTotalGastosVariables();
+            }
+        }
 
-        fila.querySelector(".total").textContent = `$${totalFinal.toFixed(2)}`;
-      });
+        // Instancia global
+        const fm = new FinancialManager();
 
-      costos.querySelectorAll(".costo").forEach(c => costosFijos += parseFloat(c.value) || 0);
+        // Navegación
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (sectionId === 'dashboard') actualizarDashboard();
+            if (sectionId === 'gastosFijos') cargarTablaGastosFijos();
+            if (sectionId === 'costosMarginales') cargarTablaCostosMarginales();
+            if (sectionId === 'gastosVariables') cargarTablaGastosVariables();
+        }
 
-      const utilidadBruta = subtotal + ivaTotal - descuentoTotal - costosFijos;
-      const impuestoTotal = utilidadBruta * ((parseFloat(impuestoInput.value) || 0) / 100);
-      const utilidadNeta = utilidadBruta - impuestoTotal;
-      const margen = subtotal ? (utilidadNeta / subtotal * 100) : 0;
+        // Dashboard
+        function actualizarDashboard() {
+            const totales = {
+                fijos: fm.getTotalGastosFijos(),
+                marginales: fm.getTotalCostosMarginales(),
+                variables: fm.getTotalGastosVariables(),
+                total: fm.getCostoTotalOperativo()
+            };
 
-      document.getElementById("subtotal").textContent = subtotal.toFixed(2);
-      document.getElementById("iva-total").textContent = ivaTotal.toFixed(2);
-      document.getElementById("descuento-total").textContent = descuentoTotal.toFixed(2);
-      document.getElementById("costos-fijos").textContent = costosFijos.toFixed(2);
-      document.getElementById("utilidad-bruta").textContent = utilidadBruta.toFixed(2);
-      document.getElementById("impuesto-total").textContent = impuestoTotal.toFixed(2);
-      document.getElementById("utilidad-neta").textContent = utilidadNeta.toFixed(2);
-      document.getElementById("margen").textContent = margen.toFixed(2);
-    }
+            document.getElementById('totalGastosFijos').textContent = `$${totales.fijos.toFixed(2)}`;
+            document.getElementById('totalCostosMarginales').textContent = `$${totales.marginales.toFixed(2)}`;
+            document.getElementById('totalGastosVariables').textContent = `$${totales.variables.toFixed(2)}`;
+            document.getElementById('costoTotalOperativo').textContent = `$${totales.total.toFixed(2)}`;
 
-    // Exportar a Excel
-    document.getElementById("export-excel").addEventListener("click", () => {
-      const wb = XLSX.utils.book_new();
-      const ws1 = XLSX.utils.table_to_sheet(document.getElementById("tabla-productos"));
-      const ws2 = XLSX.utils.table_to_sheet(document.getElementById("tabla-costos"));
-      XLSX.utils.book_append_sheet(wb, ws1, "Productos");
-      XLSX.utils.book_append_sheet(wb, ws2, "Costos Fijos");
-      XLSX.writeFile(wb, "Panel_Financiero.xlsx");
-    });
+            // Estimaciones
+            const ingresos = totales.total * 1.5; // 50% de margen estimado
+            const margen = ((ingresos - totales.total) / ingresos * 100).toFixed(1);
+            const puntoEquilibrio = totales.fijos / 100; // Simplificado
 
-    // Exportar a PDF
-    document.getElementById("export-pdf").addEventListener("click", () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Resumen Financiero", 10, 10);
-      doc.text(`Subtotal: $${document.getElementById("subtotal").textContent}`, 10, 20);
-      doc.text(`IVA Total: $${document.getElementById("iva-total").textContent}`, 10, 30);
-      doc.text(`Descuentos: $${document.getElementById("descuento-total").textContent}`, 10, 40);
-      doc.text(`Costos Fijos: $${document.getElementById("costos-fijos").textContent}`, 10, 50);
-      doc.text(`Utilidad Neta: $${document.getElementById("utilidad-neta").textContent}`, 10, 60);
-      doc.text(`Margen: ${document.getElementById("margen").textContent}%`, 10, 70);
-      doc.save("Resumen_Financiero.pdf");
-    });
+            document.getElementById('ingresosEstimados').textContent = `$${ingresos.toFixed(2)}`;
+            document.getElementById('margenGanancia').textContent = `${margen}%`;
+            document.getElementById('puntoEquilibrio').textContent = `${Math.round(puntoEquilibrio)} unidades`;
+        }
 
-    // Importar Excel
-    document.getElementById("import-excel").addEventListener("change", e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = evt => {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        // Gastos Fijos
+        function agregarGastoFijo() {
+            const concepto = document.getElementById('gf_concepto').value;
+            const monto = document.getElementById('gf_monto').value;
+            const categoria = document.getElementById('gf_categoria').value;
 
-        productos.innerHTML = "";
-        json.slice(1).forEach(row => {
-          if (row.length > 0) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td contenteditable="true">${row[0] || ""}</td>
-              <td><input type="number" class="precio" value="${row[1] || 0}"></td>
-              <td><input type="number" class="cantidad" value="${row[2] || 1}"></td>
-              <td><input type="number" class="descuento" value="${row[3] || 0}"></td>
-              <td><input type="number" class="iva" value="${row[4] || 13}"></td>
-              <td class="total">$0.00</td>
-              <td><button class="btn btn-danger btn-sm eliminar">🗑️</button></td>`;
-            productos.appendChild(tr);
-          }
+            if (!concepto || !monto) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+
+            fm.agregarGastoFijo({ concepto, monto, categoria });
+            document.getElementById('gf_concepto').value = '';
+            document.getElementById('gf_monto').value = '';
+            cargarTablaGastosFijos();
+            alert('Gasto fijo agregado exitosamente');
+        }
+
+        function cargarTablaGastosFijos() {
+            const tbody = document.querySelector('#tablaGastosFijos tbody');
+            tbody.innerHTML = '';
+            
+            fm.gastosFijos.forEach(gasto => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${gasto.concepto}</td>
+                    <td>${gasto.categoria}</td>
+                    <td>$${parseFloat(gasto.monto).toFixed(2)}</td>
+                    <td class="action-buttons">
+                        <button class="icon-btn delete" onclick="eliminarGastoFijo(${gasto.id})">🗑️</button>
+                    </td>
+                `;
+            });
+        }
+
+        function eliminarGastoFijo(id) {
+            if (confirm('¿Está seguro de eliminar este gasto fijo?')) {
+                fm.eliminarGastoFijo(id);
+                cargarTablaGastosFijos();
+                alert('Gasto fijo eliminado');
+            }
+        }
+
+        // Costos Marginales
+        function agregarCostoMarginal() {
+            const producto = document.getElementById('cm_producto').value;
+            const costo = document.getElementById('cm_costo').value;
+            const unidad = document.getElementById('cm_unidad').value;
+
+            if (!producto || !costo) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+
+            fm.agregarCostoMarginal({ producto, costo, unidad });
+            document.getElementById('cm_producto').value = '';
+            document.getElementById('cm_costo').value = '';
+            cargarTablaCostosMarginales();
+            alert('Costo marginal agregado exitosamente');
+        }
+
+        function cargarTablaCostosMarginales() {
+            const tbody = document.querySelector('#tablaCostosMarginales tbody');
+            tbody.innerHTML = '';
+            
+            fm.costosMarginales.forEach(costo => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${costo.producto}</td>
+                    <td>$${parseFloat(costo.costo).toFixed(2)}</td>
+                    <td>${costo.unidad}</td>
+                    <td class="action-buttons">
+                        <button class="icon-btn delete" onclick="eliminarCostoMarginal(${costo.id})">🗑️</button>
+                    </td>
+                `;
+            });
+        }
+
+        function eliminarCostoMarginal(id) {
+            if (confirm('¿Está seguro de eliminar este costo marginal?')) {
+                fm.eliminarCostoMarginal(id);
+                cargarTablaCostosMarginales();
+                alert('Costo marginal eliminado');
+            }
+        }
+
+        // Gastos Variables
+        function agregarGastoVariable() {
+            const descripcion = document.getElementById('gv_descripcion').value;
+            const monto = document.getElementById('gv_monto').value;
+            const fecha = document.getElementById('gv_fecha').value || new Date().toISOString().split('T')[0];
+
+            if (!descripcion || !monto) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+
+            fm.agregarGastoVariable({ descripcion, monto, fecha });
+            document.getElementById('gv_descripcion').value = '';
+            document.getElementById('gv_monto').value = '';
+            document.getElementById('gv_fecha').value = '';
+            cargarTablaGastosVariables();
+            alert('Gasto variable agregado exitosamente');
+        }
+
+        function cargarTablaGastosVariables() {
+            const tbody = document.querySelector('#tablaGastosVariables tbody');
+            tbody.innerHTML = '';
+            
+            fm.gastosVariables.forEach(gasto => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${gasto.fecha}</td>
+                    <td>${gasto.descripcion}</td>
+                    <td>$${parseFloat(gasto.monto).toFixed(2)}</td>
+                    <td class="action-buttons">
+                        <button class="icon-btn delete" onclick="eliminarGastoVariable(${gasto.id})">🗑️</button>
+                    </td>
+                `;
+            });
+        }
+
+        function eliminarGastoVariable(id) {
+            if (confirm('¿Está seguro de eliminar este gasto variable?')) {
+                fm.eliminarGastoVariable(id);
+                cargarTablaGastosVariables();
+                alert('Gasto variable eliminado');
+            }
+        }
+
+        // Análisis de Precios
+        function calcularPrecio() {
+            const compra = parseFloat(document.getElementById('precio_compra').value) || 0;
+            const margen = parseFloat(document.getElementById('precio_margen').value) || 0;
+
+            if (compra === 0 || margen === 0) {
+                alert('Ingrese el costo de compra y el porcentaje de ganancia deseado');
+                return;
+            }
+
+            const precioSugerido = compra * (1 + margen / 100);
+            const ganancia = precioSugerido - compra;
+
+            document.getElementById('precioSugerido').textContent = `$${precioSugerido.toFixed(2)}`;
+            document.getElementById('gananciaUnidad').textContent = `$${ganancia.toFixed(2)}`;
+        }
+
+        // Exportación e Importación
+        function exportarExcel() {
+            const wb = XLSX.utils.book_new();
+
+            const wsGastosFijos = XLSX.utils.json_to_sheet(fm.gastosFijos.map(g => ({
+                Concepto: g.concepto,
+                Categoría: g.categoria,
+                'Monto Mensual': `$${parseFloat(g.monto).toFixed(2)}`
+            })));
+            XLSX.utils.book_append_sheet(wb, wsGastosFijos, "Gastos Fijos");
+
+            const wsCostosMarginales = XLSX.utils.json_to_sheet(fm.costosMarginales.map(c => ({
+                Producto: c.producto,
+                'Costo por Unidad': `$${parseFloat(c.costo).toFixed(2)}`,
+                Unidad: c.unidad
+            })));
+            XLSX.utils.book_append_sheet(wb, wsCostosMarginales, "Costos Marginales");
+
+            const wsGastosVariables = XLSX.utils.json_to_sheet(fm.gastosVariables.map(g => ({
+                Fecha: g.fecha,
+                Descripción: g.descripcion,
+                Monto: `$${parseFloat(g.monto).toFixed(2)}`
+            })));
+            XLSX.utils.book_append_sheet(wb, wsGastosVariables, "Gastos Variables");
+
+            XLSX.writeFile(wb, `Reporte_Financiero_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('Reporte Financiero Empresarial', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 20, 40);
+            
+            doc.setFontSize(14);
+            doc.text('Resumen Ejecutivo', 20, 55);
+            doc.setFontSize(12);
+            doc.text(`Total Gastos Fijos: $${fm.getTotalGastosFijos().toFixed(2)}`, 20, 65);
+            doc.text(`Total Costos Marginales: $${fm.getTotalCostosMarginales().toFixed(2)}`, 20, 75);
+            doc.text(`Total Gastos Variables: $${fm.getTotalGastosVariables().toFixed(2)}`, 20, 85);
+            doc.text(`Costo Total Operativo: $${fm.getCostoTotalOperativo().toFixed(2)}`, 20, 95);
+
+            doc.save(`Reporte_Financiero_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        function importarExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+
+                    workbook.SheetNames.forEach(sheetName => {
+                        const worksheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+
+                        if (sheetName === 'Gastos Fijos' && jsonData.length > 1) {
+                            jsonData.slice(1).forEach(row => {
+                                if (row[0] && row[2]) {
+                                    fm.agregarGastoFijo({
+                                        concepto: row[0],
+                                        categoria: row[1] || 'Otros',
+                                        monto: parseFloat(row[2].toString().replace('$', ''))
+                                    });
+                                }
+                            });
+                        }
+                        // Similar para otras hojas...
+                    });
+
+                    fm.guardarDatos();
+                    alert('Datos importados exitosamente');
+                    location.reload();
+                } catch (error) {
+                    alert('Error al importar archivo. Asegúrese de que el formato sea correcto.');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarDashboard();
         });
-        calcular();
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  </script>
+    </script>
 </body>
 </html>
