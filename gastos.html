@@ -1,15 +1,39 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Financiero - Gestión de Gastos Empresarial</title>
+    <title>ERP Financiero Pro - Sistema Contable Integral</title>
     
-    <!-- Librerías CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- CDN de librerías esenciales -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
+        /* Sistema de diseño profesional con CSS variables */
+        :root {
+            --primary: #1e3a8a;
+            --primary-dark: #1e40af;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --gray-100: #f8fafc;
+            --gray-200: #e2e8f0;
+            --gray-400: #94a3b8;
+            --gray-600: #475569;
+            --gray-800: #1e293b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --border-radius: 12px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -17,879 +41,1617 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Layout profesional: Sidebar + Main */
+        .app-container {
+            display: flex;
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        .sidebar {
+            width: 280px;
+            background: var(--primary);
+            color: white;
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
         }
 
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
+        .sidebar-header {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 24px;
         }
 
-        h1 {
-            color: #4c51bf;
-            text-align: center;
-            font-size: 2.5em;
+        .sidebar-header h1 {
+            font-size: 1.5rem;
             font-weight: 700;
-        }
-
-        .nav-tabs {
+            color: white;
             display: flex;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 12px;
         }
 
-        .nav-tab {
-            flex: 1;
-            padding: 15px;
-            background: transparent;
-            border: none;
+        .sidebar-nav {
+            padding: 0 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
             transition: all 0.3s;
-            color: #666;
+            margin-bottom: 4px;
+            font-weight: 500;
         }
 
-        .nav-tab.active {
-            background: #4c51bf;
-            color: white;
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
         }
 
-        .nav-tab:hover {
-            background: #667eea;
-            color: white;
+        .nav-item.active {
+            background: var(--secondary);
+            box-shadow: var(--shadow-sm);
         }
 
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s;
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1.2rem;
         }
 
-        .content-section.active {
-            display: block;
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            max-width: 1400px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .top-bar {
+            background: white;
+            padding: 20px 32px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: -32px -32px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Componentes UI */
         .card {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--gray-200);
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
         }
 
         .card-title {
-            color: #666;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .card-value {
-            font-size: 2.2em;
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #4c51bf;
+            margin: 12px 0;
+            position: relative;
+            z-index: 2;
         }
 
-        .card-value.positive {
-            color: #48bb78;
+        .kpi-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
         }
 
-        .card-value.negative {
-            color: #f56565;
+        .kpi-change {
+            font-size: 0.75rem;
+            margin-top: 8px;
+            position: relative;
+            z-index: 2;
         }
 
-        .form-container, .table-container {
+        .kpi-change.positive { color: #6ee7b7; }
+        .kpi-change.negative { color: #fecaca; }
+
+        /* Formularios profesionales */
+        .form-container {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
+            gap: 8px;
         }
 
         label {
+            font-size: 0.875rem;
             font-weight: 600;
-            margin-bottom: 5px;
-            color: #4a5568;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        input, select {
-            padding: 12px;
-            border: 2px solid #e2e8f0;
+        input, select, textarea {
+            padding: 12px 16px;
+            border: 1px solid var(--gray-200);
             border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: var(--gray-100);
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: white;
         }
 
-        button {
-            padding: 12px 25px;
+        .btn {
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 1em;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
-            background: #4c51bf;
+            background: var(--primary);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #667eea;
+            background: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #f56565;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #ed8936;
-            color: white;
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
         }
 
         .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-top: 20px;
+        }
+
+        /* Tablas profesionales */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
         }
 
         th {
-            background: #4c51bf;
-            color: white;
+            background: var(--gray-100);
+            padding: 16px;
+            text-align: left;
             font-weight: 600;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            font-size: 0.85em;
+            letter-spacing: 0.05em;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
         }
 
         tr:hover {
-            background: #f7fafc;
+            background: var(--gray-100);
         }
 
-        .action-buttons {
+        .table-actions {
             display: flex;
-            gap: 5px;
+            gap: 8px;
         }
 
-        .icon-btn {
-            padding: 8px 12px;
-            border-radius: 5px;
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             border: none;
             cursor: pointer;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 0.875rem;
         }
 
-        .icon-btn.edit {
-            background: #4299e1;
-            color: white;
-        }
+        .btn-icon:hover { transform: scale(1.1); }
+        .btn-icon.edit { background: #dbeafe; color: var(--primary); }
+        .btn-icon.delete { background: #fee2e2; color: var(--danger); }
 
-        .icon-btn.delete {
-            background: #f56565;
-            color: white;
-        }
-
-        .summary-box {
-            background: #edf2f7;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+        /* Dashboard específico */
+        .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
         }
 
-        .summary-item {
-            text-align: center;
+        .chart-container {
+            background: white;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
         }
 
-        .summary-label {
-            font-size: 0.85em;
-            color: #718096;
+        .chart-title {
+            font-size: 1.125rem;
             font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .summary-value {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #2d3748;
-        }
-
-        .price-analysis {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .analysis-result {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-        }
-
-        .analysis-result h3 {
             margin-bottom: 20px;
-            font-size: 1.5em;
+            color: var(--gray-800);
         }
 
-        .analysis-result .value {
-            font-size: 3em;
-            font-weight: 700;
-            margin: 10px 0;
+        /* Modal profesional */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            backdrop-filter: blur(4px);
         }
 
-        @media (max-width: 768px) {
-            .price-analysis {
-                grid-template-columns: 1fr;
-            }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 24px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 12px; }
+
+        /* Notificaciones toast */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: toastSlideIn 0.3s ease-out;
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+        .toast.info { border-left-color: var(--primary); }
+
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-icon { font-size: 1.25rem; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; font-size: 0.875rem; }
+        .toast-message { font-size: 0.75rem; color: var(--gray-600); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .tab.active { color: var(--primary); }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📊 Panel Financiero Empresarial</h1>
-        </header>
+    <!-- Contenedor principal -->
+    <div class="app-container">
+        <!-- Sidebar profesional -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>💼 ERP Finance Pro</h1>
+                <p style="font-size: 0.75rem; opacity: 0.8; margin-top: 8px;">Sistema Contable Integral</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-item active" onclick="navigateTo('dashboard')">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard Ejecutivo</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('contabilidad')">
+                    <span class="nav-icon">📝</span>
+                    <span>Libro Contable</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('plan-cuentas')">
+                    <span class="nav-icon">📚</span>
+                    <span>Plan de Cuentas</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('ingresos')">
+                    <span class="nav-icon">💰</span>
+                    <span>Ingresos</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('gastos')">
+                    <span class="nav-icon">💸</span>
+                    <span>Gastos</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('activos')">
+                    <span class="nav-icon">🏢</span>
+                    <span>Activos Fijos</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('reportes')">
+                    <span class="nav-icon">📈</span>
+                    <span>Estados Financieros</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('analisis')">
+                    <span class="nav-icon">🎯</span>
+                    <span>Análisis Financiero</span>
+                </div>
+                <div class="nav-item" onclick="navigateTo('config')">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Configuración</span>
+                </div>
+            </nav>
+        </aside>
 
-        <nav class="nav-tabs">
-            <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
-            <button class="nav-tab" onclick="showSection('gastosFijos')">Gastos Fijos</button>
-            <button class="nav-tab" onclick="showSection('costosMarginales')">Costos Marginales</button>
-            <button class="nav-tab" onclick="showSection('gastosVariables')">Gastos Variables</button>
-            <button class="nav-tab" onclick="showSection('precios')">Análisis de Precios</button>
-            <button class="nav-tab" onclick="showSection('reportes')">Reportes</button>
-        </nav>
-
-        <!-- Dashboard -->
-        <div id="dashboard" class="content-section active">
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="card-title">Total Gastos Fijos</div>
-                    <div class="card-value negative" id="totalGastosFijos">$0.00</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Total Costos Marginales</div>
-                    <div class="card-value negative" id="totalCostosMarginales">$0.00</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Total Gastos Variables</div>
-                    <div class="card-value negative" id="totalGastosVariables">$0.00</div>
-                </div>
-                <div class="card">
-                    <div class="card-title">Costo Total Operativo</div>
-                    <div class="card-value negative" id="costoTotalOperativo">$0.00</div>
+        <!-- Contenido principal -->
+        <main class="main-content" id="mainContent">
+            <div class="top-bar">
+                <h2 class="page-title" id="pageTitle">Dashboard Ejecutivo</h2>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="exportarReporte('excel')">
+                        📊 Excel
+                    </button>
+                    <button class="btn btn-outline" onclick="exportarReporte('pdf')">
+                        📄 PDF
+                    </button>
                 </div>
             </div>
 
-            <div class="form-container">
-                <h2>Resumen Financiero Mensual</h2>
-                <div class="summary-box">
-                    <div class="summary-item">
-                        <div class="summary-label">Ingresos Estimados</div>
-                        <div class="summary-value positive" id="ingresosEstimados">$0.00</div>
+            <!-- Dashboard Ejecutivo -->
+            <section id="dashboard" class="content-section">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Activo Total</div>
+                        <div class="kpi-value" id="kpiActivoTotal">$0.00</div>
+                        <div class="kpi-change positive">↑ 12.5% vs período anterior</div>
                     </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Margen de Ganancia</div>
-                        <div class="summary-value" id="margenGanancia">0%</div>
+                    <div class="kpi-card" style="background: linear-gradient(135deg, var(--success) 0%, #34d399 100%);">
+                        <div class="kpi-label">Ingresos del Mes</div>
+                        <div class="kpi-value" id="kpiIngresosMes">$0.00</div>
+                        <div class="kpi-change positive">↑ 8.3% vs mes anterior</div>
                     </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Punto de Equilibrio</div>
-                        <div class="summary-value" id="puntoEquilibrio">0 unidades</div>
+                    <div class="kpi-card" style="background: linear-gradient(135deg, var(--danger) 0%, #f87171 100%);">
+                        <div class="kpi-label">Gastos del Mes</div>
+                        <div class="kpi-value" id="kpiGastosMes">$0.00</div>
+                        <div class="kpi-change negative">↑ 3.7% vs mes anterior</div>
+                    </div>
+                    <div class="kpi-card" style="background: linear-gradient(135deg, var(--warning) 0%, #fbbf24 100%);">
+                        <div class="kpi-label">Margen Neto</div>
+                        <div class="kpi-value" id="kpiMargenNeto">0%</div>
+                        <div class="kpi-change">vs objetivo 15%</div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Gastos Fijos -->
-        <div id="gastosFijos" class="content-section">
-            <div class="form-container">
-                <h2>➕ Registrar Gasto Fijo</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Concepto</label>
-                        <input type="text" id="gf_concepto" placeholder="Ej: Alquiler">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3 class="chart-title">📈 Flujo de Caja</h3>
+                        <canvas id="cashFlowChart" width="400" height="200"></canvas>
                     </div>
-                    <div class="form-group">
-                        <label>Monto Mensual ($)</label>
-                        <input type="number" id="gf_monto" placeholder="0.00" step="0.01">
+                    <div class="chart-container">
+                        <h3 class="chart-title">🥧 Distribución de Gastos</h3>
+                        <canvas id="expenseChart" width="300" height="200"></canvas>
                     </div>
-                    <div class="form-group">
-                        <label>Categoría</label>
-                        <select id="gf_categoria">
-                            <option>Arrendamientos</option>
-                            <option>Sueldos</option>
-                            <option>Servicios</option>
-                            <option>Seguros</option>
-                            <option>Otros</option>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 Resumen Financiero del Período</h3>
+                        <select id="periodoSelect" class="btn btn-outline" onchange="actualizarDashboard()">
+                            <option value="mes">Este Mes</option>
+                            <option value="trimestre">Este Trimestre</option>
+                            <option value="año">Este Año</option>
                         </select>
                     </div>
-                </div>
-                <button class="btn-primary" onclick="agregarGastoFijo()">Agregar Gasto Fijo</button>
-            </div>
-
-            <div class="table-container">
-                <h3>📋 Lista de Gastos Fijos</h3>
-                <table id="tablaGastosFijos">
-                    <thead>
-                        <tr>
-                            <th>Concepto</th>
-                            <th>Categoría</th>
-                            <th>Monto Mensual</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Costos Marginales -->
-        <div id="costosMarginales" class="content-section">
-            <div class="form-container">
-                <h2>➕ Registrar Costo Marginal</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Producto/Servicio</label>
-                        <input type="text" id="cm_producto" placeholder="Ej: Producto A">
-                    </div>
-                    <div class="form-group">
-                        <label>Costo por Unidad ($)</label>
-                        <input type="number" id="cm_costo" placeholder="0.00" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Unidad</label>
-                        <select id="cm_unidad">
-                            <option>Unidad</option>
-                            <option>Kilogramo</option>
-                            <option>Litro</option>
-                            <option>Hora</option>
-                            <option>Otro</option>
-                        </select>
+                    <div class="summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div class="summary-item">
+                            <div class="summary-label" style="color: var(--gray-600); font-size: 0.875rem;">EBITDA</div>
+                            <div class="summary-value" style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="ebitda">$0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" style="color: var(--gray-600); font-size: 0.875rem;">ROI</div>
+                            <div class="summary-value" style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="roi">0%</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" style="color: var(--gray-600); font-size: 0.875rem;">Liquidez Inmediata</div>
+                            <div class="summary-value" style="font-size: 1.5rem; font-weight: 700; color: var(--warning);" id="liquidez">0.00</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label" style="color: var(--gray-600); font-size: 0.875rem;">Punto de Equilibrio</div>
+                            <div class="summary-value" style="font-size: 1.5rem; font-weight: 700; color: var(--gray-800);" id="breakEven">0 unidades</div>
+                        </div>
                     </div>
                 </div>
-                <button class="btn-primary" onclick="agregarCostoMarginal()">Agregar Costo Marginal</button>
-            </div>
+            </section>
 
-            <div class="table-container">
-                <h3>📋 Lista de Costos Marginales</h3>
-                <table id="tablaCostosMarginales">
-                    <thead>
-                        <tr>
-                            <th>Producto/Servicio</th>
-                            <th>Costo por Unidad</th>
-                            <th>Unidad</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
+            <!-- Libro Contable -->
+            <section id="contabilidad" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('libro-diario')">Libro Diario</button>
+                        <button class="tab" onclick="switchTab('libro-mayor')">Libro Mayor</button>
+                        <button class="tab" onclick="switchTab('asientos')">Asientos Contables</button>
+                    </div>
+                    
+                    <div id="libro-diario" class="tab-content active">
+                        <div class="btn-group" style="margin-bottom: 20px;">
+                            <button class="btn btn-primary" onclick="nuevoAsiento()">
+                                ➕ Nuevo Asiento
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table id="tablaLibroDiario">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cuenta</th>
+                                        <th>Debe</th>
+                                        <th>Haber</th>
+                                        <th>Concepto</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Gastos Variables -->
-        <div id="gastosVariables" class="content-section">
-            <div class="form-container">
-                <h2>➕ Registrar Gasto Variable</h2>
+            <!-- Plan de Cuentas -->
+            <section id="plan-cuentas" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="btn-group" style="margin-bottom: 20px;">
+                        <button class="btn btn-primary" onclick="nuevaCuenta()">
+                            ➕ Nueva Cuenta
+                        </button>
+                        <button class="btn btn-outline" onclick="cargarPlanCuentasEstandar()">
+                            📚 Cargar Plan Estándar
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table id="tablaPlanCuentas">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Naturaleza</th>
+                                    <th>Saldo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ingresos -->
+            <section id="ingresos" class="content-section" style="display: none;">
+                <div class="form-container">
+                    <h3 class="card-title">💰 Registrar Ingreso</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <input type="text" id="ing_cliente" placeholder="Nombre del cliente">
+                        </div>
+                        <div class="form-group">
+                            <label>Concepto</label>
+                            <input type="text" id="ing_concepto" placeholder="Descripción del ingreso">
+                        </div>
+                        <div class="form-group">
+                            <label>Monto ($)</label>
+                            <input type="number" id="ing_monto" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Cuenta</label>
+                            <select id="ing_cuenta"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" id="ing_fecha">
+                        </div>
+                        <div class="form-group">
+                            <label>Método de Pago</label>
+                            <select id="ing_metodo">
+                                <option>Efectivo</option>
+                                <option>Transferencia</option>
+                                <option>Tarjeta Débito</option>
+                                <option>Tarjeta Crédito</option>
+                                <option>Cheque</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="registrarIngreso()">💾 Guardar Ingreso</button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📋 Historial de Ingresos</h3>
+                    <table id="tablaIngresos">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Concepto</th>
+                                <th>Monto</th>
+                                <th>Método</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Gastos Detallados -->
+            <section id="gastos" class="content-section" style="display: none;">
+                <div class="form-container">
+                    <h3 class="card-title">💸 Registrar Gasto</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Proveedor</label>
+                            <input type="text" id="gasto_proveedor" placeholder="Nombre del proveedor">
+                        </div>
+                        <div class="form-group">
+                            <label>Concepto</label>
+                            <input type="text" id="gasto_concepto" placeholder="Descripción del gasto">
+                        </div>
+                        <div class="form-group">
+                            <label>Monto ($)</label>
+                            <input type="number" id="gasto_monto" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select id="gasto_categoria">
+                                <option>Gastos Administrativos</option>
+                                <option>Gastos de Venta</option>
+                                <option>Gastos Financieros</option>
+                                <option>Impuestos</option>
+                                <option>Otros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" id="gasto_fecha">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Comprobante</label>
+                            <select id="gasto_comprobante">
+                                <option>Factura</option>
+                                <option>Boleta</option>
+                                <option>Recibo</option>
+                                <option>Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" onclick="registrarGasto()">💾 Guardar Gasto</button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📋 Historial de Gastos</h3>
+                    <div class="btn-group" style="margin-bottom: 20px;">
+                        <input type="text" placeholder="🔍 Buscar..." class="btn btn-outline" style="text-transform: none;" onkeyup="filtrarGastos(this.value)">
+                    </div>
+                    <table id="tablaGastos">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Proveedor</th>
+                                <th>Concepto</th>
+                                <th>Categoría</th>
+                                <th>Monto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Activos Fijos -->
+            <section id="activos" class="content-section" style="display: none;">
+                <div class="card">
+                    <h3 class="card-title">🏢 Gestión de Activos Fijos</h3>
+                    <div class="btn-group" style="margin-bottom: 20px;">
+                        <button class="btn btn-primary" onclick="nuevoActivo()">
+                            ➕ Registrar Activo
+                        </button>
+                    </div>
+                    <table id="tablaActivos">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th>Valor</th>
+                                <th>Fecha Compra</th>
+                                <th>Vida Útil</th>
+                                <th>Depreciación Mensual</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Estados Financieros -->
+            <section id="reportes" class="content-section" style="display: none;">
+                <div class="card">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('estado-resultados')">Estado de Resultados</button>
+                        <button class="tab" onclick="switchTab('balance-general')">Balance General</button>
+                        <button class="tab" onclick="switchTab('flujo-caja')">Flujo de Caja</button>
+                    </div>
+                    
+                    <div id="estado-resultados" class="tab-content active">
+                        <div class="btn-group" style="margin: 20px 0;">
+                            <select class="btn btn-outline" onchange="generarEstadoResultados(this.value)">
+                                <option value="2024-01">Enero 2024</option>
+                                <option value="2024-02">Febrero 2024</option>
+                                <option value="2024-03">Marzo 2024</option>
+                                <option value="2024-Q1">Q1 2024</option>
+                            </select>
+                        </div>
+                        <div id="estadoResultadosContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Análisis Financiero -->
+            <section id="analisis" class="content-section" style="display: none;">
+                <div class="kpi-grid">
+                    <div class="card">
+                        <h4 class="card-title">Liquidez Corriente</h4>
+                        <div class="kpi-value" id="ratioLiquidez">0.00</div>
+                        <p style="font-size: 0.75rem; color: var(--gray-600);">Ideal: > 1.5</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="card-title">Razón de Endeudamiento</h4>
+                        <div class="kpi-value" id="ratioEndeudamiento">0%</div>
+                        <p style="font-size: 0.75rem; color: var(--gray-600);">Ideal: < 40%</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="card-title">Rentabilidad sobre Activos</h4>
+                        <div class="kpi-value" id="ratioROA">0%</div>
+                        <p style="font-size: 0.75rem; color: var(--gray-600);">Ideal: > 5%</p>
+                    </div>
+                    <div class="card">
+                        <h4 class="card-title">Rotación de Inventario</h4>
+                        <div class="kpi-value" id="ratioInventario">0 días</div>
+                        <p style="font-size: 0.75rem; color: var(--gray-600);">Ideal: < 30 días</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📊 Análisis de Tendencias</h3>
+                    <canvas id="trendChart" width="800" height="300"></canvas>
+                </div>
+            </section>
+
+            <!-- Configuración -->
+            <section id="config" class="content-section" style="display: none;">
+                <div class="card">
+                    <h3 class="card-title">⚙️ Configuración Empresarial</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre de la Empresa</label>
+                            <input type="text" id="cfg_empresa" value="Mi Empresa S.A.">
+                        </div>
+                        <div class="form-group">
+                            <label>RUC/NIT</label>
+                            <input type="text" id="cfg_ruc" placeholder="Ingrese RUC/NIT">
+                        </div>
+                        <div class="form-group">
+                            <label>Moneda Base</label>
+                            <select id="cfg_moneda">
+                                <option value="USD">USD - Dólar Americano</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="COP">COP - Peso Colombiano</option>
+                                <option value="MXN">MXN - Peso Mexicano</option>
+                                <option value="ARS">ARS - Peso Argentino</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Período Contable</label>
+                            <select id="cfg_periodo">
+                                <option>Mensual</option>
+                                <option>Trimestral</option>
+                                <option>Anual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="guardarConfiguracion()">
+                        💾 Guardar Configuración
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modales -->
+    <div class="modal" id="modalAsiento">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="card-title">📝 Nuevo Asiento Contable</h3>
+                <button class="btn-icon" onclick="cerrarModal('modalAsiento')" style="font-size: 1.5rem;">×</button>
+            </div>
+            <div class="modal-body">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Descripción</label>
-                        <input type="text" id="gv_descripcion" placeholder="Ej: Publicidad">
-                    </div>
-                    <div class="form-group">
-                        <label>Monto ($)</label>
-                        <input type="number" id="gv_monto" placeholder="0.00" step="0.01">
-                    </div>
                     <div class="form-group">
                         <label>Fecha</label>
-                        <input type="date" id="gv_fecha">
+                        <input type="date" id="as_fecha">
                     </div>
-                </div>
-                <button class="btn-primary" onclick="agregarGastoVariable()">Agregar Gasto Variable</button>
-            </div>
-
-            <div class="table-container">
-                <h3>📋 Lista de Gastos Variables</h3>
-                <table id="tablaGastosVariables">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Descripción</th>
-                            <th>Monto</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Análisis de Precios -->
-        <div id="precios" class="content-section">
-            <div class="form-container">
-                <h2>💰 Calculadora de Precios</h2>
-                <div class="price-analysis">
-                    <div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Producto</label>
-                                <input type="text" id="precio_producto" placeholder="Ej: Producto A">
-                            </div>
-                            <div class="form-group">
-                                <label>Costo de Compra ($)</label>
-                                <input type="number" id="precio_compra" placeholder="0.00" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label>Porcentaje de Ganancia Deseado (%)</label>
-                                <input type="number" id="precio_margen" placeholder="0" step="0.1">
-                            </div>
-                        </div>
-                        <button class="btn-primary" onclick="calcularPrecio()">Calcular Precio Sugerido</button>
+                    <div class="form-group">
+                        <label>Concepto</label>
+                        <input type="text" id="as_concepto" placeholder="Descripción del asiento">
                     </div>
-                    <div class="analysis-result">
-                        <h3>Precio Sugerido</h3>
-                        <div class="value" id="precioSugerido">$0.00</div>
-                        <p>Ganancia por unidad: <strong id="gananciaUnidad">$0.00</strong></p>
+                    <div class="form-group">
+                        <label>Cuenta (Debe)</label>
+                        <select id="as_cuenta_debe"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cuenta (Haber)</label>
+                        <select id="as_cuenta_haber"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto</label>
+                        <input type="number" id="as_monto" placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Comprobante</label>
+                        <input type="text" id="as_comprobante" placeholder="N° de comprobante">
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Reportes -->
-        <div id="reportes" class="content-section">
-            <div class="form-container">
-                <h2>📈 Exportación de Reportes</h2>
-                <p>Genera reportes financieros completos en Excel o PDF</p>
-                <div class="btn-group">
-                    <button class="btn-success" onclick="exportarExcel()">📊 Exportar a Excel</button>
-                    <button class="btn-danger" onclick="exportarPDF()">📄 Exportar a PDF</button>
-                    <label class="btn-warning" style="cursor: pointer;">
-                        📥 Importar desde Excel
-                        <input type="file" id="importExcel" accept=".xlsx, .xls" style="display: none;" onchange="importarExcel(event)">
-                    </label>
-                </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="cerrarModal('modalAsiento')">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarAsiento()">Guardar Asiento</button>
             </div>
         </div>
     </div>
 
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>
-        // Clase principal para la gestión financiera
-        class FinancialManager {
+        // Sistema de Navegación Profesional
+        const sections = {
+            dashboard: { title: 'Dashboard Ejecutivo', icon: '📊' },
+            contabilidad: { title: 'Libro Contable', icon: '📝' },
+            'plan-cuentas': { title: 'Plan de Cuentas', icon: '📚' },
+            ingresos: { title: 'Gestión de Ingresos', icon: '💰' },
+            gastos: { title: 'Gestión de Gastos', icon: '💸' },
+            activos: { title: 'Activos Fijos', icon: '🏢' },
+            reportes: { title: 'Estados Financieros', icon: '📈' },
+            analisis: { title: 'Análisis Financiero', icon: '🎯' },
+            config: { title: 'Configuración', icon: '⚙️' }
+        };
+
+        let currentSection = 'dashboard';
+        let charts = {};
+
+        // Clase Contable Principal
+        class SistemaContable {
             constructor() {
-                this.gastosFijos = JSON.parse(localStorage.getItem('gastosFijos')) || [];
-                this.costosMarginales = JSON.parse(localStorage.getItem('costosMarginales')) || [];
-                this.gastosVariables = JSON.parse(localStorage.getItem('gastosVariables')) || [];
+                this.config = JSON.parse(localStorage.getItem('config')) || {
+                    empresa: 'Mi Empresa S.A.',
+                    ruc: '',
+                    moneda: 'USD',
+                    periodo: 'Mensual',
+                    fechaInicio: new Date().toISOString().split('T')[0]
+                };
+                this.planCuentas = JSON.parse(localStorage.getItem('planCuentas')) || [];
+                this.asientos = JSON.parse(localStorage.getItem('asientos')) || [];
+                this.ingresos = JSON.parse(localStorage.getItem('ingresos')) || [];
+                this.gastos = JSON.parse(localStorage.getItem('gastos')) || [];
+                this.activos = JSON.parse(localStorage.getItem('activos')) || [];
+                this.init();
             }
 
-            guardarDatos() {
-                localStorage.setItem('gastosFijos', JSON.stringify(this.gastosFijos));
-                localStorage.setItem('costosMarginales', JSON.stringify(this.costosMarginales));
-                localStorage.setItem('gastosVariables', JSON.stringify(this.gastosVariables));
+            init() {
+                if (this.planCuentas.length === 0) {
+                    this.cargarPlanCuentasEstandar();
+                }
+                this.actualizarSelects();
             }
 
-            // Gastos Fijos
-            agregarGastoFijo(gasto) {
-                gasto.id = Date.now();
-                this.gastosFijos.push(gasto);
-                this.guardarDatos();
+            guardar() {
+                localStorage.setItem('config', JSON.stringify(this.config));
+                localStorage.setItem('planCuentas', JSON.stringify(this.planCuentas));
+                localStorage.setItem('asientos', JSON.stringify(this.asientos));
+                localStorage.setItem('ingresos', JSON.stringify(this.ingresos));
+                localStorage.setItem('gastos', JSON.stringify(this.gastos));
+                localStorage.setItem('activos', JSON.stringify(this.activos));
             }
 
-            eliminarGastoFijo(id) {
-                this.gastosFijos = this.gastosFijos.filter(g => g.id !== id);
-                this.guardarDatos();
+            cargarPlanCuentasEstandar() {
+                const cuentasEstandar = [
+                    { codigo: '1000', nombre: 'ACTIVOS', tipo: 'Balance', naturaleza: 'Deudora', saldo: 0 },
+                    { codigo: '1100', nombre: 'ACTIVOS CORRIENTES', tipo: 'Balance', naturaleza: 'Deudora', saldo: 0 },
+                    { codigo: '1110', nombre: 'Caja y Bancos', tipo: 'Balance', naturaleza: 'Deudora', saldo: 0 },
+                    { codigo: '1200', nombre: 'ACTIVOS FIJOS', tipo: 'Balance', naturaleza: 'Deudora', saldo: 0 },
+                    { codigo: '2000', nombre: 'PASIVOS', tipo: 'Balance', naturaleza: 'Acreedora', saldo: 0 },
+                    { codigo: '2100', nombre: 'PASIVOS CORRIENTES', tipo: 'Balance', naturaleza: 'Acreedora', saldo: 0 },
+                    { codigo: '3000', nombre: 'PATRIMONIO', tipo: 'Balance', naturaleza: 'Acreedora', saldo: 0 },
+                    { codigo: '4000', nombre: 'INGRESOS', tipo: 'Resultados', naturaleza: 'Acreedora', saldo: 0 },
+                    { codigo: '5000', nombre: 'GASTOS', tipo: 'Resultados', naturaleza: 'Deudora', saldo: 0 },
+                    { codigo: '5100', nombre: 'Gastos de Administración', tipo: 'Resultados', naturaleza: 'Deudora', saldo: 0 },
+                    { codigo: '5200', nombre: 'Gastos de Venta', tipo: 'Resultados', naturaleza: 'Deudora', saldo: 0 }
+                ];
+                this.planCuentas = cuentasEstandar;
+                this.guardar();
             }
 
-            // Costos Marginales
-            agregarCostoMarginal(costo) {
-                costo.id = Date.now();
-                this.costosMarginales.push(costo);
-                this.guardarDatos();
+            actualizarSelects() {
+                const selects = ['as_cuenta_debe', 'as_cuenta_haber', 'ing_cuenta'];
+                selects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    if (select) {
+                        select.innerHTML = '';
+                        this.planCuentas
+                            .filter(c => c.tipo === 'Resultados' || c.codigo.length > 3)
+                            .forEach(cuenta => {
+                                const option = document.createElement('option');
+                                option.value = cuenta.codigo;
+                                option.textContent = `${cuenta.codigo} - ${cuenta.nombre}`;
+                                select.appendChild(option);
+                            });
+                    }
+                });
             }
 
-            eliminarCostoMarginal(id) {
-                this.costosMarginales = this.costosMarginales.filter(c => c.id !== id);
-                this.guardarDatos();
+            registrarAsiento(asiento) {
+                asiento.id = Date.now() + Math.random();
+                asiento.fecha = new Date().toISOString().split('T')[0];
+                this.asientos.push(asiento);
+                this.guardar();
+                this.actualizarSaldos();
             }
 
-            // Gastos Variables
-            agregarGastoVariable(gasto) {
-                gasto.id = Date.now();
-                this.gastosVariables.push(gasto);
-                this.guardarDatos();
+            actualizarSaldos() {
+                // Resetear saldos
+                this.planCuentas.forEach(c => c.saldo = 0);
+
+                // Calcular saldos desde asientos
+                this.asientos.forEach(asiento => {
+                    const cuentaDebe = this.planCuentas.find(c => c.codigo === asiento.cuentaDebe);
+                    const cuentaHaber = this.planCuentas.find(c => c.codigo === asiento.cuentaHaber);
+                    
+                    if (cuentaDebe && cuentaHaber) {
+                        if (cuentaDebe.naturaleza === 'Deudora') {
+                            cuentaDebe.saldo += parseFloat(asiento.monto);
+                        } else {
+                            cuentaDebe.saldo -= parseFloat(asiento.monto);
+                        }
+
+                        if (cuentaHaber.naturaleza === 'Acreedora') {
+                            cuentaHaber.saldo += parseFloat(asiento.monto);
+                        } else {
+                            cuentaHaber.saldo -= parseFloat(asiento.monto);
+                        }
+                    }
+                });
+
+                // Actualizar con ingresos y gastos directos
+                this.ingresos.forEach(ing => {
+                    const cuenta = this.planCuentas.find(c => c.codigo === '4000');
+                    if (cuenta) cuenta.saldo += parseFloat(ing.monto);
+                });
+
+                this.gastos.forEach(gasto => {
+                    const cuenta = this.planCuentas.find(c => c.codigo === '5000');
+                    if (cuenta) cuenta.saldo += parseFloat(gasto.monto);
+                });
+
+                this.guardar();
             }
 
-            eliminarGastoVariable(id) {
-                this.gastosVariables = this.gastosVariables.filter(g => g.id !== id);
-                this.guardarDatos();
+            // Métodos para cálculos financieros
+            getTotalIngresos() {
+                return this.ingresos.reduce((sum, ing) => sum + parseFloat(ing.monto), 0);
             }
 
-            // Cálculos
-            getTotalGastosFijos() {
-                return this.gastosFijos.reduce((sum, g) => sum + parseFloat(g.monto), 0);
+            getTotalGastos() {
+                return this.gastos.reduce((sum, gasto) => sum + parseFloat(gasto.monto), 0);
             }
 
-            getTotalCostosMarginales() {
-                return this.costosMarginales.reduce((sum, c) => sum + parseFloat(c.costo), 0);
+            getActivoTotal() {
+                return this.planCuentas
+                    .filter(c => c.codigo.startsWith('1'))
+                    .reduce((sum, c) => sum + Math.abs(c.saldo), 0);
             }
 
-            getTotalGastosVariables() {
-                return this.gastosVariables.reduce((sum, g) => sum + parseFloat(g.monto), 0);
+            getPasivoTotal() {
+                return this.planCuentas
+                    .filter(c => c.codigo.startsWith('2'))
+                    .reduce((sum, c) => sum + Math.abs(c.saldo), 0);
             }
 
-            getCostoTotalOperativo() {
-                return this.getTotalGastosFijos() + this.getTotalCostosMarginales() + this.getTotalGastosVariables();
+            getPatrimonioTotal() {
+                return this.planCuentas
+                    .filter(c => c.codigo.startsWith('3'))
+                    .reduce((sum, c) => sum + Math.abs(c.saldo), 0);
+            }
+
+            generarEstadoResultados() {
+                const ingresos = this.getTotalIngresos();
+                const gastosAdmin = this.gastos
+                    .filter(g => g.categoria === 'Gastos Administrativos')
+                    .reduce((sum, g) => sum + parseFloat(g.monto), 0);
+                const gastosVenta = this.gastos
+                    .filter(g => g.categoria === 'Gastos de Venta')
+                    .reduce((sum, g) => sum + parseFloat(g.monto), 0);
+                const utilidadBruta = ingresos - (gastosAdmin + gastosVenta);
+                const impuestos = utilidadBruta * 0.25; // 25% impuesto estimado
+                const utilidadNeta = utilidadBruta - impuestos;
+
+                return {
+                    ingresos, gastosAdmin, gastosVenta, utilidadBruta, impuestos, utilidadNeta
+                };
+            }
+
+            generarBalanceGeneral() {
+                const activos = this.getActivoTotal();
+                const pasivos = this.getPasivoTotal();
+                const patrimonio = this.getPatrimonioTotal();
+                
+                return { activos, pasivos, patrimonio, totalPasivoPatrimonio: pasivos + patrimonio };
+            }
+
+            calcularRatios() {
+                const activos = this.getActivoTotal();
+                const pasivos = this.getPasivoTotal();
+                const ingresos = this.getTotalIngresos();
+                const gastos = this.getTotalGastos();
+                const circulante = this.planCuentas.find(c => c.codigo === '1100')?.saldo || 0;
+
+                return {
+                    liquidezCorriente: circulante / (pasivos || 1),
+                    endeudamiento: (pasivos / (activos || 1)) * 100,
+                    roa: ((ingresos - gastos) / (activos || 1)) * 100,
+                    roe: ((ingresos - gastos) / (this.getPatrimonioTotal() || 1)) * 100
+                };
             }
         }
 
-        // Instancia global
-        const fm = new FinancialManager();
+        // Instancia global del sistema
+        const sistema = new SistemaContable();
 
-        // Navegación
-        function showSection(sectionId) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            
-            document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
-            
+        // Sistema de Navegación
+        function navigateTo(sectionId) {
+            // Ocultar secciones
+            document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Actualizar nav
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Actualizar título
+            const section = sections[sectionId];
+            document.getElementById('pageTitle').textContent = `${section.icon} ${section.title}`;
+
+            currentSection = sectionId;
+
+            // Cargar datos específicos
             if (sectionId === 'dashboard') actualizarDashboard();
-            if (sectionId === 'gastosFijos') cargarTablaGastosFijos();
-            if (sectionId === 'costosMarginales') cargarTablaCostosMarginales();
-            if (sectionId === 'gastosVariables') cargarTablaGastosVariables();
+            if (sectionId === 'contabilidad') cargarLibroDiario();
+            if (sectionId === 'plan-cuentas') cargarPlanCuentas();
+            if (sectionId === 'ingresos') cargarIngresos();
+            if (sectionId === 'gastos') cargarGastos();
+            if (sectionId === 'activos') cargarActivos();
+            if (sectionId === 'analisis') calcularAnalisis();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
         }
 
         // Dashboard
         function actualizarDashboard() {
-            const totales = {
-                fijos: fm.getTotalGastosFijos(),
-                marginales: fm.getTotalCostosMarginales(),
-                variables: fm.getTotalGastosVariables(),
-                total: fm.getCostoTotalOperativo()
+            const ingresos = sistema.getTotalIngresos();
+            const gastos = sistema.getTotalGastos();
+            const activos = sistema.getActivoTotal();
+            const margen = ingresos > 0 ? ((ingresos - gastos) / ingresos * 100).toFixed(1) : 0;
+
+            document.getElementById('kpiActivoTotal').textContent = formatoMoneda(activos);
+            document.getElementById('kpiIngresosMes').textContent = formatoMoneda(ingresos);
+            document.getElementById('kpiGastosMes').textContent = formatoMoneda(gastos);
+            document.getElementById('kpiMargenNeto').textContent = `${margen}%`;
+
+            // Actualizar gráficos
+            actualizarGraficas();
+        }
+
+        function formatoMoneda(valor) {
+            const moneda = sistema.config.moneda;
+            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: moneda }).format(valor);
+        }
+
+        function actualizarGraficas() {
+            // Gráfico de flujo de caja
+            const ctx1 = document.getElementById('cashFlowChart');
+            if (ctx1) {
+                if (charts.cashFlow) charts.cashFlow.destroy();
+                
+                const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+                const ingresos = [45000, 52000, 48000, 61000, 58000, 67000];
+                const gastos = [32000, 35000, 38000, 42000, 39000, 41000];
+
+                charts.cashFlow = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Ingresos',
+                            data: ingresos,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Gastos',
+                            data: gastos,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { callback: v => formatoMoneda(v) } }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico de distribución
+            const ctx2 = document.getElementById('expenseChart');
+            if (ctx2) {
+                if (charts.expense) charts.expense.destroy();
+                
+                charts.expense = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Admin', 'Ventas', 'Financiero', 'Impuestos'],
+                        datasets: [{
+                            data: [35, 25, 20, 20],
+                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+        }
+
+        // Libro Diario
+        function nuevoAsiento() {
+            document.getElementById('modalAsiento').classList.add('active');
+        }
+
+        function guardarAsiento() {
+            const asiento = {
+                fecha: document.getElementById('as_fecha').value,
+                concepto: document.getElementById('as_concepto').value,
+                cuentaDebe: document.getElementById('as_cuenta_debe').value,
+                cuentaHaber: document.getElementById('as_cuenta_haber').value,
+                monto: document.getElementById('as_monto').value,
+                comprobante: document.getElementById('as_comprobante').value
             };
 
-            document.getElementById('totalGastosFijos').textContent = `$${totales.fijos.toFixed(2)}`;
-            document.getElementById('totalCostosMarginales').textContent = `$${totales.marginales.toFixed(2)}`;
-            document.getElementById('totalGastosVariables').textContent = `$${totales.variables.toFixed(2)}`;
-            document.getElementById('costoTotalOperativo').textContent = `$${totales.total.toFixed(2)}`;
-
-            // Estimaciones
-            const ingresos = totales.total * 1.5; // 50% de margen estimado
-            const margen = ((ingresos - totales.total) / ingresos * 100).toFixed(1);
-            const puntoEquilibrio = totales.fijos / 100; // Simplificado
-
-            document.getElementById('ingresosEstimados').textContent = `$${ingresos.toFixed(2)}`;
-            document.getElementById('margenGanancia').textContent = `${margen}%`;
-            document.getElementById('puntoEquilibrio').textContent = `${Math.round(puntoEquilibrio)} unidades`;
-        }
-
-        // Gastos Fijos
-        function agregarGastoFijo() {
-            const concepto = document.getElementById('gf_concepto').value;
-            const monto = document.getElementById('gf_monto').value;
-            const categoria = document.getElementById('gf_categoria').value;
-
-            if (!concepto || !monto) {
-                alert('Por favor complete todos los campos');
+            if (!asiento.fecha || !asiento.concepto || !asiento.monto) {
+                mostrarToast('Complete todos los campos obligatorios', 'error');
                 return;
             }
 
-            fm.agregarGastoFijo({ concepto, monto, categoria });
-            document.getElementById('gf_concepto').value = '';
-            document.getElementById('gf_monto').value = '';
-            cargarTablaGastosFijos();
-            alert('Gasto fijo agregado exitosamente');
+            sistema.registrarAsiento(asiento);
+            cargarLibroDiario();
+            cerrarModal('modalAsiento');
+            mostrarToast('Asiento contable registrado correctamente', 'success');
+            limpiarFormulario('modalAsiento');
         }
 
-        function cargarTablaGastosFijos() {
-            const tbody = document.querySelector('#tablaGastosFijos tbody');
-            tbody.innerHTML = '';
+        function cargarLibroDiario() {
+            const tbody = document.querySelector('#tablaLibroDiario tbody');
+            if (!tbody) return;
             
-            fm.gastosFijos.forEach(gasto => {
+            tbody.innerHTML = '';
+            sistema.asientos.slice(-50).reverse().forEach(asiento => {
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td>${gasto.concepto}</td>
-                    <td>${gasto.categoria}</td>
-                    <td>$${parseFloat(gasto.monto).toFixed(2)}</td>
-                    <td class="action-buttons">
-                        <button class="icon-btn delete" onclick="eliminarGastoFijo(${gasto.id})">🗑️</button>
+                    <td>${asiento.fecha}</td>
+                    <td>${asiento.cuentaDebe} / ${asiento.cuentaHaber}</td>
+                    <td style="color: var(--success); font-weight: 600;">$${parseFloat(asiento.monto).toFixed(2)}</td>
+                    <td style="color: var(--danger); font-weight: 600;">$${parseFloat(asiento.monto).toFixed(2)}</td>
+                    <td>${asiento.concepto}</td>
+                    <td>
+                        <button class="btn-icon edit" onclick="editarAsiento('${asiento.id}')">✏️</button>
+                        <button class="btn-icon delete" onclick="eliminarAsiento('${asiento.id}')">🗑️</button>
                     </td>
                 `;
             });
         }
 
-        function eliminarGastoFijo(id) {
-            if (confirm('¿Está seguro de eliminar este gasto fijo?')) {
-                fm.eliminarGastoFijo(id);
-                cargarTablaGastosFijos();
-                alert('Gasto fijo eliminado');
-            }
-        }
-
-        // Costos Marginales
-        function agregarCostoMarginal() {
-            const producto = document.getElementById('cm_producto').value;
-            const costo = document.getElementById('cm_costo').value;
-            const unidad = document.getElementById('cm_unidad').value;
-
-            if (!producto || !costo) {
-                alert('Por favor complete todos los campos');
-                return;
-            }
-
-            fm.agregarCostoMarginal({ producto, costo, unidad });
-            document.getElementById('cm_producto').value = '';
-            document.getElementById('cm_costo').value = '';
-            cargarTablaCostosMarginales();
-            alert('Costo marginal agregado exitosamente');
-        }
-
-        function cargarTablaCostosMarginales() {
-            const tbody = document.querySelector('#tablaCostosMarginales tbody');
-            tbody.innerHTML = '';
+        // Plan de Cuentas
+        function cargarPlanCuentas() {
+            const tbody = document.querySelector('#tablaPlanCuentas tbody');
+            if (!tbody) return;
             
-            fm.costosMarginales.forEach(costo => {
+            tbody.innerHTML = '';
+            sistema.planCuentas.forEach(cuenta => {
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td>${costo.producto}</td>
-                    <td>$${parseFloat(costo.costo).toFixed(2)}</td>
-                    <td>${costo.unidad}</td>
-                    <td class="action-buttons">
-                        <button class="icon-btn delete" onclick="eliminarCostoMarginal(${costo.id})">🗑️</button>
+                    <td><strong>${cuenta.codigo}</strong></td>
+                    <td>${cuenta.nombre}</td>
+                    <td>${cuenta.tipo}</td>
+                    <td>${cuenta.naturaleza}</td>
+                    <td style="font-weight: 600;">${formatoMoneda(Math.abs(cuenta.saldo))}</td>
+                    <td>
+                        <button class="btn-icon edit" onclick="editarCuenta('${cuenta.codigo}')">✏️</button>
                     </td>
                 `;
             });
         }
 
-        function eliminarCostoMarginal(id) {
-            if (confirm('¿Está seguro de eliminar este costo marginal?')) {
-                fm.eliminarCostoMarginal(id);
-                cargarTablaCostosMarginales();
-                alert('Costo marginal eliminado');
-            }
-        }
+        // Ingresos y Gastos
+        function registrarIngreso() {
+            const ingreso = {
+                cliente: document.getElementById('ing_cliente').value,
+                concepto: document.getElementById('ing_concepto').value,
+                monto: parseFloat(document.getElementById('ing_monto').value),
+                cuenta: document.getElementById('ing_cuenta').value,
+                fecha: document.getElementById('ing_fecha').value,
+                metodo: document.getElementById('ing_metodo').value
+            };
 
-        // Gastos Variables
-        function agregarGastoVariable() {
-            const descripcion = document.getElementById('gv_descripcion').value;
-            const monto = document.getElementById('gv_monto').value;
-            const fecha = document.getElementById('gv_fecha').value || new Date().toISOString().split('T')[0];
-
-            if (!descripcion || !monto) {
-                alert('Por favor complete todos los campos');
+            if (!ingreso.cliente || !ingreso.monto) {
+                mostrarToast('Complete los campos obligatorios', 'error');
                 return;
             }
 
-            fm.agregarGastoVariable({ descripcion, monto, fecha });
-            document.getElementById('gv_descripcion').value = '';
-            document.getElementById('gv_monto').value = '';
-            document.getElementById('gv_fecha').value = '';
-            cargarTablaGastosVariables();
-            alert('Gasto variable agregado exitosamente');
+            sistema.ingresos.push({...ingreso, id: Date.now()});
+            sistema.guardar();
+            sistema.actualizarSaldos();
+            cargarIngresos();
+            mostrarToast('Ingreso registrado correctamente', 'success');
+            limpiarFormulario('ingresos');
         }
 
-        function cargarTablaGastosVariables() {
-            const tbody = document.querySelector('#tablaGastosVariables tbody');
-            tbody.innerHTML = '';
+        function registrarGasto() {
+            const gasto = {
+                proveedor: document.getElementById('gasto_proveedor').value,
+                concepto: document.getElementById('gasto_concepto').value,
+                monto: parseFloat(document.getElementById('gasto_monto').value),
+                categoria: document.getElementById('gasto_categoria').value,
+                fecha: document.getElementById('gasto_fecha').value,
+                comprobante: document.getElementById('gasto_comprobante').value
+            };
+
+            if (!gasto.concepto || !gasto.monto) {
+                mostrarToast('Complete los campos obligatorios', 'error');
+                return;
+            }
+
+            sistema.gastos.push({...gasto, id: Date.now()});
+            sistema.guardar();
+            sistema.actualizarSaldos();
+            cargarGastos();
+            mostrarToast('Gasto registrado correctamente', 'success');
+            limpiarFormulario('gastos');
+        }
+
+        function cargarIngresos() {
+            const tbody = document.querySelector('#tablaIngresos tbody');
+            if (!tbody) return;
             
-            fm.gastosVariables.forEach(gasto => {
+            tbody.innerHTML = '';
+            sistema.ingresos.slice(-30).reverse().forEach(ingreso => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${ingreso.fecha}</td>
+                    <td>${ingreso.cliente}</td>
+                    <td>${ingreso.concepto}</td>
+                    <td style="color: var(--success); font-weight: 600;">${formatoMoneda(ingreso.monto)}</td>
+                    <td>${ingreso.metodo}</td>
+                    <td>
+                        <button class="btn-icon delete" onclick="eliminarIngreso(${ingreso.id})">🗑️</button>
+                    </td>
+                `;
+            });
+        }
+
+        function cargarGastos() {
+            const tbody = document.querySelector('#tablaGastos tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            sistema.gastos.slice(-30).reverse().forEach(gasto => {
                 const row = tbody.insertRow();
                 row.innerHTML = `
                     <td>${gasto.fecha}</td>
-                    <td>${gasto.descripcion}</td>
-                    <td>$${parseFloat(gasto.monto).toFixed(2)}</td>
-                    <td class="action-buttons">
-                        <button class="icon-btn delete" onclick="eliminarGastoVariable(${gasto.id})">🗑️</button>
+                    <td>${gasto.proveedor || 'N/A'}</td>
+                    <td>${gasto.concepto}</td>
+                    <td>${gasto.categoria}</td>
+                    <td style="color: var(--danger); font-weight: 600;">${formatoMoneda(gasto.monto)}</td>
+                    <td>
+                        <button class="btn-icon delete" onclick="eliminarGasto(${gasto.id})">🗑️</button>
                     </td>
                 `;
             });
         }
 
-        function eliminarGastoVariable(id) {
-            if (confirm('¿Está seguro de eliminar este gasto variable?')) {
-                fm.eliminarGastoVariable(id);
-                cargarTablaGastosVariables();
-                alert('Gasto variable eliminado');
+        function eliminarIngreso(id) {
+            if (confirm('¿Eliminar este ingreso?')) {
+                sistema.ingresos = sistema.ingresos.filter(i => i.id !== id);
+                sistema.guardar();
+                sistema.actualizarSaldos();
+                cargarIngresos();
+                mostrarToast('Ingreso eliminado', 'warning');
             }
         }
 
-        // Análisis de Precios
-        function calcularPrecio() {
-            const compra = parseFloat(document.getElementById('precio_compra').value) || 0;
-            const margen = parseFloat(document.getElementById('precio_margen').value) || 0;
-
-            if (compra === 0 || margen === 0) {
-                alert('Ingrese el costo de compra y el porcentaje de ganancia deseado');
-                return;
+        function eliminarGasto(id) {
+            if (confirm('¿Eliminar este gasto?')) {
+                sistema.gastos = sistema.gastos.filter(g => g.id !== id);
+                sistema.guardar();
+                sistema.actualizarSaldos();
+                cargarGastos();
+                mostrarToast('Gasto eliminado', 'warning');
             }
-
-            const precioSugerido = compra * (1 + margen / 100);
-            const ganancia = precioSugerido - compra;
-
-            document.getElementById('precioSugerido').textContent = `$${precioSugerido.toFixed(2)}`;
-            document.getElementById('gananciaUnidad').textContent = `$${ganancia.toFixed(2)}`;
         }
 
-        // Exportación e Importación
+        // Análisis Financiero
+        function calcularAnalisis() {
+            const ratios = sistema.calcularRatios();
+            const estado = sistema.generarEstadoResultados();
+
+            document.getElementById('ratioLiquidez').textContent = ratios.liquidezCorriente.toFixed(2);
+            document.getElementById('ratioEndeudamiento').textContent = ratios.endeudamiento.toFixed(1) + '%';
+            document.getElementById('ratioROA').textContent = ratios.roa.toFixed(1) + '%';
+
+            // Actualizar gráfico de tendencias
+            const ctx = document.getElementById('trendChart');
+            if (ctx && charts.trend) charts.trend.destroy();
+            
+            charts.trend = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ingresos', 'Gastos', 'Utilidad Neta'],
+                    datasets: [{
+                        label: 'USD',
+                        data: [estado.ingresos, estado.gastosAdmin + estado.gastosVenta, estado.utilidadNeta],
+                        backgroundColor: ['#10b981', '#ef4444', '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { ticks: { callback: v => formatoMoneda(v) } }
+                    }
+                }
+            });
+        }
+
+        // Exportación
+        function exportarReporte(tipo) {
+            if (tipo === 'excel') {
+                exportarExcel();
+            } else {
+                exportarPDF();
+            }
+        }
+
         function exportarExcel() {
             const wb = XLSX.utils.book_new();
+            
+            // Hoja de resumen
+            const resumen = [[
+                'Métrica', 'Valor'
+            ], [
+                'Ingresos del Período', sistema.getTotalIngresos()
+            ], [
+                'Gastos del Período', sistema.getTotalGastos()
+            ], [
+                'Utilidad Neta', sistema.getTotalIngresos() - sistema.getTotalGastos()
+            ], [
+                'Activo Total', sistema.getActivoTotal()
+            ]];
+            
+            const wsResumen = XLSX.utils.aoa_to_sheet(resumen);
+            XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen Ejecutivo");
 
-            const wsGastosFijos = XLSX.utils.json_to_sheet(fm.gastosFijos.map(g => ({
-                Concepto: g.concepto,
-                Categoría: g.categoria,
-                'Monto Mensual': `$${parseFloat(g.monto).toFixed(2)}`
+            // Hoja de plan de cuentas
+            const wsCuentas = XLSX.utils.json_to_sheet(sistema.planCuentas.map(c => ({
+                Código: c.codigo,
+                Nombre: c.nombre,
+                Tipo: c.tipo,
+                Naturaleza: c.naturaleza,
+                Saldo: c.saldo
             })));
-            XLSX.utils.book_append_sheet(wb, wsGastosFijos, "Gastos Fijos");
+            XLSX.utils.book_append_sheet(wb, wsCuentas, "Plan de Cuentas");
 
-            const wsCostosMarginales = XLSX.utils.json_to_sheet(fm.costosMarginales.map(c => ({
-                Producto: c.producto,
-                'Costo por Unidad': `$${parseFloat(c.costo).toFixed(2)}`,
-                Unidad: c.unidad
-            })));
-            XLSX.utils.book_append_sheet(wb, wsCostosMarginales, "Costos Marginales");
-
-            const wsGastosVariables = XLSX.utils.json_to_sheet(fm.gastosVariables.map(g => ({
-                Fecha: g.fecha,
-                Descripción: g.descripcion,
-                Monto: `$${parseFloat(g.monto).toFixed(2)}`
-            })));
-            XLSX.utils.book_append_sheet(wb, wsGastosVariables, "Gastos Variables");
-
-            XLSX.writeFile(wb, `Reporte_Financiero_${new Date().toISOString().split('T')[0]}.xlsx`);
+            XLSX.writeFile(wb, `ERP_Finance_Pro_${new Date().toISOString().split('T')[0]}.xlsx`);
+            mostrarToast('Reporte Excel generado correctamente', 'success');
         }
 
         function exportarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
+            
             doc.setFontSize(20);
-            doc.text('Reporte Financiero Empresarial', 105, 20, { align: 'center' });
+            doc.text('Reporte Financiero Integral', 105, 20, { align: 'center' });
             
             doc.setFontSize(12);
-            doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 20, 40);
+            doc.text(`Empresa: ${sistema.config.empresa}`, 20, 40);
+            doc.text(`Período: ${new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`, 20, 50);
             
-            doc.setFontSize(14);
-            doc.text('Resumen Ejecutivo', 20, 55);
-            doc.setFontSize(12);
-            doc.text(`Total Gastos Fijos: $${fm.getTotalGastosFijos().toFixed(2)}`, 20, 65);
-            doc.text(`Total Costos Marginales: $${fm.getTotalCostosMarginales().toFixed(2)}`, 20, 75);
-            doc.text(`Total Gastos Variables: $${fm.getTotalGastosVariables().toFixed(2)}`, 20, 85);
-            doc.text(`Costo Total Operativo: $${fm.getCostoTotalOperativo().toFixed(2)}`, 20, 95);
+            const estado = sistema.generarEstadoResultados();
+            const balance = sistema.generarBalanceGeneral();
+            
+            doc.text('ESTADO DE RESULTADOS', 20, 70);
+            const estadoData = [
+                ['Ingresos', formatoMoneda(estado.ingresos)],
+                ['Gastos Administrativos', formatoMoneda(estado.gastosAdmin)],
+                ['Gastos de Venta', formatoMoneda(estado.gastosVenta)],
+                ['Utilidad Neta', formatoMoneda(estado.utilidadNeta)]
+            ];
+            doc.autoTable({ head: [['Concepto', 'Monto']], body: estadoData, startY: 75 });
 
-            doc.save(`Reporte_Financiero_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.text('BALANCE GENERAL', 20, 140);
+            const balanceData = [
+                ['Activos', formatoMoneda(balance.activos)],
+                ['Pasivos', formatoMoneda(balance.pasivos)],
+                ['Patrimonio', formatoMoneda(balance.patrimonio)]
+            ];
+            doc.autoTable({ head: [['Concepto', 'Monto']], body: balanceData, startY: 145 });
+
+            doc.save(`Reporte_Financiero_${sistema.config.empresa}_${new Date().toISOString().split('T')[0]}.pdf`);
+            mostrarToast('Reporte PDF generado correctamente', 'success');
         }
 
-        function importarExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // Utilidades UI
+        function mostrarToast(mensaje, tipo = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : '⚠️'}</span>
+                <div class="toast-content">
+                    <div class="toast-title">${tipo === 'success' ? 'Éxito' : tipo === 'error' ? 'Error' : 'Advertencia'}</div>
+                    <div class="toast-message">${mensaje}</div>
+                </div>
+                <button class="btn-icon" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
 
-                    workbook.SheetNames.forEach(sheetName => {
-                        const worksheet = workbook.Sheets[sheetName];
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+        function limpiarFormulario(seccion) {
+            const container = document.getElementById(seccion);
+            if (container) {
+                container.querySelectorAll('input').forEach(i => i.value = '');
+            }
+        }
 
-                        if (sheetName === 'Gastos Fijos' && jsonData.length > 1) {
-                            jsonData.slice(1).forEach(row => {
-                                if (row[0] && row[2]) {
-                                    fm.agregarGastoFijo({
-                                        concepto: row[0],
-                                        categoria: row[1] || 'Otros',
-                                        monto: parseFloat(row[2].toString().replace('$', ''))
-                                    });
-                                }
-                            });
-                        }
-                        // Similar para otras hojas...
-                    });
-
-                    fm.guardarDatos();
-                    alert('Datos importados exitosamente');
-                    location.reload();
-                } catch (error) {
-                    alert('Error al importar archivo. Asegúrese de que el formato sea correcto.');
-                }
-            };
-            reader.readAsArrayBuffer(file);
+        function filtrarGastos(query) {
+            const tbody = document.querySelector('#tablaGastos tbody');
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
         }
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             actualizarDashboard();
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.value = new Date().toISOString().split('T')[0];
+            });
+        });
+
+        // Manejo responsive del sidebar
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
         });
     </script>
 </body>
