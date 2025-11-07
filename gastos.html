@@ -3,28 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestor de Gastos Empresariales</title>
+  <title>Panel Financiero Empresarial</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background-color: #f0f3f7;
+      background-color: #f4f6f8;
+      color: #222;
       margin: 0;
       padding: 20px;
-      color: #333;
     }
 
-    h1 {
+    h1, h2 {
       text-align: center;
-      color: #1e293b;
+      color: #0d47a1;
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
       background: #fff;
-      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
     }
 
     table {
@@ -34,13 +34,13 @@
     }
 
     th, td {
+      border-bottom: 1px solid #ddd;
       text-align: center;
       padding: 10px;
-      border-bottom: 1px solid #ddd;
     }
 
     th {
-      background-color: #0d6efd;
+      background-color: #1565c0;
       color: white;
     }
 
@@ -53,7 +53,7 @@
     }
 
     .btn {
-      background-color: #0d6efd;
+      background-color: #1976d2;
       color: white;
       border: none;
       padding: 10px 16px;
@@ -64,19 +64,23 @@
     }
 
     .btn:hover {
-      background-color: #0b5ed7;
+      background-color: #1259a8;
     }
 
     .btn-danger {
-      background-color: #dc3545;
+      background-color: #d32f2f;
     }
 
     .btn-danger:hover {
-      background-color: #bb2d3b;
+      background-color: #b71c1c;
+    }
+
+    .section {
+      margin-top: 40px;
     }
 
     .summary {
-      margin-top: 30px;
+      margin-top: 25px;
       text-align: right;
     }
 
@@ -90,18 +94,19 @@
     }
 
     .actions {
-      margin-top: 20px;
       display: flex;
       justify-content: space-between;
+      margin-bottom: 15px;
     }
 
-    @media (max-width: 700px) {
+    .highlight {
+      color: #0d47a1;
+      font-weight: bold;
+    }
+
+    @media (max-width: 800px) {
       table, th, td {
-        font-size: 14px;
-      }
-      .btn {
         font-size: 13px;
-        padding: 8px;
       }
     }
   </style>
@@ -109,116 +114,180 @@
 <body>
 
   <div class="container">
-    <h1>💼 Gestor de Gastos Empresariales</h1>
+    <h1>📊 Panel Financiero Empresarial</h1>
 
-    <div class="actions">
-      <button id="add-row" class="btn">➕ Agregar Producto</button>
-      <button id="calculate" class="btn">💰 Calcular Totales</button>
+    <!-- === SECCIÓN DE PRODUCTOS === -->
+    <div class="section">
+      <h2>Ventas de Productos / Servicios</h2>
+      <div class="actions">
+        <button id="add-product" class="btn">➕ Agregar Producto</button>
+        <button id="calculate" class="btn">💰 Calcular Totales</button>
+      </div>
+
+      <table id="tabla-productos">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio Unitario ($)</th>
+            <th>Cantidad</th>
+            <th>Descuento (%)</th>
+            <th>IVA (%)</th>
+            <th>Total ($)</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" value="Producto A"></td>
+            <td><input type="number" class="precio" value="100"></td>
+            <td><input type="number" class="cantidad" value="2"></td>
+            <td><input type="number" class="descuento" value="10"></td>
+            <td><input type="number" class="iva" value="13"></td>
+            <td class="total">$0.00</td>
+            <td><button class="btn btn-danger eliminar">🗑️</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <table id="expense-table">
-      <thead>
-        <tr>
-          <th>Producto / Servicio</th>
-          <th>Precio Unitario ($)</th>
-          <th>Cantidad</th>
-          <th>Descuento (%)</th>
-          <th>IVA (%)</th>
-          <th>Total ($)</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="text" value="Producto A"></td>
-          <td><input type="number" class="precio" value="100"></td>
-          <td><input type="number" class="cantidad" value="2" min="0"></td>
-          <td><input type="number" class="descuento" value="5" min="0"></td>
-          <td><input type="number" class="iva" value="13" min="0"></td>
-          <td class="total">$0.00</td>
-          <td><button class="btn btn-danger delete-row">🗑️</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- === SECCIÓN DE COSTOS FIJOS === -->
+    <div class="section">
+      <h2>Costos Fijos Mensuales</h2>
+      <table id="tabla-costos">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Monto ($)</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" value="Renta oficina"></td>
+            <td><input type="number" class="costo" value="500"></td>
+            <td><button class="btn btn-danger eliminar">🗑️</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" value="Salarios"></td>
+            <td><input type="number" class="costo" value="1200"></td>
+            <td><button class="btn btn-danger eliminar">🗑️</button></td>
+          </tr>
+        </tbody>
+      </table>
 
-    <div class="summary">
-      <div>Subtotal: $<span id="subtotal">0.00</span></div>
-      <div>IVA Total: $<span id="iva-total">0.00</span></div>
-      <div>Descuento Total: $<span id="descuento-total">0.00</span></div>
-      <div><strong>Total General: $<span id="total-general">0.00</span></strong></div>
+      <button id="add-cost" class="btn" style="margin-top:10px;">➕ Agregar Costo</button>
+    </div>
+
+    <!-- === RESUMEN CONTABLE === -->
+    <div class="section summary">
+      <h2>Resumen Contable</h2>
+      <div>Subtotal Ventas: $<span id="subtotal">0.00</span></div>
+      <div>Total IVA: $<span id="iva-total">0.00</span></div>
+      <div>Total Descuentos: $<span id="descuento-total">0.00</span></div>
+      <div>Costos Fijos: $<span id="costos-fijos">0.00</span></div>
+      <hr>
+      <div>💵 <strong>Utilidad Bruta:</strong> $<span id="utilidad-bruta">0.00</span></div>
+      <div>Impuesto Corporativo (%): <input type="number" id="impuesto" value="25" style="width:60px;">%</div>
+      <div>🧾 Impuestos: $<span id="impuesto-total">0.00</span></div>
+      <div>🏁 <strong>Utilidad Neta:</strong> $<span id="utilidad-neta">0.00</span></div>
+      <div>📈 <strong>Margen de Ganancia:</strong> <span id="margen">0.00</span>%</div>
     </div>
   </div>
 
   <script>
-    const table = document.getElementById("expense-table").getElementsByTagName("tbody")[0];
-    const addRowBtn = document.getElementById("add-row");
-    const calculateBtn = document.getElementById("calculate");
+    const tablaProductos = document.querySelector("#tabla-productos tbody");
+    const tablaCostos = document.querySelector("#tabla-costos tbody");
+    const addProductBtn = document.getElementById("add-product");
+    const addCostBtn = document.getElementById("add-cost");
+    const impuestoInput = document.getElementById("impuesto");
 
-    // Función para calcular todos los totales
-    function calcularTotales() {
-      let subtotal = 0, ivaTotal = 0, descuentoTotal = 0, totalGeneral = 0;
+    function calcular() {
+      let subtotal = 0, ivaTotal = 0, descuentoTotal = 0, costosFijos = 0;
 
-      const filas = table.querySelectorAll("tr");
-      filas.forEach(fila => {
-        const precio = parseFloat(fila.querySelector(".precio")?.value) || 0;
-        const cantidad = parseFloat(fila.querySelector(".cantidad")?.value) || 0;
-        const descuento = parseFloat(fila.querySelector(".descuento")?.value) || 0;
-        const iva = parseFloat(fila.querySelector(".iva")?.value) || 0;
+      // Calcular productos
+      tablaProductos.querySelectorAll("tr").forEach(fila => {
+        const precio = parseFloat(fila.querySelector(".precio").value) || 0;
+        const cantidad = parseFloat(fila.querySelector(".cantidad").value) || 0;
+        const descuento = parseFloat(fila.querySelector(".descuento").value) || 0;
+        const iva = parseFloat(fila.querySelector(".iva").value) || 0;
 
-        let totalProducto = precio * cantidad;
-        let montoDescuento = totalProducto * (descuento / 100);
-        let montoIVA = (totalProducto - montoDescuento) * (iva / 100);
-
-        let totalFinal = totalProducto - montoDescuento + montoIVA;
+        const totalProducto = precio * cantidad;
+        const montoDescuento = totalProducto * (descuento / 100);
+        const montoIVA = (totalProducto - montoDescuento) * (iva / 100);
+        const totalFinal = totalProducto - montoDescuento + montoIVA;
 
         subtotal += totalProducto;
         ivaTotal += montoIVA;
         descuentoTotal += montoDescuento;
-        totalGeneral += totalFinal;
 
         fila.querySelector(".total").textContent = `$${totalFinal.toFixed(2)}`;
       });
 
+      // Calcular costos fijos
+      tablaCostos.querySelectorAll(".costo").forEach(input => {
+        costosFijos += parseFloat(input.value) || 0;
+      });
+
+      // Calcular utilidad
+      const utilidadBruta = subtotal + ivaTotal - descuentoTotal - costosFijos;
+      const impuestoCorporativo = parseFloat(impuestoInput.value) || 0;
+      const impuestoTotal = utilidadBruta * (impuestoCorporativo / 100);
+      const utilidadNeta = utilidadBruta - impuestoTotal;
+      const margen = subtotal > 0 ? (utilidadNeta / subtotal) * 100 : 0;
+
+      // Mostrar resultados
       document.getElementById("subtotal").textContent = subtotal.toFixed(2);
       document.getElementById("iva-total").textContent = ivaTotal.toFixed(2);
       document.getElementById("descuento-total").textContent = descuentoTotal.toFixed(2);
-      document.getElementById("total-general").textContent = totalGeneral.toFixed(2);
+      document.getElementById("costos-fijos").textContent = costosFijos.toFixed(2);
+      document.getElementById("utilidad-bruta").textContent = utilidadBruta.toFixed(2);
+      document.getElementById("impuesto-total").textContent = impuestoTotal.toFixed(2);
+      document.getElementById("utilidad-neta").textContent = utilidadNeta.toFixed(2);
+      document.getElementById("margen").textContent = margen.toFixed(2);
     }
 
-    // Agregar nueva fila
-    addRowBtn.addEventListener("click", () => {
-      const nuevaFila = document.createElement("tr");
-      nuevaFila.innerHTML = `
+    // Agregar fila de producto
+    addProductBtn.addEventListener("click", () => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
         <td><input type="text" value="Nuevo Producto"></td>
-        <td><input type="number" class="precio" value="0" min="0"></td>
-        <td><input type="number" class="cantidad" value="1" min="0"></td>
-        <td><input type="number" class="descuento" value="0" min="0"></td>
-        <td><input type="number" class="iva" value="13" min="0"></td>
+        <td><input type="number" class="precio" value="0"></td>
+        <td><input type="number" class="cantidad" value="1"></td>
+        <td><input type="number" class="descuento" value="0"></td>
+        <td><input type="number" class="iva" value="13"></td>
         <td class="total">$0.00</td>
-        <td><button class="btn btn-danger delete-row">🗑️</button></td>
+        <td><button class="btn btn-danger eliminar">🗑️</button></td>
       `;
-      table.appendChild(nuevaFila);
+      tablaProductos.appendChild(fila);
     });
 
-    // Eliminar fila
-    table.addEventListener("click", (e) => {
-      if (e.target.classList.contains("delete-row")) {
+    // Agregar fila de costo fijo
+    addCostBtn.addEventListener("click", () => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td><input type="text" value="Nuevo Costo"></td>
+        <td><input type="number" class="costo" value="0"></td>
+        <td><button class="btn btn-danger eliminar">🗑️</button></td>
+      `;
+      tablaCostos.appendChild(fila);
+    });
+
+    // Eliminar filas
+    document.body.addEventListener("click", e => {
+      if (e.target.classList.contains("eliminar")) {
         e.target.closest("tr").remove();
-        calcularTotales();
+        calcular();
       }
     });
 
     // Calcular automáticamente al cambiar valores
-    table.addEventListener("input", (e) => {
-      if (["precio", "cantidad", "descuento", "iva"].some(cls => e.target.classList.contains(cls))) {
-        calcularTotales();
+    document.body.addEventListener("input", e => {
+      if (["precio", "cantidad", "descuento", "iva", "costo", "impuesto"].some(cls => e.target.classList.contains(cls) || e.target.id === "impuesto")) {
+        calcular();
       }
     });
 
-    calculateBtn.addEventListener("click", calcularTotales);
-
-    // Calcular al inicio
-    calcularTotales();
+    calcular(); // inicial
   </script>
 
 </body>
