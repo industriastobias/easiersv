@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <style>
-        /* [Estilos idénticos a la versión anterior] */
         :root {
             --primary: #1e3a8a;
             --primary-dark: #1e40af;
@@ -524,6 +523,21 @@
             width: 100%;
             font-size: inherit;
         }
+
+        /* Animación de carga */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -537,39 +551,39 @@
             </div>
             
             <nav class="sidebar-nav">
-                <div class="nav-item active" onclick="navigateTo('dashboard')">
+                <div class="nav-item active" data-section="dashboard">
                     <span class="nav-icon">📊</span>
                     <span>Dashboard Ejecutivo</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('contabilidad')">
+                <div class="nav-item" data-section="contabilidad">
                     <span class="nav-icon">📝</span>
                     <span>Libro Contable</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('plan-cuentas')">
+                <div class="nav-item" data-section="plan-cuentas">
                     <span class="nav-icon">📚</span>
                     <span>Plan de Cuentas</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('ingresos')">
+                <div class="nav-item" data-section="ingresos">
                     <span class="nav-icon">💰</span>
                     <span>Ingresos</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('gastos')">
+                <div class="nav-item" data-section="gastos">
                     <span class="nav-icon">💸</span>
                     <span>Gastos</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('activos')">
+                <div class="nav-item" data-section="activos">
                     <span class="nav-icon">🏢</span>
                     <span>Activos Fijos</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('reportes')">
+                <div class="nav-item" data-section="reportes">
                     <span class="nav-icon">📈</span>
                     <span>Estados Financieros</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('analisis')">
+                <div class="nav-item" data-section="analisis">
                     <span class="nav-icon">🎯</span>
                     <span>Análisis Financiero</span>
                 </div>
-                <div class="nav-item" onclick="navigateTo('config')">
+                <div class="nav-item" data-section="config">
                     <span class="nav-icon">⚙️</span>
                     <span>Configuración</span>
                 </div>
@@ -581,10 +595,10 @@
             <div class="top-bar">
                 <h2 class="page-title" id="pageTitle">Dashboard Ejecutivo</h2>
                 <div class="header-actions">
-                    <button class="btn btn-outline" onclick="exportarReporte('excel')">
+                    <button class="btn btn-outline" id="btnExportarExcel">
                         📊 Excel
                     </button>
-                    <button class="btn btn-outline" onclick="exportarReporte('pdf')">
+                    <button class="btn btn-outline" id="btnExportarPDF">
                         📄 PDF
                     </button>
                 </div>
@@ -629,7 +643,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">📋 Resumen Financiero del Período</h3>
-                        <select id="periodoSelect" class="btn btn-outline" onchange="actualizarDashboard()">
+                        <select id="periodoSelect" class="btn btn-outline">
                             <option value="mes">Este Mes</option>
                             <option value="trimestre">Este Trimestre</option>
                             <option value="año">Este Año</option>
@@ -660,17 +674,17 @@
             <section id="contabilidad" class="content-section" style="display: none;">
                 <div class="card">
                     <div class="tabs">
-                        <button class="tab active" onclick="switchTab('libro-diario')">Libro Diario</button>
-                        <button class="tab" onclick="switchTab('libro-mayor')">Libro Mayor</button>
-                        <button class="tab" onclick="switchTab('asientos')">Asientos Contables</button>
+                        <button class="tab active" data-tab="libro-diario">Libro Diario</button>
+                        <button class="tab" data-tab="libro-mayor">Libro Mayor</button>
+                        <button class="tab" data-tab="asientos">Asientos Contables</button>
                     </div>
                     
                     <div id="libro-diario" class="tab-content active">
                         <div class="btn-group" style="margin-bottom: 20px;">
-                            <button class="btn btn-primary" onclick="nuevoAsiento()">
+                            <button class="btn btn-primary" id="btnNuevoAsiento">
                                 ➕ Nuevo Asiento
                             </button>
-                            <button class="btn btn-outline" onclick="exportarAsientos()">
+                            <button class="btn btn-outline" id="btnExportarAsientos">
                                 📤 Exportar
                             </button>
                         </div>
@@ -699,10 +713,10 @@
             <section id="plan-cuentas" class="content-section" style="display: none;">
                 <div class="card">
                     <div class="btn-group" style="margin-bottom: 20px;">
-                        <button class="btn btn-primary" onclick="nuevaCuenta()">
+                        <button class="btn btn-primary" id="btnNuevaCuenta">
                             ➕ Nueva Cuenta
                         </button>
-                        <button class="btn btn-outline" onclick="cargarPlanCuentasEstandar()">
+                        <button class="btn btn-outline" id="btnCargarPlanEstandar">
                             📚 Cargar Plan Estándar
                         </button>
                     </div>
@@ -761,15 +775,15 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-success" id="btnGuardarIngreso" onclick="guardarIngreso()">💾 Guardar Ingreso</button>
-                    <button class="btn btn-outline" id="btnCancelarIngreso" onclick="cancelarEdicionIngreso()" style="display: none;">❌ Cancelar</button>
+                    <button class="btn btn-success" id="btnGuardarIngreso">💾 Guardar Ingreso</button>
+                    <button class="btn btn-outline" id="btnCancelarIngreso" style="display: none;">❌ Cancelar</button>
                 </div>
 
                 <div class="card">
                     <h3 class="card-title">📋 Historial de Ingresos</h3>
                     <div class="btn-group" style="margin-bottom: 20px;">
-                        <input type="text" placeholder="🔍 Buscar ingresos..." class="btn btn-outline" style="text-transform: none;" onkeyup="filtrarIngresos(this.value)">
-                        <button class="btn btn-warning" onclick="exportarIngresos()">📤 Exportar</button>
+                        <input type="text" placeholder="🔍 Buscar ingresos..." class="btn btn-outline" style="text-transform: none;" id="buscarIngresos">
+                        <button class="btn btn-warning" id="btnExportarIngresos">📤 Exportar</button>
                     </div>
                     <table id="tablaIngresos">
                         <thead>
@@ -829,15 +843,15 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-danger" id="btnGuardarGasto" onclick="guardarGasto()">💾 Guardar Gasto</button>
-                    <button class="btn btn-outline" id="btnCancelarGasto" onclick="cancelarEdicionGasto()" style="display: none;">❌ Cancelar</button>
+                    <button class="btn btn-danger" id="btnGuardarGasto">💾 Guardar Gasto</button>
+                    <button class="btn btn-outline" id="btnCancelarGasto" style="display: none;">❌ Cancelar</button>
                 </div>
 
                 <div class="card">
                     <h3 class="card-title">📋 Historial de Gastos</h3>
                     <div class="btn-group" style="margin-bottom: 20px;">
-                        <input type="text" placeholder="🔍 Buscar gastos..." class="btn btn-outline" style="text-transform: none;" onkeyup="filtrarGastos(this.value)">
-                        <button class="btn btn-warning" onclick="exportarGastos()">📤 Exportar</button>
+                        <input type="text" placeholder="🔍 Buscar gastos..." class="btn btn-outline" style="text-transform: none;" id="buscarGastos">
+                        <button class="btn btn-warning" id="btnExportarGastos">📤 Exportar</button>
                     </div>
                     <table id="tablaGastos">
                         <thead>
@@ -861,10 +875,10 @@
                 <div class="card">
                     <h3 class="card-title">🏢 Gestión de Activos Fijos</h3>
                     <div class="btn-group" style="margin-bottom: 20px;">
-                        <button class="btn btn-primary" onclick="nuevoActivo()">
+                        <button class="btn btn-primary" id="btnNuevoActivo">
                             ➕ Registrar Activo
                         </button>
-                        <button class="btn btn-outline" onclick="calcularDepreciacion()">
+                        <button class="btn btn-outline" id="btnCalcularDepreciacion">
                             🧮 Calcular Depreciación
                         </button>
                     </div>
@@ -891,20 +905,20 @@
             <section id="reportes" class="content-section" style="display: none;">
                 <div class="card">
                     <div class="tabs">
-                        <button class="tab active" onclick="switchTab('estado-resultados')">Estado de Resultados</button>
-                        <button class="tab" onclick="switchTab('balance-general')">Balance General</button>
-                        <button class="tab" onclick="switchTab('flujo-caja')">Flujo de Caja</button>
+                        <button class="tab active" data-tab="estado-resultados">Estado de Resultados</button>
+                        <button class="tab" data-tab="balance-general">Balance General</button>
+                        <button class="tab" data-tab="flujo-caja">Flujo de Caja</button>
                     </div>
                     
                     <div id="estado-resultados" class="tab-content active">
                         <div class="btn-group" style="margin: 20px 0;">
-                            <select class="btn btn-outline" onchange="generarEstadoResultados(this.value)">
+                            <select class="btn btn-outline" id="selectPeriodo">
                                 <option value="2024-01">Enero 2024</option>
                                 <option value="2024-02">Febrero 2024</option>
                                 <option value="2024-03">Marzo 2024</option>
                                 <option value="2024-Q1">Q1 2024</option>
                             </select>
-                            <button class="btn btn-success" onclick="exportarEstadoResultados()">📤 Exportar</button>
+                            <button class="btn btn-success" id="btnExportarEstado">📤 Exportar</button>
                         </div>
                         <div id="estadoResultadosContent"></div>
                     </div>
@@ -974,9 +988,7 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-primary" onclick="guardarConfiguracion()">
-                        💾 Guardar Configuración
-                    </button>
+                    <button class="btn btn-primary" id="btnGuardarConfig">💾 Guardar Configuración</button>
                 </div>
             </section>
         </main>
@@ -987,7 +999,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="card-title">📝 <span id="tituloAsiento">Nuevo</span> Asiento Contable</h3>
-                <button class="btn-icon" onclick="cerrarModal('modalAsiento')" style="font-size: 1.5rem;">×</button>
+                <button class="btn-icon" data-dismiss="modal" style="font-size: 1.5rem;">×</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="as_id">
@@ -1019,8 +1031,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="cerrarModal('modalAsiento')">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarAsiento()">Guardar Asiento</button>
+                <button class="btn btn-outline" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btnGuardarAsiento">Guardar Asiento</button>
             </div>
         </div>
     </div>
@@ -1029,7 +1041,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="card-title">📚 <span id="tituloCuenta">Nueva</span> Cuenta</h3>
-                <button class="btn-icon" onclick="cerrarModal('modalCuenta')" style="font-size: 1.5rem;">×</button>
+                <button class="btn-icon" data-dismiss="modal" style="font-size: 1.5rem;">×</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="cuenta_id">
@@ -1066,8 +1078,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="cerrarModal('modalCuenta')">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarCuenta()">Guardar Cuenta</button>
+                <button class="btn btn-outline" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btnGuardarCuenta">Guardar Cuenta</button>
             </div>
         </div>
     </div>
@@ -1076,7 +1088,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="card-title">🏢 <span id="tituloActivo">Nuevo</span> Activo Fijo</h3>
-                <button class="btn-icon" onclick="cerrarModal('modalActivo')" style="font-size: 1.5rem;">×</button>
+                <button class="btn-icon" data-dismiss="modal" style="font-size: 1.5rem;">×</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="activo_id">
@@ -1112,8 +1124,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="cerrarModal('modalActivo')">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarActivo()">Guardar Activo</button>
+                <button class="btn btn-outline" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" id="btnGuardarActivo">Guardar Activo</button>
             </div>
         </div>
     </div>
@@ -1122,7 +1134,7 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // Sistema de Navegación Profesional
+        // Sistema de Navegación con manejadores de eventos robustos
         const sections = {
             dashboard: { title: 'Dashboard Ejecutivo', icon: '📊' },
             contabilidad: { title: 'Libro Contable', icon: '📝' },
@@ -1137,9 +1149,10 @@
 
         let currentSection = 'dashboard';
         let charts = {};
-        let editingId = null; // Para controlar ediciones
+        let editingId = null;
+        let sistema = null;
 
-        // Clase Contable Principal (con funciones de edición)
+        // Clase Contable Principal
         class SistemaContable {
             constructor() {
                 this.config = JSON.parse(localStorage.getItem('config')) || {
@@ -1210,16 +1223,13 @@
                 });
             }
 
-            // Métodos de edición
             registrarAsiento(asiento) {
                 if (asiento.id) {
-                    // Editar asiento existente
                     const index = this.asientos.findIndex(a => a.id === asiento.id);
                     if (index !== -1) {
                         this.asientos[index] = asiento;
                     }
                 } else {
-                    // Nuevo asiento
                     asiento.id = Date.now() + Math.random();
                     asiento.fecha = new Date().toISOString().split('T')[0];
                     this.asientos.push(asiento);
@@ -1229,7 +1239,7 @@
             }
 
             eliminarAsiento(id) {
-                if (confirm('¿Está seguro de eliminar este asiento? Esta acción no se puede deshacer.')) {
+                if (confirm('¿Está seguro de eliminar este asiento?')) {
                     this.asientos = this.asientos.filter(a => a.id !== id);
                     this.guardar();
                     this.actualizarSaldos();
@@ -1239,10 +1249,8 @@
             }
 
             actualizarSaldos() {
-                // Resetear saldos
                 this.planCuentas.forEach(c => c.saldo = 0);
 
-                // Calcular saldos desde asientos
                 this.asientos.forEach(asiento => {
                     const cuentaDebe = this.planCuentas.find(c => c.codigo === asiento.cuentaDebe);
                     const cuentaHaber = this.planCuentas.find(c => c.codigo === asiento.cuentaHaber);
@@ -1262,7 +1270,6 @@
                     }
                 });
 
-                // Actualizar con ingresos y gastos directos
                 this.ingresos.forEach(ing => {
                     const cuenta = this.planCuentas.find(c => c.codigo === '4000');
                     if (cuenta) cuenta.saldo += parseFloat(ing.monto);
@@ -1276,7 +1283,6 @@
                 this.guardar();
             }
 
-            // Métodos para cálculos financieros
             getTotalIngresos() {
                 return this.ingresos.reduce((sum, ing) => sum + parseFloat(ing.monto), 0);
             }
@@ -1312,7 +1318,7 @@
                     .filter(g => g.categoria === 'Gastos de Venta')
                     .reduce((sum, g) => sum + parseFloat(g.monto), 0);
                 const utilidadBruta = ingresos - (gastosAdmin + gastosVenta);
-                const impuestos = utilidadBruta * 0.25; // 25% impuesto estimado
+                const impuestos = utilidadBruta * 0.25;
                 const utilidadNeta = utilidadBruta - impuestos;
 
                 return {
@@ -1344,40 +1350,46 @@
             }
         }
 
-        // Instancia global del sistema
-        const sistema = new SistemaContable();
-
-        // Sistema de Navegación
+        // Funciones de navegación
         function navigateTo(sectionId) {
             document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-            document.getElementById(sectionId).style.display = 'block';
-
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.target.closest('.nav-item').classList.add('active');
-
-            const section = sections[sectionId];
-            document.getElementById('pageTitle').textContent = `${section.icon} ${section.title}`;
-
-            currentSection = sectionId;
-
-            if (sectionId === 'dashboard') actualizarDashboard();
-            if (sectionId === 'contabilidad') cargarLibroDiario();
-            if (sectionId === 'plan-cuentas') cargarPlanCuentas();
-            if (sectionId === 'ingresos') cargarIngresos();
-            if (sectionId === 'gastos') cargarGastos();
-            if (sectionId === 'activos') cargarActivos();
-            if (sectionId === 'analisis') calcularAnalisis();
+            
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                
+                const section = sections[sectionId];
+                document.getElementById('pageTitle').textContent = `${section.icon} ${section.title}`;
+                
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+                
+                currentSection = sectionId;
+                
+                setTimeout(() => {
+                    if (sectionId === 'dashboard') actualizarDashboard();
+                    if (sectionId === 'contabilidad') cargarLibroDiario();
+                    if (sectionId === 'plan-cuentas') cargarPlanCuentas();
+                    if (sectionId === 'ingresos') cargarIngresos();
+                    if (sectionId === 'gastos') cargarGastos();
+                    if (sectionId === 'activos') cargarActivos();
+                    if (sectionId === 'analisis') calcularAnalisis();
+                }, 100);
+            }
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
             event.target.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(tabId)?.classList.add('active');
         }
 
         // Dashboard
         function actualizarDashboard() {
+            if (!sistema) return;
+            
             const ingresos = sistema.getTotalIngresos();
             const gastos = sistema.getTotalGastos();
             const activos = sistema.getActivoTotal();
@@ -1392,8 +1404,9 @@
         }
 
         function formatoMoneda(valor) {
-            const moneda = sistema.config.moneda;
-            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: moneda }).format(valor);
+            if (!sistema) return '$0.00';
+            const moneda = sistema.config.moneda || 'USD';
+            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: moneda }).format(valor || 0);
         }
 
         function actualizarGraficas() {
@@ -1513,6 +1526,8 @@
         }
 
         function cargarLibroDiario() {
+            if (!sistema) return;
+            
             const tbody = document.querySelector('#tablaLibroDiario tbody');
             if (!tbody) return;
             
@@ -1529,8 +1544,8 @@
                     <td><span class="status-badge status-active">Activo</span></td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon edit" onclick="editarAsiento('${asiento.id}')" title="Editar">✏️</button>
-                            <button class="btn-icon delete" onclick="eliminarAsiento('${asiento.id}')" title="Eliminar">🗑️</button>
+                            <button class="btn-icon edit" data-action="editar-asiento" data-id="${asiento.id}" title="Editar">✏️</button>
+                            <button class="btn-icon delete" data-action="eliminar-asiento" data-id="${asiento.id}" title="Eliminar">🗑️</button>
                         </div>
                     </td>
                 `;
@@ -1605,6 +1620,8 @@
         }
 
         function cargarPlanCuentas() {
+            if (!sistema) return;
+            
             const tbody = document.querySelector('#tablaPlanCuentas tbody');
             if (!tbody) return;
             
@@ -1613,15 +1630,15 @@
                 const row = tbody.insertRow();
                 row.innerHTML = `
                     <td><strong>${cuenta.codigo}</strong></td>
-                    <td class="editable-cell" onclick="editarCelda(this, 'nombre', '${cuenta.id}')">${cuenta.nombre}</td>
+                    <td>${cuenta.nombre}</td>
                     <td>${cuenta.tipo}</td>
                     <td>${cuenta.naturaleza}</td>
                     <td style="font-weight: 600;">${formatoMoneda(Math.abs(cuenta.saldo))}</td>
                     <td><span class="status-badge ${cuenta.estado === 'Activa' ? 'status-active' : 'status-inactive'}">${cuenta.estado}</span></td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon edit" onclick="editarCuenta('${cuenta.codigo}')" title="Editar">✏️</button>
-                            <button class="btn-icon delete" onclick="eliminarCuenta('${cuenta.codigo}')" title="Eliminar">🗑️</button>
+                            <button class="btn-icon edit" data-action="editar-cuenta" data-codigo="${cuenta.codigo}" title="Editar">✏️</button>
+                            <button class="btn-icon delete" data-action="eliminar-cuenta" data-codigo="${cuenta.codigo}" title="Eliminar">🗑️</button>
                         </div>
                     </td>
                 `;
@@ -1657,7 +1674,6 @@
 
             sistema.guardar();
             sistema.actualizarSaldos();
-            cargarIngresos```html
             cargarIngresos();
             cancelarEdicionIngreso();
             mostrarToast(`Ingreso ${editingId ? 'actualizado' : 'registrado'} correctamente`, 'success');
@@ -1672,6 +1688,7 @@
             document.getElementById('ing_concepto').value = ingreso.concepto;
             document.getElementById('ing_monto').value = ingreso.monto;
             document.getElementById('ing_cuenta').value = ingreso.cuenta;
+            document.getElementById('ing_fecha```html
             document.getElementById('ing_fecha').value = ingreso.fecha;
             document.getElementById('ing_metodo').value = ingreso.metodo;
             
@@ -1697,6 +1714,8 @@
         }
 
         function cargarIngresos() {
+            if (!sistema) return;
+            
             const tbody = document.querySelector('#tablaIngresos tbody');
             if (!tbody) return;
             
@@ -1712,8 +1731,8 @@
                     <td><span class="status-badge status-active">${ingreso.estado || 'Activo'}</span></td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon edit" onclick="editarIngreso(${ingreso.id})" title="Editar">✏️</button>
-                            <button class="btn-icon delete" onclick="eliminarIngreso(${ingreso.id})" title="Eliminar">🗑️</button>
+                            <button class="btn-icon edit" data-action="editar-ingreso" data-id="${ingreso.id}" title="Editar">✏️</button>
+                            <button class="btn-icon delete" data-action="eliminar-ingreso" data-id="${ingreso.id}" title="Eliminar">🗑️</button>
                         </div>
                     </td>
                 `;
@@ -1814,6 +1833,8 @@
         }
 
         function cargarGastos() {
+            if (!sistema) return;
+            
             const tbody = document.querySelector('#tablaGastos tbody');
             if (!tbody) return;
             
@@ -1829,8 +1850,8 @@
                     <td><span class="status-badge status-active">${gasto.estado || 'Activo'}</span></td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon edit" onclick="editarGasto(${gasto.id})" title="Editar">✏️</button>
-                            <button class="btn-icon delete" onclick="eliminarGasto(${gasto.id})" title="Eliminar">🗑️</button>
+                            <button class="btn-icon edit" data-action="editar-gasto" data-id="${gasto.id}" title="Editar">✏️</button>
+                            <button class="btn-icon delete" data-action="eliminar-gasto" data-id="${gasto.id}" title="Eliminar">🗑️</button>
                         </div>
                     </td>
                 `;
@@ -1907,7 +1928,7 @@
             }
 
             // Calcular depreciación
-            const valorResidual = activo.valor * 0.10; // 10% valor residual
+            const valorResidual = activo.valor * 0.10;
             const valorDepreciable = activo.valor - valorResidual;
             activo.depreciacionMensual = valorDepreciable / (activo.vidaUtil * 12);
             activo.valorNeto = activo.valor;
@@ -1952,6 +1973,8 @@
         }
 
         function cargarActivos() {
+            if (!sistema) return;
+            
             const tbody = document.querySelector('#tablaActivos tbody');
             if (!tbody) return;
             
@@ -1969,8 +1992,8 @@
                     <td><span class="status-badge ${activo.estado === 'Activo' ? 'status-active' : activo.estado === 'Depreciado' ? 'status-inactive' : 'status-pending'}">${activo.estado}</span></td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon edit" onclick="editarActivo('${activo.id}')" title="Editar">✏️</button>
-                            <button class="btn-icon delete" onclick="eliminarActivo('${activo.id}')" title="Eliminar">🗑️</button>
+                            <button class="btn-icon edit" data-action="editar-activo" data-id="${activo.id}" title="Editar">✏️</button>
+                            <button class="btn-icon delete" data-action="eliminar-activo" data-id="${activo.id}" title="Eliminar">🗑️</button>
                         </div>
                     </td>
                 `;
@@ -1979,6 +2002,8 @@
 
         // Análisis Financiero
         function calcularAnalisis() {
+            if (!sistema) return;
+            
             const ratios = sistema.calcularRatios();
             const estado = sistema.generarEstadoResultados();
 
@@ -2019,6 +2044,8 @@
         }
 
         function exportarExcel() {
+            if (!sistema) return;
+            
             const wb = XLSX.utils.book_new();
             
             // Hoja de resumen
@@ -2072,6 +2099,8 @@
         }
 
         function exportarPDF() {
+            if (!sistema) return;
+            
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -2106,7 +2135,95 @@
             mostrarToast('Reporte PDF generado correctamente', 'success');
         }
 
-        // Utilidades UI
+        function exportarAsientos() {
+            if (!sistema) return;
+            
+            const data = sistema.asientos.map(asiento => ({
+                Fecha: asiento.fecha,
+                'Cuenta Debe': asiento.cuentaDebe,
+                'Cuenta Haber': asiento.cuentaHaber,
+                Concepto: asiento.concepto,
+                Monto: asiento.monto,
+                Comprobante: asiento.comprobante || 'N/A'
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Asientos Contables");
+            XLSX.writeFile(wb, `Asientos_Contables_${sistema.config.empresa}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            mostrarToast('Asientos exportados correctamente', 'success');
+        }
+
+        function exportarIngresos() {
+            const data = sistema.ingresos.map(ing => ({
+                Fecha: ing.fecha,
+                Cliente: ing.cliente,
+                Concepto: ing.concepto,
+                Monto: ing.monto,
+                Método: ing.metodo,
+                Estado: ing.estado || 'Activo'
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Ingresos");
+            XLSX.writeFile(wb, `Ingresos_${sistema.config.empresa}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            mostrarToast('Ingresos exportados correctamente', 'success');
+        }
+
+        function exportarGastos() {
+            const data = sistema.gastos.map(gasto => ({
+                Fecha: gasto.fecha,
+                Proveedor: gasto.proveedor || 'N/A',
+                Concepto: gasto.concepto,
+                Categoría: gasto.categoria,
+                Monto: gasto.monto,
+                Comprobante: gasto.comprobante || 'N/A',
+                Estado: gasto.estado || 'Activo'
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Gastos");
+            XLSX.writeFile(wb, `Gastos_${sistema.config.empresa}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            mostrarToast('Gastos exportados correctamente', 'success');
+        }
+
+        function exportarEstadoResultados() {
+            if (!sistema) return;
+            
+            const estado = sistema.generarEstadoResultados();
+            const data = [
+                ['CONCEPTO', 'MONTO'],
+                ['INGRESOS', estado.ingresos],
+                ['Gastos Administrativos', -estado.gastosAdmin],
+                ['Gastos de Venta', -estado.gastosVenta],
+                ['UTILIDAD BRUTA', estado.utilidadBruta],
+                ['Impuestos (25%)', -estado.impuestos],
+                ['UTILIDAD NETA', estado.utilidadNeta]
+            ];
+            
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Estado de Resultados");
+            XLSX.writeFile(wb, `Estado_Resultados_${sistema.config.empresa}_${new Date().toISOString().split('T')[0]}.xlsx`);
+            mostrarToast('Estado de resultados exportado correctamente', 'success');
+        }
+
+        // Utilidades
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            editingId = null;
+        }
+
+        function limpiarFormulario(seccion) {
+            const container = document.getElementById(seccion);
+            if (container) {
+                container.querySelectorAll('input').forEach(i => i.value = '');
+                container.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+            }
+        }
+
         function mostrarToast(mensaje, tipo = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -2123,56 +2240,167 @@
             setTimeout(() => toast.remove(), 5000);
         }
 
-        function cerrarModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-            editingId = null;
+        // Configuración de eventos
+        function configurarEventos() {
+            // Navegación del sidebar
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    if (section) {
+                        navigateTo(section);
+                    }
+                });
+            });
+
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.dataset.tab;
+                    if (tabId) {
+                        switchTab(tabId);
+                    }
+                });
+            });
+
+            // Botones principales
+            document.getElementById('btnNuevoAsiento')?.addEventListener('click', nuevoAsiento);
+            document.getElementById('btnExportarAsientos')?.addEventListener('click', exportarAsientos);
+            document.getElementById('btnExportarExcel')?.addEventListener('click', () => exportarReporte('excel'));
+            document.getElementById('btnExportarPDF')?.addEventListener('click', () => exportarReporte('pdf'));
+            document.getElementById('btnNuevaCuenta')?.addEventListener('click', nuevaCuenta);
+            document.getElementById('btnCargarPlanEstandar')?.addEventListener('click', () => {
+                sistema.cargarPlanCuentasEstandar();
+                cargarPlanCuentas();
+                mostrarToast('Plan de cuentas estándar cargado', 'success');
+            });
+            document.getElementById('btnGuardarIngreso')?.addEventListener('click', guardarIngreso);
+            document.getElementById('btnCancelarIngreso')?.addEventListener('click', cancelarEdicionIngreso);
+            document.getElementById('btnGuardarGasto')?.addEventListener('click', guardarGasto);
+            document.getElementById('btnCancelarGasto')?.addEventListener('click', cancelarEdicionGasto);
+            document.getElementById('btnNuevoActivo')?.addEventListener('click', nuevoActivo);
+            document.getElementById('btnCalcularDepreciacion')?.addEventListener('click', calcularDepreciacion);
+            document.getElementById('btnExportarIngresos')?.addEventListener('click', exportarIngresos);
+            document.getElementById('btnExportarGastos')?.addEventListener('click', exportarGastos);
+            document.getElementById('btnExportarEstado')?.addEventListener('click', exportarEstadoResultados);
+            document.getElementById('btnGuardarConfig')?.addEventListener('click', guardarConfiguracion);
+
+            // Eventos delegados para acciones de tabla
+            document.addEventListener('click', function(e) {
+                const action = e.target.dataset.action;
+                const id = e.target.dataset.id;
+                const codigo = e.target.dataset.codigo;
+
+                switch(action) {
+                    case 'editar-asiento':
+                        if (id) editarAsiento(id);
+                        break;
+                    case 'eliminar-asiento':
+                        if (id) eliminarAsiento(id);
+                        break;
+                    case 'editar-cuenta':
+                        if (codigo) editarCuenta(codigo);
+                        break;
+                    case 'eliminar-cuenta':
+                        if (codigo) eliminarCuenta(codigo);
+                        break;
+                    case 'editar-ingreso':
+                        if (id) editarIngreso(id);
+                        break;
+                    case 'eliminar-ingreso':
+                        if (id) eliminarIngreso(id);
+                        break;
+                    case 'editar-gasto':
+                        if (id) editarGasto(id);
+                        break;
+                    case 'eliminar-gasto':
+                        if (id) eliminarGasto(id);
+                        break;
+                    case 'editar-activo':
+                        if (id) editarActivo(id);
+                        break;
+                    case 'eliminar-activo':
+                        if (id) eliminarActivo(id);
+                        break;
+                }
+            });
+
+            // Modal de asiento
+            document.getElementById('btnGuardarAsiento')?.addEventListener('click', guardarAsiento);
+            document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modalId = this.closest('.modal').id;
+                    cerrarModal(modalId);
+                });
+            });
+
+            // Búsquedas
+            document.getElementById('buscarIngresos')?.addEventListener('keyup', function() {
+                filtrarIngresos(this.value);
+            });
+            document.getElementById('buscarGastos')?.addEventListener('keyup', function() {
+                filtrarGastos(this.value);
+            });
+
+            // Select de período
+            document.getElementById('periodoSelect')?.addEventListener('change', actualizarDashboard);
+            document.getElementById('selectPeriodo')?.addEventListener('change', generarEstadoResultados);
         }
 
-        function limpiarFormulario(seccion) {
-            const container = document.getElementById(seccion);
-            if (container) {
-                container.querySelectorAll('input').forEach(i => i.value = '');
-                container.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-            }
+        function guardarConfiguracion() {
+            sistema.config.empresa = document.getElementById('cfg_empresa').value;
+            sistema.config.ruc = document.getElementById('cfg_ruc').value;
+            sistema.config.moneda = document.getElementById('cfg_moneda').value;
+            sistema.config.periodo = document.getElementById('cfg_periodo').value;
+            sistema.guardar();
+            mostrarToast('Configuración guardada correctamente', 'success');
         }
 
-        function editarCelda(elemento, campo, id) {
-            const valorActual = elemento.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'edit-input';
-            input.value = valorActual;
+        function generarEstadoResultados() {
+            if (!sistema) return;
             
-            elemento.textContent = '';
-            elemento.appendChild(input);
-            input.focus();
-            input.select();
-
-            input.addEventListener('blur', function() {
-                const nuevoValor = this.value;
-                elemento.textContent = nuevoValor;
-                
-                const cuenta = sistema.planCuentas.find(c => c.id == id);
-                if (cuenta) {
-                    cuenta[campo] = nuevoValor;
-                    sistema.guardar();
-                    mostrarToast('Cuenta actualizada', 'success');
-                }
-            });
-
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    this.blur();
-                }
-            });
+            const estado = sistema.generarEstadoResultados();
+            const content = document.getElementById('estadoResultadosContent');
+            content.innerHTML = `
+                <div class="card">
+                    <h4>Estado de Resultados - ${document.getElementById('selectPeriodo').value}</h4>
+                    <table class="table">
+                        <tr><td>INGRESOS</td><td style="text-align: right; color: var(--success); font-weight: 600;">${formatoMoneda(estado.ingresos)}</td></tr>
+                        <tr><td>Gastos Administrativos</td><td style="text-align: right; color: var(--danger);">-${formatoMoneda(estado.gastosAdmin)}</td></tr>
+                        <tr><td>Gastos de Venta</td><td style="text-align: right; color: var(--danger);">-${formatoMoneda(estado.gastosVenta)}</td></tr>
+                        <tr style="border-top: 2px solid var(--gray-400); font-weight: 600;">
+                            <td>UTILIDAD BRUTA</td>
+                            <td style="text-align: right;">${formatoMoneda(estado.utilidadBruta)}</td>
+                        </tr>
+                        <tr><td>Impuestos (25%)</td><td style="text-align: right; color: var(--danger);">-${formatoMoneda(estado.impuestos)}</td></tr>
+                        <tr style="border-top: 2px solid var(--gray-800); font-weight: 700; font-size: 1.1rem;">
+                            <td>UTILIDAD NETA</td>
+                            <td style="text-align: right; color: var(--primary);">${formatoMoneda(estado.utilidadNeta)}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
         }
 
-        // Inicialización
+        // Inicialización mejorada
         document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar sistema
+            sistema = new SistemaContable();
+            
+            // Configurar eventos
+            configurarEventos();
+            
+            // Inicializar dashboard
             actualizarDashboard();
+            
+            // Establecer fechas por defecto
             document.querySelectorAll('input[type="date"]').forEach(input => {
                 input.value = new Date().toISOString().split('T')[0];
             });
+            
+            // Mostrar mensaje de bienvenida
+            mostrarToast('Sistema contable iniciado correctamente', 'success');
         });
 
         // Manejo responsive del sidebar
