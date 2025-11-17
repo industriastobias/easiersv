@@ -1,254 +1,484 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard – TOBIAS PALACIOS COMPANY</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css  ">
-    <style>
-        /* TEMA CLARO (por defecto) */
-        :root {
-            --bg: #ffffff;
-            --panel: #ffffff;
-            --accent: #DBB8BC;
-            --text: #1F2937;
-            --muted: #9CA3AF;
-            --danger: #EF4444;
-            --border: #DBB8BC;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Dashboard – TOBIAS PALACIOS COMPANY</title>
 
-        /* TEMA AZUL MARINO */
-        body[data-theme="dark"] {
-            --bg: #0d1117;
-            --panel: #161b22;
-            --accent: #38bdf8;
-            --text: #e5e7eb;
-            --muted: #6b7280;
-            --danger: #f43f5e;
-            --border: #30363d;
-        }
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', system-ui, sans-serif;
-        }
+  <!-- Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --primary: #1a1a2e;
+      --accent: #4a7c7e;
+      --accent-hover: #3d6567;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --danger: #dc2626;
+      --border: #e5e7eb;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body.dark {
+      --bg: #111827;
+      --panel: #1f2937;
+      --primary: #f9fafb;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --border: #374151;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    }
 
-        .sidebar {
-            width: 260px;
-            background: var(--panel);
-            display: flex;
-            flex-direction: column;
-            padding: 2rem 1.5rem;
-            gap: 2rem;
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent) transparent;
-        }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: var(--transition);
+    }
 
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
+    /* --------- SIDEBAR --------- */
+    .sidebar {
+      width: 280px;
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+      height: 100vh;
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+    
+    .logo-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
 
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 3px;
-        }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    
+    .nav a {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: .9rem 1.2rem;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: var(--transition);
+      white-space: nowrap;
+      position: relative;
+    }
+    
+    .nav a:hover { 
+      background: rgba(74, 124, 126, 0.08); 
+      transform: translateX(5px); 
+    }
+    
+    .nav a.active { 
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(74, 124, 126, 0.3);
+    }
+    
+    .nav a.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: #fff;
+      border-radius: 0 4px 4px 0;
+    }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--accent);
-            text-align: center;
-        }
+    .nav a .material-icons { 
+      font-size: 22px;
+      transition: transform 0.2s;
+    }
+    
+    .nav a:hover .material-icons {
+      transform: scale(1.1);
+    }
 
-        .nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: .75rem;
-        }
+    /* --------- MAIN CONTENT --------- */
+    main {
+      flex: 1;
+      padding: 2.5rem;
+      overflow-y: auto;
+    }
+    
+    .header {
+      margin-bottom: 3rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .welcome { 
+      font-size: 2.5rem; 
+      font-weight: 800; 
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: .5rem;
+    }
+    
+    .subtitle { 
+      font-size: 1.1rem; 
+      color: var(--muted);
+      font-weight: 400;
+    }
 
-        .nav a {
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            padding: .85rem 1rem;
-            border-radius: 10px;
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 500;
-            transition: background .2s, transform .2s;
-        }
+    /* --------- RIGHT PANEL --------- */
+    .right-panel {
+      position: fixed;
+      right: 1.5rem;
+      top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      background: var(--panel);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      z-index: 200;
+    }
+    
+    .user-section { 
+      text-align: center;
+      position: relative;
+    }
+    
+    .user-section img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent);
+      background: #fff;
+      transition: var(--transition);
+    }
+    
+    .user-section:hover img {
+      transform: scale(1.05);
+    }
+    
+    .user-name { 
+      margin-top: .5rem; 
+      font-weight: 600; 
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    
+    .logout-btn {
+      background: linear-gradient(135deg, var(--danger), #b91c1c);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: .7rem 1.2rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .logout-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(220, 38, 38, 0.3);
+    }
 
-        .nav a:hover {
-            background: rgba(219, 184, 188, 0.1);
-            transform: translateX(6px);
-        }
+    /* --------- THEME TOGGLE --------- */
+    .theme-toggle {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+    }
+    
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(15deg);
+    }
 
-        body[data-theme="dark"] .nav a:hover {
-            background: rgba(255, 255, 255, .05);
-        }
+    /* --------- RESPONSIVE --------- */
+    @media (max-width: 1024px) {
+      .sidebar { width: 240px; }
+      .logo-text { font-size: 1.1rem; }
+      .nav a { padding: .8rem 1rem; font-size: .9rem; }
+      .welcome { font-size: 2.2rem; }
+    }
 
-        .nav a.active {
-            background: var(--accent);
-            color: #ffffff;
-        }
-
-        .logout-btn-top, .theme-toggle {
-            position: absolute;
-            top: 1.5rem;
-            border: none;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            color: #fff;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: background .2s, transform .2s;
-            z-index: 1000;
-        }
-
-        .logout-btn-top {
-            right: 2rem;
-            background: var(--danger);
-        }
-
-        .logout-btn-top:hover {
-            background: #DC2626;
-            transform: scale(1.1);
-        }
-
-        .theme-toggle {
-            right: 5.5rem;
-            background: var(--accent);
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        main {
-            flex: 1;
-            padding: 3rem 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .welcome {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: var(--accent);
-        }
-    </style>
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+      }
+      .logo { display: none; }
+      .nav {
+        flex-direction: row;
+        gap: .4rem;
+        flex-wrap: nowrap;
+      }
+      .nav a {
+        flex: 0 0 auto;
+        padding: .6rem .8rem;
+        font-size: .85rem;
+      }
+      .nav a:hover { transform: none; }
+      .right-panel {
+        position: static;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 1rem;
+      }
+      .theme-toggle {
+        bottom: 1rem;
+        right: 1rem;
+        width: 45px;
+        height: 45px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
-    <i id="theme-icon" class="fa-solid fa-moon"></i>
-</button>
-
-<button class="logout-btn-top" onclick="logout();" title="Cerrar sesión">
-    <i class="fa-solid fa-right-from-bracket"></i>
-</button>
-
+<!-- ========== SIDEBAR ========== -->
 <aside class="sidebar">
-    <div class="logo"></div>
-    <nav class="nav">
-        <a href="almacenamiento.html"><i class="fa-solid fa-warehouse"></i> Almacenamiento</a>
-        <a href="clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
-        <a href="compra.html" id="compra-link"><i class="fa-solid fa-cart-plus"></i> Compra</a>
-        <a href="descuentos.html" id="descuentos-link"><i class="fa-solid fa-percent"></i> Descuentos</a>
-        <a href="facturas.html"><i class="fa-solid fa-file-invoice"></i> Facturas</a>
-        <a href="gastos.html"><i class="fa-solid fa-money-check-dollar"></i> Gastos</a>
-        <a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
-        <a href="lista.html" id="lista-link"><i class="fa-solid fa-list"></i> Lista</a>
-        <a href="traslados.html"><i class="fa-solid fa-truck"></i> Traslados</a>
-        <a href="venta.html" id="venta-link"><i class="fa-solid fa-cash-register"></i> Venta</a>
-        <a href="lista_usuarios.html" id="usuarios-link"><i class="fa-solid fa-user-gear"></i> Usuarios</a>
-    </nav>
+  <div class="logo">
+    <div class="logo-icon">TPC</div>
+    <div class="logo-text">Tobias Palacios Co.</div>
+  </div>
+  
+  <nav class="nav" id="main-nav">
+    <a href="almacenamiento.html"><span class="material-icons">warehouse</span>Almacenamiento</a>
+    <a href="clientes.html"><span class="material-icons">groups</span>Clientes</a>
+    <a href="compra.html"><span class="material-icons">shopping_cart</span>Compra</a>
+    <a href="descuentos.html"><span class="material-icons">local_offer</span>Descuentos</a>
+    <a href="facturas.html"><span class="material-icons">receipt_long</span>Facturas</a>
+    <a href="gastos.html"><span class="material-icons">store</span>Catálogo</a>
+    <a href="inventario.html"><span class="material-icons">inventory_2</span>Inventario</a>
+    <a href="lista.html"><span class="material-icons">account_balance</span>Finanzas</a>
+    <a href="traslados.html"><span class="material-icons">local_shipping</span>Traslados</a>
+    <a href="venta.html"><span class="material-icons">point_of_sale</span>Venta</a>
+    <a href="Verificasion.html"><span class="material-icons">verified</span>Verificación</a>
+  </nav>
 </aside>
 
+<!-- ========== MAIN CONTENT ========== -->
 <main>
-    <h1 class="welcome">KLOHE A FAMILY COMPANY</h1>
+  <div class="header">
+    <h1 class="welcome">A FAMILY COMPANY</h1>
+    <p class="subtitle">TOBIAS PALACIOS COMPANY</p>
+  </div>
+  
+  <!-- Aquí puedes agregar widgets, gráficos o contenido adicional -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; width: 100%;">
+    <!-- Ejemplo de tarjetas de dashboard -->
+    <div style="background: var(--panel); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+      <h3 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">VENTAS HOY</h3>
+      <p style="font-size: 2rem; font-weight: 700; color: var(--accent);">$0.00</p>
+    </div>
+    <div style="background: var(--panel); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+      <h3 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">INVENTARIO</h3>
+      <p style="font-size: 2rem; font-weight: 700; color: var(--accent);">0</p>
+    </div>
+  </div>
 </main>
 
+<!-- ========== RIGHT PANEL ========== -->
+<div class="right-panel">
+  <div class="user-section">
+    <img id="userPhoto" src="user2005.jpg" alt="Usuario" onerror="this.src='user2005.jpg'">
+    <div id="userName" class="user-name">ERNESTO TOBIAS</div>
+  </div>
+  <button class="logout-btn" type="button" onclick="logout()" aria-label="Cerrar sesión">
+    <span class="material-icons">logout</span> Exit
+  </button>
+</div>
+
+<!-- ========== THEME TOGGLE ========== -->
+<button class="theme-toggle" id="themeToggle" title="Cambiar tema">
+  <span class="material-icons">dark_mode</span>
+</button>
+
 <script>
-    function checkAuthentication() {
-        if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.replace('index.html');
-        }
+/* ========== IndexedDB & sesiones ========== */
+const DB_NAME = 'menuDB';
+const STORE_SESSION = 'userSession';
+let db;
+
+async function openDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onerror = () => rej(req.error);
+    req.onsuccess = () => res(db = req.result);
+    req.onupgradeneeded = () => {
+      const d = req.result;
+      if (!d.objectStoreNames.contains(STORE_SESSION))
+        d.createObjectStore(STORE_SESSION, { keyPath: 'id', autoIncrement: true });
+    };
+  });
+}
+
+async function getLastSession() {
+  const tx = db.transaction([STORE_SESSION], 'readonly');
+  const store = tx.objectStore(STORE_SESSION);
+  return new Promise(res => {
+    const req = store.getAll();
+    req.onsuccess = () => {
+      const all = req.result;
+      res(all && all.length ? all[all.length - 1] : null);
+    };
+  });
+}
+
+async function clearSessions() {
+  const tx = db.transaction([STORE_SESSION], 'readwrite');
+  tx.objectStore(STORE_SESSION).clear();
+}
+
+/* ========== autenticación ========== */
+function checkAuthentication() {
+  if (sessionStorage.getItem('loggedIn') !== 'true') {
+    window.location.replace('index.html');
+  }
+}
+
+async function logout() {
+  await clearSessions();
+  sessionStorage.clear();
+  window.location.replace('index.html');
+}
+
+/* ========== UI dinámico de usuario ========== */
+async function configureUserUI() {
+  const storedFoto = sessionStorage.getItem('foto');
+  const storedNombre = sessionStorage.getItem('nombre');
+  let foto = storedFoto || 'user2005.jpg';
+  let nombre = storedNombre || 'Usuario';
+
+  if (!storedFoto || !storedNombre) {
+    try {
+      const sess = await getLastSession();
+      if (sess) {
+        foto = sess.foto || foto;
+        nombre = sess.nombre || nombre;
+        if (!sessionStorage.getItem('foto') && sess.foto) sessionStorage.setItem('foto', sess.foto);
+        if (!sessionStorage.getItem('nombre') && sess.nombre) sessionStorage.setItem('nombre', sess.nombre);
+      }
+    } catch {}
+  }
+
+  const imgEl = document.getElementById('userPhoto');
+  const nameEl = document.getElementById('userName');
+  if (imgEl) imgEl.src = foto;
+  if (nameEl) nameEl.textContent = nombre;
+}
+
+/* ========== Resaltar página actual ========== */
+function highlightCurrentPage() {
+  const currentPage = window.location.pathname.split('/').pop();
+  document.querySelectorAll('.nav a').forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
+    } else {
+      link.classList.remove('active');
+      link.removeAttribute('aria-current');
     }
+  });
+}
 
-    function logout() {
-        sessionStorage.clear();
-        localStorage.removeItem('userID');
-        window.location.replace('index.html');
-    }
+/* ========== THEME TOGGLE ========== */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  const icon = themeToggle.querySelector('.material-icons');
+  icon.textContent = document.body.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+});
 
-    function configureUserLinks() {
-        const userID = localStorage.getItem('userID');
-        const userLink = document.getElementById('usuarios-link');
-        const compraLink = document.getElementById('compra-link');
-        const ventaLink = document.getElementById('venta-link');
-
-        if (userID !== '2005') userLink.style.display = 'none';
-        if (userID && userID.startsWith('100')) {
-            compraLink.style.display = 'none';
-            ventaLink.style.display = 'none';
-        }
-    }
-
-    function highlightCurrentPage() {
-        const currentPage = window.location.pathname.split('/').pop();
-        document.querySelectorAll('.nav a').forEach(link => {
-            if (link.getAttribute('href') === currentPage) link.classList.add('active');
-        });
-    }
-
-    function applyTheme(theme) {
-        const body = document.body;
-        const icon = document.getElementById('theme-icon');
-        if (theme === 'dark') {
-            body.setAttribute('data-theme', 'dark');
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
-        } else {
-            body.removeAttribute('data-theme');
-            icon.classList.remove('fa-sun');
-            icon.classList.add('fa-moon');
-        }
-    }
-
-    function toggleTheme() {
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        localStorage.setItem('theme', newTheme);
-        applyTheme(newTheme);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        checkAuthentication();
-        configureUserLinks();
-        highlightCurrentPage();
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        applyTheme(savedTheme);
-    });
+/* ========== Arranque ========== */
+document.addEventListener('DOMContentLoaded', async () => {
+  checkAuthentication();
+  try { await openDB(); } catch {}
+  await configureUserUI();
+  highlightCurrentPage();
+});
 </script>
-
 </body>
 </html>
