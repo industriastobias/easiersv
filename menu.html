@@ -10,198 +10,110 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #ffffff;
+      --bg: #fafafa;
       --panel: #ffffff;
-      --primary: #1a1a2e;
-      --accent: #4a7c7e;
-      --accent-hover: #3d6567;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --danger: #dc2626;
-      --border: #e5e7eb;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --accent: #DBB8BC;
+      --accent-hover: #C9A4A8;
+      --text: #1F2937;
+      --muted: #6B7280;
+      --danger: #DC2626;
+      --border: #E5E7EB;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    body.dark {
-      --bg: #111827;
-      --panel: #1f2937;
-      --primary: #f9fafb;
-      --text: #f3f4f6;
-      --muted: #9ca3af;
-      --border: #374151;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    }
-
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-      font-family: 'Inter', system-ui, sans-serif;
-    }
-    
-    html { scroll-behavior: smooth; }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
     body {
       background: var(--bg);
       color: var(--text);
       display: flex;
       height: 100vh;
       overflow: hidden;
-      transition: var(--transition);
     }
 
     /* --------- SIDEBAR --------- */
     .sidebar {
-      width: 280px;
+      width: 260px;
       background: var(--panel);
       display: flex;
       flex-direction: column;
-      padding: 2rem 1.5rem;
+      padding: 1.5rem 1rem;
       border-right: 1px solid var(--border);
       height: 100vh;
       box-shadow: var(--shadow);
-      z-index: 100;
     }
-    
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 2.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 1.2rem;
-    }
-    
-    .logo-text {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
     .nav {
       display: flex;
       flex-direction: column;
-      gap: .5rem;
+      gap: .4rem;
       flex-grow: 1;
       overflow-y: auto;
     }
-    
     .nav a {
       display: flex;
       align-items: center;
-      gap: .9rem;
-      padding: .9rem 1.2rem;
-      border-radius: 10px;
+      gap: .8rem;
+      padding: .75rem 1rem;
+      border-radius: 8px;
       text-decoration: none;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: .95rem;
       font-weight: 500;
       transition: var(--transition);
       white-space: nowrap;
-      position: relative;
     }
-    
-    .nav a:hover { 
-      background: rgba(74, 124, 126, 0.08); 
-      transform: translateX(5px); 
+    .nav a:hover {
+      background: rgba(219, 184, 188, 0.12);
+      transform: translateX(4px);
     }
-    
-    .nav a.active { 
-      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    .nav a.active {
+      background: var(--accent);
       color: #fff;
-      box-shadow: 0 4px 12px rgba(74, 124, 126, 0.3);
-    }
-    
-    .nav a.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: 4px;
-      background: #fff;
-      border-radius: 0 4px 4px 0;
+      box-shadow: var(--shadow);
     }
 
-    .nav a .material-icons { 
-      font-size: 22px;
-      transition: transform 0.2s;
-    }
-    
-    .nav a:hover .material-icons {
-      transform: scale(1.1);
-    }
-
-    /* --------- MAIN CONTENT --------- */
+    /* --------- MAIN --------- */
     main {
       flex: 1;
       padding: 2.5rem;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
-    
-    .header {
-      margin-bottom: 3rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .welcome { 
-      font-size: 2.5rem; 
-      font-weight: 800; 
-      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .welcome {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
       margin-bottom: .5rem;
+      letter-spacing: -0.5px;
     }
-    
-    .subtitle { 
-      font-size: 1.1rem; 
+    .subtitle {
+      font-size: 1rem;
       color: var(--muted);
       font-weight: 400;
     }
 
     /* --------- RIGHT PANEL --------- */
     .right-panel {
-      position: fixed;
+      position: absolute;
       right: 1.5rem;
       top: 1.5rem;
+      background: var(--panel);
+      padding: 1.25rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
-      background: var(--panel);
-      padding: 1.5rem;
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      z-index: 200;
+      gap: .8rem;
     }
-    
-    .user-section { 
-      text-align: center;
-      position: relative;
-    }
-    
     .user-section img {
       width: 70px;
       height: 70px;
@@ -211,69 +123,37 @@
       background: #fff;
       transition: var(--transition);
     }
-    
-    .user-section:hover img {
+    .user-section img:hover {
       transform: scale(1.05);
     }
-    
-    .user-name { 
-      margin-top: .5rem; 
-      font-weight: 600; 
-      font-size: 0.9rem;
-      color: var(--text);
+    .user-name {
+      margin-top: .4rem;
+      font-weight: 600;
+      font-size: .9rem;
     }
-    
     .logout-btn {
-      background: linear-gradient(135deg, var(--danger), #b91c1c);
+      background: var(--danger);
       color: #fff;
       border: none;
-      border-radius: 10px;
-      padding: .7rem 1.2rem;
-      font-size: 0.9rem;
+      border-radius: 8px;
+      padding: .6rem 1.2rem;
+      font-size: .9rem;
       cursor: pointer;
       transition: var(--transition);
       display: flex;
       align-items: center;
       gap: .5rem;
-      width: 100%;
-      justify-content: center;
     }
-    
-    .logout-btn:hover { 
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(220, 38, 38, 0.3);
-    }
-
-    /* --------- THEME TOGGLE --------- */
-    .theme-toggle {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      box-shadow: var(--shadow-lg);
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 300;
-    }
-    
-    .theme-toggle:hover {
-      transform: scale(1.1) rotate(15deg);
+    .logout-btn:hover {
+      background: #B91C1C;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-hover);
     }
 
     /* --------- RESPONSIVE --------- */
     @media (max-width: 1024px) {
       .sidebar { width: 240px; }
-      .logo-text { font-size: 1.1rem; }
-      .nav a { padding: .8rem 1rem; font-size: .9rem; }
-      .welcome { font-size: 2.2rem; }
+      .welcome { font-size: 2rem; }
     }
 
     @media (max-width: 768px) {
@@ -287,10 +167,9 @@
         border-bottom: 1px solid var(--border);
         padding: 1rem;
       }
-      .logo { display: none; }
       .nav {
         flex-direction: row;
-        gap: .4rem;
+        gap: .3rem;
         flex-wrap: nowrap;
       }
       .nav a {
@@ -306,12 +185,7 @@
         width: 100%;
         margin-top: 1rem;
       }
-      .theme-toggle {
-        bottom: 1rem;
-        right: 1rem;
-        width: 45px;
-        height: 45px;
-      }
+      main { padding: 1.5rem; }
     }
   </style>
 </head>
@@ -319,11 +193,6 @@
 
 <!-- ========== SIDEBAR ========== -->
 <aside class="sidebar">
-  <div class="logo">
-    <div class="logo-icon">TPC</div>
-    <div class="logo-text">Tobias Palacios Co.</div>
-  </div>
-  
   <nav class="nav" id="main-nav">
     <a href="almacenamiento.html"><span class="material-icons">warehouse</span>Almacenamiento</a>
     <a href="clientes.html"><span class="material-icons">groups</span>Clientes</a>
@@ -339,27 +208,6 @@
   </nav>
 </aside>
 
-<!-- ========== MAIN CONTENT ========== -->
-<main>
-  <div class="header">
-    <h1 class="welcome">A FAMILY COMPANY</h1>
-    <p class="subtitle">TOBIAS PALACIOS COMPANY</p>
-  </div>
-  
-  <!-- Aquí puedes agregar widgets, gráficos o contenido adicional -->
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; width: 100%;">
-    <!-- Ejemplo de tarjetas de dashboard -->
-    <div style="background: var(--panel); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);">
-      <h3 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">VENTAS HOY</h3>
-      <p style="font-size: 2rem; font-weight: 700; color: var(--accent);">$0.00</p>
-    </div>
-    <div style="background: var(--panel); padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);">
-      <h3 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem;">INVENTARIO</h3>
-      <p style="font-size: 2rem; font-weight: 700; color: var(--accent);">0</p>
-    </div>
-  </div>
-</main>
-
 <!-- ========== RIGHT PANEL ========== -->
 <div class="right-panel">
   <div class="user-section">
@@ -371,10 +219,11 @@
   </button>
 </div>
 
-<!-- ========== THEME TOGGLE ========== -->
-<button class="theme-toggle" id="themeToggle" title="Cambiar tema">
-  <span class="material-icons">dark_mode</span>
-</button>
+<!-- ========== MAIN ========== -->
+<main>
+  <h1 class="welcome">A FAMILY COMPANY</h1>
+  <p class="subtitle">TOBIAS PALACIOS COMPANY</p>
+</main>
 
 <script>
 /* ========== IndexedDB & sesiones ========== */
@@ -463,14 +312,6 @@ function highlightCurrentPage() {
     }
   });
 }
-
-/* ========== THEME TOGGLE ========== */
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
-  document.body.classList.toggle('dark');
-  const icon = themeToggle.querySelector('.material-icons');
-  icon.textContent = document.body.classList.contains('dark') ? 'light_mode' : 'dark_mode';
-});
 
 /* ========== Arranque ========== */
 document.addEventListener('DOMContentLoaded', async () => {
